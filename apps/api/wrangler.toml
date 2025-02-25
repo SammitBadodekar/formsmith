@@ -1,0 +1,6 @@
+name = "formlect-api"
+main = "src/index.ts"
+compatibility_date = "2025-01-12"
+
+[observability.logs]
+enabled = true

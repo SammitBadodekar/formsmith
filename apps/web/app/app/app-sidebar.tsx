@@ -8,10 +8,11 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { Anton } from "next/font/google";
+import { Dangrek } from "next/font/google";
+import Image from "next/image";
 
-const anton = Anton({
-  variable: "--font-anton",
+const dangrek = Dangrek({
+  variable: "--font-dangrek",
   subsets: ["latin"],
   weight: ["400"],
 });
@@ -48,9 +49,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <h1 className="flex w-full justify-center pb-8 pt-4">
           <span
-            className={`w-full truncate text-center text-3xl font-black ${anton.className}`}
+            className={`w-full flex truncate text-3xl font-black px-2 ${dangrek.className}`}
           >
-            formlect
+            Formlect
           </span>
         </h1>
         <NavMain items={data.navMain} />

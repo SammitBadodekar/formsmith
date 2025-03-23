@@ -1,5 +1,5 @@
 {
-  "name": "formlect",
+  "name": "formsmith",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -9,9 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@formsmith/database": "workspace:*",
     "@hookform/resolvers": "^3.10.0",
     "@libsql/client": "^0.14.0",
+    "@libsql/kysely-libsql": "^0.4.1",
+    "@radix-ui/react-avatar": "^1.1.3",
     "@radix-ui/react-dialog": "^1.1.5",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
     "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-popover": "^1.1.5",
     "@radix-ui/react-select": "^2.1.5",
@@ -20,6 +24,7 @@
     "@radix-ui/react-tabs": "^1.1.2",
     "@radix-ui/react-toggle": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.7",
+    "better-auth": "^1.2.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",

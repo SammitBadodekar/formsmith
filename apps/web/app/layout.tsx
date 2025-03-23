@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Formlect",
-  description: "Evenything you need to build forms,waitlists,survays and more",
+  title: "Formsmith",
+  description: "Everything you need to build forms,waitlists,survays and more",
 };
 
 export default function RootLayout({

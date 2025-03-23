@@ -1,15 +1,17 @@
 "use client";
 import * as React from "react";
 import { ContactRound, Home, Settings, Workflow } from "lucide-react";
-import { NavMain } from "@/app/app/nav-main";
+import { NavMain } from "@/app/app/(dashboard)/nav-main";
 import {
   Sidebar,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenuButton,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { Dangrek } from "next/font/google";
 import Image from "next/image";
+import { NavUser } from "./nav-user";
 
 const dangrek = Dangrek({
   variable: "--font-dangrek",
@@ -47,13 +49,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar className="border-r-0" {...props}>
       <SidebarHeader>
-        <h1 className="flex w-full justify-center pb-8 pt-4">
-          <span
-            className={`w-full flex truncate text-3xl font-black px-2 ${dangrek.className}`}
-          >
-            Formlect
-          </span>
-        </h1>
+        <div className="pb-4">
+          <NavUser />
+        </div>
         <NavMain items={data.navMain} />
       </SidebarHeader>
       <SidebarRail />

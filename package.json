@@ -1,5 +1,5 @@
 {
-  "name": "formlect",
+  "name": "formsmith",
   "private": true,
   "scripts": {
     "build": "turbo run build",

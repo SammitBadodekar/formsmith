@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { ContactRound, Home, Settings, Workflow } from "lucide-react";
+import { Globe, Home, Search, Settings } from "lucide-react";
 import { NavMain } from "@/app/app/(dashboard)/nav-main";
 import {
   Sidebar,
@@ -10,7 +10,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { Dangrek } from "next/font/google";
-import Image from "next/image";
 import { NavUser } from "./nav-user";
 
 const dangrek = Dangrek({
@@ -28,14 +27,14 @@ const data = {
       isActive: false,
     },
     {
-      title: "Contacts",
-      url: "/contacts",
-      icon: ContactRound,
+      title: "Search",
+      url: "/search",
+      icon: Search,
     },
     {
-      title: "Automations",
-      url: "/automations",
-      icon: Workflow,
+      title: "Domains",
+      url: "/domains",
+      icon: Globe,
     },
     {
       title: "Settings",
@@ -49,7 +48,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar className="border-r-0" {...props}>
       <SidebarHeader>
-        <div className="pb-4">
+        <div className="pb-2">
           <NavUser />
         </div>
         <NavMain items={data.navMain} />

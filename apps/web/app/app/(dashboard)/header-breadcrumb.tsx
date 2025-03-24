@@ -39,7 +39,7 @@ const DynamicBreadcrumb = () => {
       <BreadcrumbList>
         <BreadcrumbItem>
           <Link href="/" className="flex items-center">
-            formsmith
+            Formsmith
           </Link>
         </BreadcrumbItem>
 

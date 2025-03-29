@@ -1,12 +1,7 @@
 import { generateState } from "arctic";
 import { cookies } from "next/headers";
 import { GitHub } from "arctic";
-
-export const github = new GitHub(
-  process.env.GITHUB_CLIENT_ID!,
-  process.env.GITHUB_CLIENT_SECRET!,
-  null
-);
+import { github } from "@/lib/auth";
 
 export async function GET(): Promise<Response> {
   const state = generateState();

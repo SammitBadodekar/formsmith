@@ -2,12 +2,12 @@ import {
   generateSessionToken,
   createSession,
   setSessionTokenCookie,
+  google,
 } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { decodeIdToken } from "arctic";
 
 import type { OAuth2Tokens } from "arctic";
-import { google } from "../../google/route";
 import { db } from "@/lib/db";
 import { userTable } from "@formsmith/database";
 import { eq } from "drizzle-orm";

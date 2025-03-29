@@ -1,12 +1,7 @@
+import { google } from "@/lib/auth";
 import { Google } from "arctic";
 import { generateState, generateCodeVerifier } from "arctic";
 import { cookies } from "next/headers";
-
-export const google = new Google(
-  process.env.GOOGLE_CLIENT_ID!,
-  process.env.GOOGLE_CLIENT_SECRET!,
-  `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback/google`
-);
 
 export async function GET(): Promise<Response> {
   const state = generateState();

@@ -8,6 +8,7 @@ import { sha256 } from "@oslojs/crypto/sha2";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { db } from "./db";
+import { GitHub, Google } from "arctic";
 
 export function generateSessionToken(): string {
   const bytes = new Uint8Array(20);
@@ -101,4 +102,16 @@ export const getCurrentSession = cache(
     const result = await validateSessionToken(token);
     return { ...result, token: token };
   }
+);
+
+export const github = new GitHub(
+  process.env.GITHUB_CLIENT_ID!,
+  process.env.GITHUB_CLIENT_SECRET!,
+  null
+);
+
+export const google = new Google(
+  process.env.GOOGLE_CLIENT_ID!,
+  process.env.GOOGLE_CLIENT_SECRET!,
+  `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback/google`
 );

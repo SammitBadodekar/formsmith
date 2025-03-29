@@ -2,8 +2,8 @@ import {
   generateSessionToken,
   createSession,
   setSessionTokenCookie,
+  github,
 } from "@/lib/auth";
-import { github } from "../../github/route";
 import { cookies } from "next/headers";
 
 import type { OAuth2Tokens } from "arctic";

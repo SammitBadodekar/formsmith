@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "ac059e69-521e-48d7-97f8-1f58f7ec3d2f",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "78798fd9-577d-40a9-8d3b-0cc360133a09",
+  "prevId": "ac059e69-521e-48d7-97f8-1f58f7ec3d2f",
   "tables": {
     "session": {
       "name": "session",
@@ -57,13 +57,6 @@
           "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": false
-        },
-        "github_id": {
-          "name": "github_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
           "autoincrement": false
         },
         "name": {

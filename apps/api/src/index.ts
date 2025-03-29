@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import userRoutes from "./routes/users";
+import { validateSessionToken } from "./helpers";
 
 export type Env = {
   zapstr: KVNamespace;
@@ -12,7 +13,8 @@ const app = new Hono<{ Bindings: Env }>();
 app.use(
   "/*",
   cors({
-    origin: ["https://zapstr.samx.in", "https://localhost:3000"],
+    origin: (origin) =>
+      origin.endsWith(".formsmith.sbs") ? origin : "https://formsmith.sbs",
     credentials: true,
     allowHeaders: ["Content-Type", "Authorization", "X-session-token"],
     exposeHeaders: ["Content-Range", "X-Content-Range", "X-session-token"],
@@ -21,6 +23,9 @@ app.use(
 );
 
 app.get("/", async (c) => {
+  const sessionToken = c.req.header("x-session-token");
+  const { session, user } = await validateSessionToken(sessionToken!, c);
+  console.log("here in api", session, user);
   return c.json({ serverUp: true });
 });
 

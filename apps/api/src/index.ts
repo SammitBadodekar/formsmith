@@ -25,7 +25,6 @@ app.use(
 app.get("/", async (c) => {
   const sessionToken = c.req.header("x-session-token");
   const { session, user } = await validateSessionToken(sessionToken!, c);
-  console.log("here in api", session, user);
   return c.json({ serverUp: true });
 });
 

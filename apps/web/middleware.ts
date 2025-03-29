@@ -26,12 +26,10 @@ export default async function middleware(req: NextRequest) {
   const path = `${url.pathname}${
     searchParams.length > 0 ? `?${searchParams}` : ""
   }`;
-  console.log("here in middleware", hostname, path);
 
   // rewrites for app pages
   if (hostname == `app.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) {
     const { session } = await getCurrentSession();
-    console.log("here in session", session);
     if (!session && path !== "/login") {
       return NextResponse.redirect(new URL("/login", req.url));
     } else if (session && path == "/login") {
@@ -48,7 +46,6 @@ export default async function middleware(req: NextRequest) {
     hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
   ) {
     const url = new URL(path, req.url);
-    console.log("here in root", hostname, path, url.toString());
     return NextResponse.rewrite(new URL(path, req.url));
   }
 

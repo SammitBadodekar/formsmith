@@ -36,9 +36,7 @@ export function NavUser() {
 
   useEffect(() => {
     const func = async () => {
-      const { data } = await fromsmithAxios.get(
-        process.env.NEXT_PUBLIC_API_URL!
-      );
+      const { data } = await fromsmithAxios.get("/");
       console.log("here in axios", data);
     };
     func();

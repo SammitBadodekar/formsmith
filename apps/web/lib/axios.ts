@@ -2,14 +2,13 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const fromsmithAxios = axios.create({
-  baseURL: "https://different-domain.com",
+  baseURL: process.env.NEXT_PUBLIC_API_URL!,
   withCredentials: true,
 });
 
 fromsmithAxios.interceptors.request.use(
   (config) => {
     const value = Cookies.get("session");
-    console.log("here in axios", value);
     config.headers["X-Session-Token"] = value;
     return config;
   },

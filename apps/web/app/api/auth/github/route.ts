@@ -13,7 +13,6 @@ export async function GET(): Promise<Response> {
   const url = github.createAuthorizationURL(state, ["read:user", "user:email"]);
 
   const cookieStore = await cookies();
-  console.log("here in node env", process.env.NODE_ENV === "production");
   cookieStore.set("github_oauth_state", state, {
     path: "/",
     secure: process.env.NODE_ENV === "production",

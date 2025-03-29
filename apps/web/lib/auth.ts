@@ -78,7 +78,6 @@ export async function setSessionTokenCookie(
     expires: expiresAt,
     path: "/",
   });
-  console.log("here in setSessionTokenCookie", token);
 }
 
 export async function deleteSessionTokenCookie(): Promise<void> {

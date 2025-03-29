@@ -44,7 +44,6 @@ export async function GET(request: Request): Promise<Response> {
     },
   });
   const githubUser = await githubUserResponse.json();
-  console.log("here in github callback", githubUser);
   const githubUserId = githubUser.id;
 
   const existingUser = await db

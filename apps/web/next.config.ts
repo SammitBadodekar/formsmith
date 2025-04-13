@@ -14,6 +14,12 @@ const nextConfig: NextConfig = {
         port: "",
         search: "",
       },
+      {
+        hostname: "tally.so",
+        port: "",
+        search: "",
+        protocol: "https",
+      },
     ],
   },
 };

@@ -1,7 +1,6 @@
 import { getDefaultReactSlashMenuItems } from "@blocknote/react";
-import { BlockNoteEditor } from "@blocknote/core";
-import { getShortInputSlashCommand } from "./blocks/short-input";
 import { schema } from "./editor";
+import { getShortInputSlashCommand } from "./blocks";
 
 export const getSlashMenuItems = (editor: typeof schema.BlockNoteEditor) => {
   const itemsToExclude = ["table", "check_list"];

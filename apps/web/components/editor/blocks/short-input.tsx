@@ -1,10 +1,9 @@
 import { Input } from "@/components/ui/input";
 import { insertOrUpdateBlock } from "@blocknote/core";
 import { createReactBlockSpec } from "@blocknote/react";
-import { FileInput } from "lucide-react";
-import { BlockNoteEditor } from "@blocknote/core";
 import { schema } from "../editor";
 import { HiOutlineBars2 } from "react-icons/hi2";
+import { v4 as uuid } from "uuid";
 
 export const ShortInput = createReactBlockSpec(
   {
@@ -22,10 +21,10 @@ export const ShortInput = createReactBlockSpec(
   },
   {
     render: (props) => {
-      console.log("here in render", props);
       return (
         <div className="w-full">
           <Input
+            ref={props.contentRef}
             placeholder={props?.block?.props?.placeholder}
             className="min-w-full"
             onChange={(e) => {
@@ -36,7 +35,6 @@ export const ShortInput = createReactBlockSpec(
               });
             }}
           />
-          {/* <div className={"inline-content"} ref={props.contentRef} /> */}
         </div>
       );
     },
@@ -49,23 +47,37 @@ export const getShortInputSlashCommand = (
   return {
     title: "Short Input",
     subtext: "",
-    onItemClick: () =>
-      // If the block containing the text caret is empty, `insertOrUpdateBlock`
-      // changes its type to the provided block. Otherwise, it inserts the new
-      // block below and moves the text caret to it. We use this function with an
-      // Alert block.
-      insertOrUpdateBlock(editor, {
-        type: "shortInput",
-      }),
-    aliases: [
-      "alert",
-      "notification",
-      "emphasize",
-      "warning",
-      "error",
-      "info",
-      "success",
-    ],
+    onItemClick: () => {
+      const blocks = editor.insertBlocks(
+        [
+          {
+            type: "label",
+            props: {
+              for: "short-input",
+              value: "Type a question",
+            },
+            content: [
+              {
+                type: "text",
+                text: "Type a question",
+                styles: {
+                  bold: true,
+                },
+              },
+            ],
+          },
+          {
+            type: "shortInput",
+            id: uuid(),
+          },
+        ],
+        editor.getTextCursorPosition().block, // Insert after current block
+        "after"
+      );
+      // @ts-ignore
+      editor.removeBlocks([editor.getPrevBlock(blocks[0])]);
+    },
+    aliases: ["short input", "input", "text", "string"],
     group: "Form Components",
     icon: <HiOutlineBars2 size={18} />,
   };

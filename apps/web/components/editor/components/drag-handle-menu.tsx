@@ -1,30 +1,70 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
+import { Card, CardContent } from "@/components/ui/card";
 import { DragHandleMenuProps } from "@blocknote/react";
+import React, { useEffect, useRef } from "react";
+import { schema } from "../editor";
+import { Separator } from "@/components/ui/separator";
+import DragHandleMenuTitle from "./drag-handle-menu-title";
 
-import React from "react";
+const BlocksDragHandleMenu = ({
+  props,
+  editor,
+}: {
+  props: DragHandleMenuProps;
+  editor: typeof schema.BlockNoteEditor;
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    updateHighlight(true);
+    function handleClick(event: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        updateHighlight(false);
+      }
+    }
 
-const BlocksDragHandleMenu = (props: DragHandleMenuProps) => {
+    document.addEventListener("mousedown", handleClick);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+    };
+  }, []);
+
+  function updateHighlight(value: boolean) {
+    editor.updateBlock(props.block, {
+      props: {
+        highlight: value,
+      },
+    });
+    // @ts-ignore
+    if (props.block.type === "label") {
+      const correspondentInput = editor.document?.find(
+        // @ts-ignore
+        (block) => block.id === props.block?.props?.for
+      );
+
+      console.log("here in if", correspondentInput);
+      if (correspondentInput) {
+        editor.updateBlock(correspondentInput, {
+          props: {
+            highlight: value,
+          },
+        });
+      }
+    }
+  }
+
   return (
-    <div>
-      <Card className="border-none rounded-none p-0 m-0 shadow-none">
-        <CardHeader>
-          <CardTitle>Card Title</CardTitle>
-          <CardDescription>Card Description</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>Card Content</p>
+    <div ref={containerRef}>
+      <Card className="border-none rounded-none p-0 shadow-none w-full">
+        <CardContent className="flex flex-col gap-2 p-2">
+          <DragHandleMenuTitle props={props} editor={editor} />
+          <Separator className="" />
+          <Separator className="" />
+          <li className="flex flex-col gap-2">
+            <button>Delete</button>
+          </li>
         </CardContent>
-        <CardFooter>
-          <p>Card Footer</p>
-        </CardFooter>
       </Card>
     </div>
   );

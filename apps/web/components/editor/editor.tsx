@@ -19,7 +19,7 @@ import {
 import Image from "next/image";
 import { getSlashMenuItems } from "./helpers";
 import { Button } from "../ui/button";
-import { ShortInput, Label } from "./blocks";
+import { shortAnswer, Label } from "./blocks";
 import { v4 as uuid } from "uuid";
 import { MdOutlineDelete } from "react-icons/md";
 import BlocksDragHandleMenu from "./components/drag-handle-menu";
@@ -27,7 +27,7 @@ import BlocksDragHandleMenu from "./components/drag-handle-menu";
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
     ...defaultBlockSpecs,
-    shortInput: ShortInput,
+    shortAnswer: shortAnswer,
     label: Label,
   },
 });
@@ -57,9 +57,9 @@ export default function Editor() {
       },
       {
         id: uuid(),
-        type: "shortInput",
+        type: "shortAnswer",
         props: {
-          type: "shortInput",
+          type: "shortAnswer",
           placeholder: "Type placeholder text...",
         },
         children: [],
@@ -137,7 +137,7 @@ export default function Editor() {
                     <DragHandleMenu {...props}>
                       {/* <RemoveBlockItem {...props}>Delete</RemoveBlockItem>
                       <BlockColorsItem {...props}>Colors</BlockColorsItem> */}
-                      <BlocksDragHandleMenu {...props} />
+                      <BlocksDragHandleMenu props={props} editor={editor} />
                     </DragHandleMenu>
                   )}
                 ></SideMenu>

@@ -15,6 +15,20 @@
       "when": 1742879304352,
       "tag": "0001_rainy_unus",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1746250745292,
+      "tag": "0002_abnormal_callisto",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1746252198163,
+      "tag": "0003_ambitious_johnny_storm",
+      "breakpoints": true
     }
   ]
 }

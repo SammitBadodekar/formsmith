@@ -1,7 +1,9 @@
 import { getDefaultReactSlashMenuItems } from "@blocknote/react";
 import { schema } from "./editor";
-import { getshortAnswerSlashCommand } from "./blocks";
-import { Block } from "@blocknote/core";
+import {
+  getLongAnswerSlashCommand,
+  getshortAnswerSlashCommand,
+} from "./blocks";
 
 export const getSlashMenuItems = (editor: typeof schema.BlockNoteEditor) => {
   const itemsToExclude = ["table", "check_list"];
@@ -9,7 +11,11 @@ export const getSlashMenuItems = (editor: typeof schema.BlockNoteEditor) => {
   const filteredItems = items.filter((item: any) => {
     return !itemsToExclude.includes(item.key);
   });
-  return [getshortAnswerSlashCommand(editor), ...filteredItems];
+  return [
+    getshortAnswerSlashCommand(editor),
+    getLongAnswerSlashCommand(editor),
+    ...filteredItems,
+  ];
 };
 
 export const getHighlightStyles = () => {

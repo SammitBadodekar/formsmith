@@ -9,8 +9,9 @@ import { decodeIdToken } from "arctic";
 
 import type { OAuth2Tokens } from "arctic";
 import { db } from "@/lib/db";
-import { userTable } from "@formsmith/database";
+import { userTable, workspaceTable } from "@formsmith/database";
 import { eq } from "drizzle-orm";
+import { v4 as uuid } from "uuid";
 
 type googleCallbackClaims = {
   sub: string;
@@ -72,15 +73,25 @@ export async function GET(request: Request): Promise<Response> {
     });
   }
 
-  await db
-    .insert(userTable)
-    .values({
-      id: googleUserId,
-      name: claims.name,
-      email: claims.email,
-      image: claims?.picture,
-    })
-    .run();
+  await Promise.all([
+    db
+      .insert(userTable)
+      .values({
+        id: googleUserId,
+        name: claims.name,
+        email: claims.email,
+        image: claims?.picture,
+      })
+      .run(),
+    db
+      .insert(workspaceTable)
+      .values({
+        id: uuid(),
+        userId: googleUserId,
+        name: "My Workspace",
+      })
+      .run(),
+  ]);
 
   const sessionToken = generateSessionToken();
   const session = await createSession(sessionToken, googleUserId);

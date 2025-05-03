@@ -19,5 +19,36 @@ export const sessionTable = sqliteTable("session", {
   }).notNull(),
 });
 
+export const workspaceTable = sqliteTable("workspace", {
+  id: text("id").primaryKey(),
+  name: text("name"),
+  userId: text("user_id")
+    .notNull()
+    .references(() => userTable.id),
+});
+
+export const formTable = sqliteTable("form", {
+  id: text("id").primaryKey(),
+  name: text("name"),
+  description: text("description"),
+  image: text("image"),
+  logo: text("logo"),
+  userId: text("user_id")
+    .notNull()
+    .references(() => userTable.id),
+  workspaceId: text("workspace_id")
+    .notNull()
+    .references(() => workspaceTable.id),
+  data: text({ mode: "json" }),
+  createdAt: integer("created_at", {
+    mode: "timestamp",
+  }),
+  updatedAt: integer("updated_at", {
+    mode: "timestamp",
+  }),
+});
+
 export type User = InferSelectModel<typeof userTable>;
 export type Session = InferSelectModel<typeof sessionTable>;
+export type Form = InferSelectModel<typeof formTable>;
+export type Workspace = InferSelectModel<typeof workspaceTable>;

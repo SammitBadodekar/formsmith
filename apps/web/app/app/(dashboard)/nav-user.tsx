@@ -26,21 +26,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useSession } from "@/components/session-provider";
-import { useEffect } from "react";
-import fromsmithAxios from "@/lib/axios";
 import Link from "next/link";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { user } = useSession();
-
-  useEffect(() => {
-    const func = async () => {
-      const { data } = await fromsmithAxios.get("/");
-      console.log("here in axios", data);
-    };
-    func();
-  }, []);
 
   return (
     <SidebarMenu>

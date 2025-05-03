@@ -10,18 +10,14 @@ import "@blocknote/mantine/style.css";
 import {
   SuggestionMenuController,
   useCreateBlockNote,
-  BlockColorsItem,
   DragHandleMenu,
-  RemoveBlockItem,
   SideMenu,
   SideMenuController,
 } from "@blocknote/react";
 import Image from "next/image";
 import { getSlashMenuItems } from "./helpers";
 import { Button } from "../ui/button";
-import { shortAnswer, Label } from "./blocks";
-import { v4 as uuid } from "uuid";
-import { MdOutlineDelete } from "react-icons/md";
+import { shortAnswer, Label, longAnswer } from "./blocks";
 import BlocksDragHandleMenu from "./components/drag-handle-menu";
 
 export const schema = BlockNoteSchema.create({
@@ -29,77 +25,45 @@ export const schema = BlockNoteSchema.create({
     ...defaultBlockSpecs,
     shortAnswer: shortAnswer,
     label: Label,
+    longAnswer: longAnswer,
   },
 });
 
-export default function Editor() {
-  if (typeof window === "undefined") return <div>Loading...</div>;
+type EditorProps = {
+  image: string;
+  logo: string;
+};
 
+export default function Editor(props: EditorProps) {
+  const { image, logo } = props;
   const editor = useCreateBlockNote({
     initialContent: [
       {
-        id: uuid(),
         type: "heading",
-        props: {
-          textColor: "default",
-          backgroundColor: "default",
-          textAlignment: "left",
-          level: 1,
-        },
-        content: [
-          {
-            type: "text",
-            text: "Heading",
-            styles: {},
-          },
-        ],
-        children: [],
+        content: "",
       },
       {
-        id: uuid(),
-        type: "shortAnswer",
-        props: {
-          type: "shortAnswer",
-          placeholder: "Type placeholder text...",
-        },
-        children: [],
-      },
-      {
-        id: uuid(),
         type: "paragraph",
-        props: {
-          textColor: "default",
-          backgroundColor: "default",
-          textAlignment: "left",
-        },
-        content: [],
-        children: [],
+        content: "",
       },
     ],
-    // [
-    //   {
-    //     type: "heading",
-    //     content: "Heading",
-    //   },
-    //   {
-    //     type: "paragraph",
-    //     content: "",
-    //   },
-    // ],
     schema: schema,
   });
   return (
-    <div className="w-full h-full">
-      <Image
-        src={"https://tally.so/images/placeholders/form-cover.jpg"}
-        height={200}
-        width={400}
-        alt="cover image"
-        className="w-full max-h-60"
-      />
-      <div className="flex w-full h-full justify-center items-center">
+    <div className="h-full w-full">
+      {image && (
+        <Image
+          src={image}
+          height={200}
+          width={400}
+          alt="cover image"
+          className="max-h-60 w-full"
+        />
+      )}
+      {!image && <div className="min-h-40 min-w-full"></div>}
+      <div className="flex h-full w-full justify-center">
         <form
-          className="max-w-[600px] w-full flex flex-col gap-4"
+          className="flex w-full max-w-[600px] flex-col gap-4"
           onSubmit={(e) => {
             e.preventDefault();
             const formData = new FormData(e.target as HTMLFormElement);
@@ -116,7 +80,7 @@ export default function Editor() {
           <BlockNoteView
             editor={editor}
             theme={"light"}
-            className="w-full p-0 -mx-[54px]"
+            className="-mx-[54px] w-full p-0"
             onChange={() => {
               console.log(editor.document);
             }}
@@ -129,20 +93,20 @@ export default function Editor() {
                 filterSuggestionItems(getSlashMenuItems(editor), query)
               }
             />
-            <SideMenuController
+            {/* <SideMenuController
               sideMenu={(props) => (
                 <SideMenu
                   {...props}
                   dragHandleMenu={(props) => (
                     <DragHandleMenu {...props}>
-                      {/* <RemoveBlockItem {...props}>Delete</RemoveBlockItem>
-                      <BlockColorsItem {...props}>Colors</BlockColorsItem> */}
+                      <RemoveBlockItem {...props}>Delete</RemoveBlockItem>
+                      <BlockColorsItem {...props}>Colors</BlockColorsItem>
                       <BlocksDragHandleMenu props={props} editor={editor} />
                     </DragHandleMenu>
                   )}
                 ></SideMenu>
               )}
-            />
+            /> */}
           </BlockNoteView>
           <Button className="w-fit">Submit</Button>
         </form>

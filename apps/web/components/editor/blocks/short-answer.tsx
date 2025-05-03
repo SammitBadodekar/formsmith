@@ -1,5 +1,4 @@
 import { Input } from "@/components/ui/input";
-import { insertOrUpdateBlock } from "@blocknote/core";
 import { createReactBlockSpec } from "@blocknote/react";
 import { schema } from "../editor";
 import { HiOutlineBars2 } from "react-icons/hi2";

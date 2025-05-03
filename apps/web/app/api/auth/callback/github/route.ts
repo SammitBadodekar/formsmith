@@ -7,10 +7,10 @@ import {
 import { cookies } from "next/headers";
 
 import type { OAuth2Tokens } from "arctic";
-import { userTable } from "@formsmith/database";
+import { userTable, workspaceTable } from "@formsmith/database";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { randomUUID } from "crypto";
+import { v4 as uuid } from "uuid";
 
 export async function GET(request: Request): Promise<Response> {
   const url = new URL(request.url);
@@ -64,15 +64,25 @@ export async function GET(request: Request): Promise<Response> {
     });
   }
 
-  await db
-    .insert(userTable)
-    .values({
-      id: githubUserId,
-      name: githubUser?.login,
-      email: githubUser?.email,
-      image: githubUser?.avatar_url,
-    })
-    .run();
+  await Promise.all([
+    db
+      .insert(userTable)
+      .values({
+        id: githubUserId,
+        name: githubUser?.login,
+        email: githubUser?.email,
+        image: githubUser?.avatar_url,
+      })
+      .run(),
+    db
+      .insert(workspaceTable)
+      .values({
+        id: uuid(),
+        userId: githubUserId,
+        name: "My Workspace",
+      })
+      .run(),
+  ]);
 
   const sessionToken = generateSessionToken();
   const session = await createSession(sessionToken, githubUserId);

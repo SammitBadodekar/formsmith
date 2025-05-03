@@ -1,12 +1,12 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const fromsmithAxios = axios.create({
+const formsmithAxios = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL!,
   withCredentials: true,
 });
 
-fromsmithAxios.interceptors.request.use(
+formsmithAxios.interceptors.request.use(
   (config) => {
     const value = Cookies.get("session");
     config.headers["X-Session-Token"] = value;
@@ -14,15 +14,15 @@ fromsmithAxios.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
-fromsmithAxios.interceptors.response.use(
+formsmithAxios.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error("API Error:", error);
     return Promise.reject(error);
-  }
+  },
 );
 
-export default fromsmithAxios;
+export default formsmithAxios;

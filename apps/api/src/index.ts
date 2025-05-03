@@ -1,15 +1,15 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import userRoutes from "./routes/users";
-import { validateSessionToken } from "./helpers";
+import formRoutes from "./routes/forms";
 import { env } from "hono/adapter";
 
 export type Env = {
-  zapstr: KVNamespace;
   DATABASE_URL: string;
   DATABASE_AUTH_TOKEN: string;
   FRONTEND_DOMAIN: string;
 };
+export type app = Hono<{ Bindings: Env }>;
 const app = new Hono<{ Bindings: Env }>();
 
 app.use(
@@ -29,11 +29,10 @@ app.use(
 );
 
 app.get("/", async (c) => {
-  const sessionToken = c.req.header("x-session-token");
-  const { session, user } = await validateSessionToken(sessionToken!, c);
   return c.json({ serverUp: true });
 });
 
 userRoutes(app);
+formRoutes(app);
 
 export default app;

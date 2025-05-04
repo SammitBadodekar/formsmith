@@ -64,25 +64,24 @@ export async function GET(request: Request): Promise<Response> {
     });
   }
 
-  await Promise.all([
-    db
-      .insert(userTable)
-      .values({
-        id: githubUserId,
-        name: githubUser?.login,
-        email: githubUser?.email,
-        image: githubUser?.avatar_url,
-      })
-      .run(),
-    db
-      .insert(workspaceTable)
-      .values({
-        id: uuid(),
-        userId: githubUserId,
-        name: "My Workspace",
-      })
-      .run(),
-  ]);
+  await db
+    .insert(userTable)
+    .values({
+      id: githubUserId,
+      name: githubUser?.login,
+      email: githubUser?.email,
+      image: githubUser?.avatar_url,
+    })
+    .run();
+
+  await db
+    .insert(workspaceTable)
+    .values({
+      id: uuid(),
+      userId: githubUserId,
+      name: "My Workspace",
+    })
+    .run();
 
   const sessionToken = generateSessionToken();
   const session = await createSession(sessionToken, githubUserId);

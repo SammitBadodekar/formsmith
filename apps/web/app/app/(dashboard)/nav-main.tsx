@@ -24,7 +24,7 @@ export function NavMain({
   const pathName = usePathname();
   const { toggleSidebar, isMobile } = useSidebar();
   return (
-    <SidebarMenu>
+    <SidebarMenu className="p-2">
       {items.map((item) => (
         <SidebarMenuItem key={item.title}>
           <SidebarMenuButton

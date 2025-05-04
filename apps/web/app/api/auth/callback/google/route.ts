@@ -73,25 +73,24 @@ export async function GET(request: Request): Promise<Response> {
     });
   }
 
-  await Promise.all([
-    db
-      .insert(userTable)
-      .values({
-        id: googleUserId,
-        name: claims.name,
-        email: claims.email,
-        image: claims?.picture,
-      })
-      .run(),
-    db
-      .insert(workspaceTable)
-      .values({
-        id: uuid(),
-        userId: googleUserId,
-        name: "My Workspace",
-      })
-      .run(),
-  ]);
+  await db
+    .insert(userTable)
+    .values({
+      id: googleUserId,
+      name: claims.name,
+      email: claims.email,
+      image: claims?.picture,
+    })
+    .run();
+
+  await db
+    .insert(workspaceTable)
+    .values({
+      id: uuid(),
+      userId: googleUserId,
+      name: "My Workspace",
+    })
+    .run();
 
   const sessionToken = generateSessionToken();
   const session = await createSession(sessionToken, googleUserId);

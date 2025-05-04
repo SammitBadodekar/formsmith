@@ -1,4 +1,4 @@
-import Editor from "@/components/editor/editor";
+import EditForm from "./edit-form";
 
 export default async function Page({
   params,
@@ -8,8 +8,8 @@ export default async function Page({
   console.log(await params);
   const { slug } = await params;
   return (
-    <div>
-      <Editor image="" logo="" />
-    </div>
+    <>
+      <EditForm />
+    </>
   );
 }

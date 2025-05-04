@@ -1,26 +1,33 @@
 "use client";
 import React from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import CreateForm from "@/components/modals/create-form";
-import { getForms } from "@/lib/queries";
+import { getForms, getWorkspaces } from "@/lib/queries";
 import { Form } from "@formsmith/database";
 import { formatDistanceToNowStrict } from "date-fns";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { PencilLine, Trash2 } from "lucide-react";
+import { PencilLine } from "lucide-react";
+import DeleteFormModal from "@/components/modals/delete-form";
+import FormsLoading from "@/components/skeletons/forms-loading";
 
 const ShowForms = () => {
-  const queryClient = useQueryClient();
   const { data, isLoading, error } = useQuery({
     queryKey: ["getForms"],
     queryFn: getForms,
+    staleTime: 60000,
   });
-  const workspaceId = data?.data?.workspaces[0]?.id;
+  const { data: workspaceData } = useQuery({
+    queryKey: ["getWorkspaces"],
+    queryFn: getWorkspaces,
+    staleTime: 60000,
+  });
+  const workspaceId = workspaceData?.data?.workspaces[0]?.id;
 
   return (
     <div className="flex h-full w-full flex-col">
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <FormsLoading />}
       <div className="">
         {data?.data?.forms?.length === 0 && (
           <div className="flex h-full min-h-[calc(100dvh_-_10rem)] w-full flex-col items-center justify-center gap-4">
@@ -73,7 +80,7 @@ const FormItem = ({ form }: { form: Form }) => {
       key={form.id}
       className="group relative flex w-full rounded-lg p-2 px-4 hover:bg-primary/5"
     >
-      <div className="flex w-full flex-col gap-2">
+      <div className="flex w-full flex-col gap-0">
         <p className="font-semibold">{form.name}</p>
         <p className="text-sm text-primary/50">Edited {timeAgo}</p>
       </div>
@@ -84,9 +91,7 @@ const FormItem = ({ form }: { form: Form }) => {
             <p>Edit</p>
           </Link>
         </Button>
-        <Button variant="ghost" size={"icon"}>
-          <Trash2 />
-        </Button>
+        <DeleteFormModal form={form} />
       </div>
     </li>
   );

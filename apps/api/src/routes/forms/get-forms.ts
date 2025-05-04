@@ -1,6 +1,4 @@
 import { Context } from "hono";
-import axios from "axios";
-import { getCookie } from "hono/cookie";
 import { getDB, validateSessionToken } from "../../helpers";
 import { eq } from "drizzle-orm";
 import { formTable, workspaceTable } from "@formsmith/database";
@@ -13,19 +11,23 @@ export const getForms = async (c: Context) => {
       return c.json({ success: false, error: "Unauthorized" }, 403);
     const db = await getDB(c);
 
-    const [forms, workspaces] = await Promise.all([
-      db.select().from(formTable).where(eq(formTable.userId, user.id)),
-      db
-        .select()
-        .from(workspaceTable)
-        .where(eq(workspaceTable.userId, user.id)),
-    ]);
+    const forms = await db
+      .select({
+        id: formTable.id,
+        name: formTable.name,
+        description: formTable.description,
+        createdAt: formTable.createdAt,
+        updatedAt: formTable.updatedAt,
+        userId: formTable.userId,
+        workspaceId: formTable.workspaceId,
+      })
+      .from(formTable)
+      .where(eq(formTable.userId, user.id));
 
     return c.json({
       success: true,
       data: {
         forms: forms,
-        workspaces: workspaces,
       },
     });
   } catch (error) {

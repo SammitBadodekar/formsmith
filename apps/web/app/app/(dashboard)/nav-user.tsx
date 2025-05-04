@@ -43,7 +43,7 @@ export function NavUser() {
             >
               <Avatar className="h-8 w-8 rounded-full">
                 <AvatarImage src={user?.image!} alt={user?.name!} />
-                <AvatarFallback className="rounded-full">CN</AvatarFallback>
+                <AvatarFallback className="animate-pulse rounded-full"></AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user?.name}</span>
@@ -94,11 +94,12 @@ export function NavUser() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href={`/api/auth/signout`}>
-                <button className="flex w-full gap-2 items-center">
-                  <LogOut className="w-4 h-4" />
-                  Log out
-                </button>
+              <Link
+                href={`/api/auth/signout`}
+                className="flex w-full items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Log out
               </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>

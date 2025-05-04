@@ -19,6 +19,7 @@ import { getSlashMenuItems } from "./helpers";
 import { Button } from "../ui/button";
 import { shortAnswer, Label, longAnswer } from "./blocks";
 import BlocksDragHandleMenu from "./components/drag-handle-menu";
+import { ArrowRight } from "lucide-react";
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
@@ -32,6 +33,7 @@ export const schema = BlockNoteSchema.create({
 type EditorProps = {
   image: string;
   logo: string;
+  onSave: (data: any) => void;
 };
 
 export default function Editor(props: EditorProps) {
@@ -82,7 +84,7 @@ export default function Editor(props: EditorProps) {
             theme={"light"}
             className="-mx-[54px] w-full p-0"
             onChange={() => {
-              console.log(editor.document);
+              props.onSave(editor);
             }}
             autoFocus={true}
           >
@@ -108,7 +110,10 @@ export default function Editor(props: EditorProps) {
               )}
             /> */}
           </BlockNoteView>
-          <Button className="w-fit">Submit</Button>
+          <Button className="w-fit px-3 font-black">
+            <p>Submit</p>
+            <ArrowRight />
+          </Button>
         </form>
       </div>
     </div>

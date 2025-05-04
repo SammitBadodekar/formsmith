@@ -38,7 +38,13 @@ export const CreateFormSchema = z.object({
   workspaceId: z.string().optional(),
 });
 
-function CreateForm({ workspaceId }: { workspaceId: string }) {
+function CreateForm({
+  workspaceId,
+  customTriggerElement,
+}: {
+  workspaceId: string;
+  customTriggerElement?: React.ReactNode;
+}) {
   const [open, setOpen] = React.useState(false);
   const form = useForm<z.infer<typeof CreateFormSchema>>({
     resolver: zodResolver(CreateFormSchema),
@@ -53,6 +59,7 @@ function CreateForm({ workspaceId }: { workspaceId: string }) {
     mutationFn: createForm,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["getForms"] });
+      queryClient.invalidateQueries({ queryKey: ["getWorkspaces"] });
       toast("Form created");
       setOpen(false);
       form.reset();
@@ -76,13 +83,17 @@ function CreateForm({ workspaceId }: { workspaceId: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          className="flex items-center gap-2 rounded-lg text-base font-semibold"
-          size="sm"
-          variant="accent"
-        >
-          <Plus /> <p>New Form</p>
-        </Button>
+        {customTriggerElement ? (
+          customTriggerElement
+        ) : (
+          <Button
+            className="flex items-center gap-2 rounded-lg text-base font-semibold"
+            size="sm"
+            variant="accent"
+          >
+            <Plus /> <p>New Form</p>
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

@@ -9,14 +9,8 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { Dangrek } from "next/font/google";
 import { NavUser } from "./nav-user";
-
-const dangrek = Dangrek({
-  variable: "--font-dangrek",
-  subsets: ["latin"],
-  weight: ["400"],
-});
+import { NavWorkspaces } from "./nav-workspaces";
 
 const data = {
   navMain: [
@@ -47,11 +41,12 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar className="border-r-0" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="p-0">
         <div className="pb-2">
           <NavUser />
         </div>
         <NavMain items={data.navMain} />
+        <NavWorkspaces />
       </SidebarHeader>
       <SidebarRail />
     </Sidebar>

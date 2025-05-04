@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import userRoutes from "./routes/users";
-import formRoutes from "./routes/forms";
 import { env } from "hono/adapter";
+import formRoutes from "./routes/forms";
+import workspaceRoutes from "./routes/workspaces";
 
 export type Env = {
   DATABASE_URL: string;
@@ -32,7 +32,7 @@ app.get("/", async (c) => {
   return c.json({ serverUp: true });
 });
 
-userRoutes(app);
 formRoutes(app);
+workspaceRoutes(app);
 
 export default app;

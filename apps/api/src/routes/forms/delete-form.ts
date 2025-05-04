@@ -1,41 +1,29 @@
 import { Context } from "hono";
-import axios from "axios";
-import { getCookie } from "hono/cookie";
 import { getDB, validateSessionToken } from "../../helpers";
 import { eq } from "drizzle-orm";
 import { formTable } from "@formsmith/database";
-import { v4 as uuid } from "uuid";
 
-export const createForms = async (c: Context) => {
+export const deleteForm = async (c: Context) => {
   try {
     const sessionToken = c.req.header("x-session-token");
     const { session, user } = await validateSessionToken(sessionToken!, c);
     if (!user || !session)
       return c.json({ success: false, error: "Unauthorized" }, 403);
     const db = await getDB(c);
-    const body = await c.req.json();
-    console.log(body);
 
-    const formId = uuid();
-    await db
-      .insert(formTable)
-      .values({
-        id: formId,
-        name: body.name || "",
-        description: body.description || "",
-        userId: user.id,
-        workspaceId: body.workspaceId,
-        data: [],
-        image: "",
-        logo: "",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .run();
+    const formId = c.req.query("form_id");
+    console.log(formId);
+    if (!formId) {
+      return c.json(
+        { success: false, error: "Missing required query parameter `form_id`" },
+        400
+      );
+    }
+    await db.delete(formTable).where(eq(formTable.id, formId)).run();
 
     return c.json({
       success: true,
-      id: formId,
+      message: `From with id ${formId} deleted successfully`,
     });
   } catch (error) {
     console.log("error", error);

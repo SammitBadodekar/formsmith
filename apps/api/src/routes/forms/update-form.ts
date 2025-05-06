@@ -2,39 +2,44 @@ import { Context } from "hono";
 import { getDB, validateSessionToken } from "../../helpers";
 import { eq } from "drizzle-orm";
 import { formTable } from "@formsmith/database";
+import { v4 as uuid } from "uuid";
 
-export const getForms = async (c: Context) => {
+export const updateForm = async (c: Context) => {
   try {
     const sessionToken = c.req.header("x-session-token");
     const { session, user } = await validateSessionToken(sessionToken!, c);
     if (!user || !session)
       return c.json({ success: false, error: "Unauthorized" }, 403);
     const db = await getDB(c);
+    const body = await c.req.json();
+    console.log(body);
 
-    const forms = await db
-      .select({
-        id: formTable.id,
-        name: formTable.name,
-        description: formTable.description,
-        createdAt: formTable.createdAt,
-        updatedAt: formTable.updatedAt,
-        userId: formTable.userId,
-        workspaceId: formTable.workspaceId,
+    const formId = body.id;
+    await db
+      .update(formTable)
+      .set({
+        data: body.data,
+        name: body.name,
+        description: body.description,
+        image: body.image,
+        logo: body.logo,
+        updatedAt: new Date(),
       })
-      .from(formTable)
-      .where(eq(formTable.userId, user.id));
+      .where(eq(formTable.id, formId))
+      .run();
 
     return c.json({
       success: true,
-      data: {
-        forms: forms,
-      },
+      id: formId,
     });
   } catch (error) {
     console.log("error", error);
-    return c.json({
-      success: false,
-      error: error,
-    });
+    return c.json(
+      {
+        success: false,
+        error: error,
+      },
+      500
+    );
   }
 };

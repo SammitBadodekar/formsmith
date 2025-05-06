@@ -62,7 +62,7 @@ const ShowForms = () => {
             <ul className="flex w-full flex-col gap-2">
               {data?.data?.forms?.map((form: Form) => {
                 console.log(form);
-                return <FormItem form={form} />;
+                return <FormItem form={form} key={form.id} />;
               })}
             </ul>
           </div>

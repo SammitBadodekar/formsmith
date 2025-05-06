@@ -3,13 +3,13 @@ import EditForm from "./edit-form";
 export default async function Page({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ form_id: string }>;
 }) {
   console.log(await params);
-  const { slug } = await params;
+  const { form_id } = await params;
   return (
     <>
-      <EditForm />
+      <EditForm formId={form_id} />
     </>
   );
 }

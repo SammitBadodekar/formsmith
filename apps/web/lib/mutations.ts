@@ -40,3 +40,18 @@ export const deleteForm = async (formId: string) => {
   });
   return data;
 };
+
+export const updateForm = async ({
+  formId,
+  formData,
+}: {
+  formId: string;
+  formData: any;
+}) => {
+  console.log("formData", formData);
+  const { data } = await formsmithAxios.put(`/forms`, {
+    data: formData,
+    id: formId,
+  });
+  return data;
+};

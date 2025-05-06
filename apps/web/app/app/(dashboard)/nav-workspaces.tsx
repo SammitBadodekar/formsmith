@@ -24,6 +24,7 @@ import WorkspacesLoading from "@/components/skeletons/workspaces-loading";
 import { useState } from "react";
 import Link from "next/link";
 import CreateForm from "@/components/modals/create-form";
+import { usePathname } from "next/navigation";
 
 type WorkspaceWithForms = Workspace & { forms: Form[] };
 
@@ -33,7 +34,7 @@ export function NavWorkspaces() {
     queryFn: getWorkspaces,
     staleTime: 60000,
   });
-  const workspaces = data?.data?.workspaces ?? [];
+  const workspaces: WorkspaceWithForms[] = data?.data?.workspaces;
   return (
     <SidebarGroup>
       <SidebarGroupLabel className="font-semibold">
@@ -44,7 +45,11 @@ export function NavWorkspaces() {
           {isLoading && <WorkspacesLoading />}
           {!isLoading &&
             workspaces.map((workspace: WorkspaceWithForms, index: number) => (
-              <WorkspaceItem workspace={workspace} index={index} />
+              <WorkspaceItem
+                workspace={workspace}
+                index={index}
+                key={workspace.id}
+              />
             ))}
         </SidebarMenu>
       </SidebarGroupContent>

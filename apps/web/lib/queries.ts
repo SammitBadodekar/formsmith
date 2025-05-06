@@ -5,6 +5,15 @@ export const getForms = async () => {
   return data;
 };
 
+export const getForm = async (formId: string) => {
+  const { data } = await formsmithAxios.get(`/form`, {
+    params: {
+      form_id: formId,
+    },
+  });
+  return data;
+};
+
 export const getWorkspaces = async () => {
   const { data } = await formsmithAxios.get("/workspaces");
   return data;

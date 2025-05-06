@@ -60,13 +60,13 @@ function CreateForm({
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["getForms"] });
       queryClient.invalidateQueries({ queryKey: ["getWorkspaces"] });
-      toast("Form created");
+      toast.success("Form created successfully");
       setOpen(false);
       form.reset();
       router.push(`/forms/${data.id}/edit`);
     },
     onError: (error) => {
-      toast("Error creating form", {
+      toast.error("Error creating form", {
         description: `Error: ${error.message}`,
       });
     },

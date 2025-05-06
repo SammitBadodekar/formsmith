@@ -34,21 +34,25 @@ type EditorProps = {
   image: string;
   logo: string;
   onSave: (data: any) => void;
+  data: any[];
 };
 
 export default function Editor(props: EditorProps) {
-  const { image, logo } = props;
+  const { image, logo, data } = props;
   const editor = useCreateBlockNote({
-    initialContent: [
-      {
-        type: "heading",
-        content: "",
-      },
-      {
-        type: "paragraph",
-        content: "",
-      },
-    ],
+    initialContent:
+      data.length > 0
+        ? data
+        : [
+            {
+              type: "heading",
+              content: "",
+            },
+            {
+              type: "paragraph",
+              content: "",
+            },
+          ],
     schema: schema,
   });
   return (
@@ -84,7 +88,7 @@ export default function Editor(props: EditorProps) {
             theme={"light"}
             className="-mx-[54px] w-full p-0"
             onChange={() => {
-              props.onSave(editor);
+              props.onSave(editor.document);
             }}
             autoFocus={true}
           >

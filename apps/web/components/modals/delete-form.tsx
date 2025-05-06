@@ -30,7 +30,7 @@ const DeleteFormModal = ({ form }: { form: Form }) => {
   };
   return (
     <AlertDialog>
-      <AlertDialogTrigger>
+      <AlertDialogTrigger asChild>
         <Button variant="ghost" size={"icon"}>
           <Trash2 />
         </Button>

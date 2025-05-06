@@ -1,5 +1,7 @@
 import EditForm from "./edit-form";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page({
   params,
 }: {

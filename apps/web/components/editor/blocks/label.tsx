@@ -31,20 +31,20 @@ export const Label = createReactBlockSpec(
   },
   {
     render: (props) => {
-      const hasContent = getPlainText(props.block).length > 0;
+      const hasContent = getPlainText(props.block)?.length > 0;
       const highlight = props?.block?.props?.highlight;
 
       return (
         <label
           htmlFor={props?.block?.props?.for}
           className={cn(
-            "w-full relative block",
-            highlight ? getHighlightStyles() : ""
+            "relative block w-full",
+            highlight ? getHighlightStyles() : "",
           )}
         >
           {/* Placeholder */}
           {!hasContent && (
-            <span className="absolute top-0 left-0 text-muted-foreground pointer-events-none opacity-50 text-[1.25rem] leading-[1.25rem]">
+            <span className="pointer-events-none absolute left-0 top-0 text-[1.25rem] leading-[1.25rem] text-muted-foreground opacity-50">
               {props.block.props.value}
             </span>
           )}
@@ -57,5 +57,5 @@ export const Label = createReactBlockSpec(
         </label>
       );
     },
-  }
+  },
 );

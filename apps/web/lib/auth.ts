@@ -18,7 +18,7 @@ export function generateSessionToken(): string {
 }
 export async function createSession(
   token: string,
-  userId: string
+  userId: string,
 ): Promise<Session> {
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
   const session: Session = {
@@ -31,7 +31,7 @@ export async function createSession(
 }
 
 export async function validateSessionToken(
-  token: string
+  token: string,
 ): Promise<SessionValidationResult> {
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
   const result = await db
@@ -39,7 +39,7 @@ export async function validateSessionToken(
     .from(sessionTable)
     .innerJoin(userTable, eq(sessionTable.userId, userTable.id))
     .where(eq(sessionTable.id, sessionId));
-  if (result.length < 1) {
+  if (result?.length < 1) {
     return { session: null, user: null };
   }
   const { user, session } = result[0];
@@ -69,7 +69,7 @@ export type SessionValidationResult =
 
 export async function setSessionTokenCookie(
   token: string,
-  expiresAt: Date
+  expiresAt: Date,
 ): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set("session", token, {
@@ -101,17 +101,17 @@ export const getCurrentSession = cache(
     }
     const result = await validateSessionToken(token);
     return { ...result, token: token };
-  }
+  },
 );
 
 export const github = new GitHub(
   process.env.GITHUB_CLIENT_ID!,
   process.env.GITHUB_CLIENT_SECRET!,
-  null
+  null,
 );
 
 export const google = new Google(
   process.env.GOOGLE_CLIENT_ID!,
   process.env.GOOGLE_CLIENT_SECRET!,
-  `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback/google`
+  `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback/google`,
 );

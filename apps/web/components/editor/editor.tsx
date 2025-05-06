@@ -41,7 +41,7 @@ export default function Editor(props: EditorProps) {
   const { image, logo, data } = props;
   const editor = useCreateBlockNote({
     initialContent:
-      data.length > 0
+      data?.length > 0
         ? data
         : [
             {

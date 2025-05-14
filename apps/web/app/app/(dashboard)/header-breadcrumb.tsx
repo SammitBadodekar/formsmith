@@ -43,10 +43,12 @@ const DynamicBreadcrumb = () => {
         (workspace: any) => workspace.id === form?.workspaceId,
       );
 
-      const invalidateQuery = () =>
+      const invalidateQuery = () => {
         queryClient.invalidateQueries({
           queryKey: ["getForm", formId] as const,
         });
+        queryClient.invalidateQueries({ queryKey: ["getForms"] });
+      };
       return [
         {
           href: `/`,

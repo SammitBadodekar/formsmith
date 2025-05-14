@@ -22,6 +22,7 @@ const EditForm = ({ formId }: { formId: string }) => {
   const { data, isLoading } = useQuery({
     queryKey: ["getForm", formId] as const,
     queryFn: ({ queryKey: [, id] }) => getForm(id),
+    staleTime: 0,
   });
 
   const { isPending, mutate, isSuccess, status } = useMutation({

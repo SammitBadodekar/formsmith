@@ -11,11 +11,12 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { getForms, getWorkspaces } from "@/lib/queries";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Form } from "@formsmith/database";
 
 const DynamicBreadcrumb = () => {
   const pathname = usePathname();
+  const queryClient = useQueryClient();
   const { data } = useQuery({
     queryKey: ["getForms"],
     queryFn: getForms,
@@ -27,7 +28,11 @@ const DynamicBreadcrumb = () => {
     staleTime: 60000,
   });
 
-  const generateBreadcrumbs = () => {
+  const generateBreadcrumbs = (): {
+    href: string;
+    text: string;
+    onClick?: () => void;
+  }[] => {
     const pathWithoutSlashes = pathname.replace(/^\/|\/$/g, "");
     const segments = pathWithoutSlashes.split("/");
 
@@ -37,14 +42,21 @@ const DynamicBreadcrumb = () => {
       const workspace = workspaceData?.data?.workspaces.find(
         (workspace: any) => workspace.id === form?.workspaceId,
       );
+
+      const invalidateQuery = () =>
+        queryClient.invalidateQueries({
+          queryKey: ["getForm", formId] as const,
+        });
       return [
         {
           href: `/`,
           text: workspace?.name,
+          onClick: invalidateQuery,
         },
         {
           href: `/forms/${formId}/edit`,
           text: form?.name,
+          onClick: invalidateQuery,
         },
       ];
     }
@@ -82,7 +94,12 @@ const DynamicBreadcrumb = () => {
                     {breadcrumb.text}
                   </BreadcrumbPage>
                 ) : (
-                  <Link href={breadcrumb.href}>{breadcrumb.text}</Link>
+                  <Link
+                    href={breadcrumb.href}
+                    onClick={() => breadcrumb?.onClick?.()}
+                  >
+                    {breadcrumb.text}
+                  </Link>
                 )}
               </BreadcrumbItem>
             </React.Fragment>

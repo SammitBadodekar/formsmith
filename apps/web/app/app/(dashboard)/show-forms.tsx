@@ -73,7 +73,7 @@ const ShowForms = () => {
 };
 
 const FormItem = ({ form }: { form: Form }) => {
-  const date = form?.createdAt;
+  const date = form?.updatedAt;
   const timeAgo = formatDistanceToNowStrict(date!, { addSuffix: true });
   return (
     <li

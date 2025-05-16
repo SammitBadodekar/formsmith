@@ -1,7 +1,7 @@
 "use client";
-import Editor, { schema } from "@/components/editor/editor";
+import Editor from "@/components/editor/editor";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import debounce from "lodash.debounce";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -22,7 +22,11 @@ const saveFormWithDebounce = debounce(async (callback, payload) => {
 
 const EditForm = ({ formId }: { formId: string }) => {
   const [slotEl, setSlotEl] = useState<HTMLElement | null>(null);
-  const [formData, setFormData] = useState<Form | null>(null);
+  const formData = useRef<Form | null>(null);
+
+  const setFormData = (data: Form) => {
+    formData.current = data;
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ["getForm", formId] as const,
@@ -118,8 +122,8 @@ const EditForm = ({ formId }: { formId: string }) => {
               className="font-black"
               onClick={() => {
                 publishMutation({
-                  formId: formData?.id!,
-                  formData: formData,
+                  formId: formData?.current?.id!,
+                  formData: formData?.current,
                 });
               }}
             >

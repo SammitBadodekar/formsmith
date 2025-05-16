@@ -46,6 +46,28 @@ export const formTable = sqliteTable("form", {
   updatedAt: integer("updated_at", {
     mode: "timestamp",
   }),
+  isPublished: integer("is_published"),
+});
+
+export const publishedFormTable = sqliteTable("published_form", {
+  id: text("id").primaryKey(),
+  name: text("name"),
+  description: text("description"),
+  image: text("image"),
+  logo: text("logo"),
+  userId: text("user_id")
+    .notNull()
+    .references(() => userTable.id),
+  workspaceId: text("workspace_id")
+    .notNull()
+    .references(() => workspaceTable.id),
+  data: text({ mode: "json" }),
+  createdAt: integer("created_at", {
+    mode: "timestamp",
+  }),
+  updatedAt: integer("updated_at", {
+    mode: "timestamp",
+  }),
 });
 
 export type User = InferSelectModel<typeof userTable>;

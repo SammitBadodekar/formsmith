@@ -40,10 +40,8 @@ const BlocksDragHandleMenu = ({
     if (props.block.type === "label") {
       const correspondentInput = editor.document?.find(
         // @ts-ignore
-        (block) => block.id === props.block?.props?.for
+        (block) => block.id === props.block?.props?.for,
       );
-
-      console.log("here in if", correspondentInput);
       if (correspondentInput) {
         editor.updateBlock(correspondentInput, {
           props: {
@@ -56,7 +54,7 @@ const BlocksDragHandleMenu = ({
 
   return (
     <div ref={containerRef}>
-      <Card className="border-none rounded-none p-0 shadow-none w-full">
+      <Card className="w-full rounded-none border-none p-0 shadow-none">
         <CardContent className="flex flex-col gap-2 p-2">
           <DragHandleMenuTitle props={props} editor={editor} />
           <Separator className="" />

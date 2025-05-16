@@ -8,8 +8,11 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { getForm } from "@/lib/queries";
 import FormsLoading from "@/components/skeletons/forms-loading";
 import FormNotFound from "@/components/error-components/form-not-found";
-import { updateForm } from "@/lib/mutations";
+import { publishForm, updateForm } from "@/lib/mutations";
 import { Loader } from "lucide-react";
+import PreviewFormModal from "@/components/modals/preview-form";
+import { Form } from "@formsmith/database";
+import { toast } from "sonner";
 
 const saveFormWithDebounce = debounce(async (callback, payload) => {
   if (callback && payload) {
@@ -19,25 +22,31 @@ const saveFormWithDebounce = debounce(async (callback, payload) => {
 
 const EditForm = ({ formId }: { formId: string }) => {
   const [slotEl, setSlotEl] = useState<HTMLElement | null>(null);
+  const [formData, setFormData] = useState<Form | null>(null);
+
   const { data, isLoading } = useQuery({
     queryKey: ["getForm", formId] as const,
     queryFn: ({ queryKey: [, id] }) => getForm(id),
     staleTime: 0,
   });
 
-  const { isPending, mutate, isSuccess, status } = useMutation({
+  const { mutate, status } = useMutation({
     mutationFn: updateForm,
-    onSuccess: (data) => {
-      console.log(data);
-    },
+    onSuccess: (data) => {},
     onError: (error) => {
       console.error(error);
     },
   });
-  console.log("isSuccess", isSuccess, isPending, status);
+
+  const { mutate: publishMutation, status: publishStatus } = useMutation({
+    mutationFn: publishForm,
+    onSuccess: (data) => {},
+    onError: (error) => {
+      console.error(error);
+    },
+  });
 
   const saveForm = async (formData: any[]) => {
-    console.log("formData", formData);
     mutate({
       formId: data?.data?.form.id,
       formData: {
@@ -51,6 +60,20 @@ const EditForm = ({ formId }: { formId: string }) => {
     const el = document.getElementById("route-header-slot");
     if (el) setSlotEl(el);
   }, []);
+
+  useEffect(() => {
+    if (data?.data?.form) {
+      setFormData({
+        ...data?.data?.form,
+      });
+    }
+  }, [data?.data?.form]);
+
+  useEffect(() => {
+    if (publishStatus === "success") {
+      toast.success("Form published successfully!");
+    }
+  }, [publishStatus]);
   return (
     <>
       {isLoading && <FormsLoading />}
@@ -59,8 +82,14 @@ const EditForm = ({ formId }: { formId: string }) => {
         <Editor
           image=""
           logo=""
-          onSave={async (data) => await saveFormWithDebounce(saveForm, data)}
-          data={data.data.form.data?.data}
+          onSave={async (documents) => {
+            setFormData({
+              ...data?.data?.form,
+              data: documents,
+            });
+            await saveFormWithDebounce(saveForm, documents);
+          }}
+          data={data?.data?.form?.data}
         />
       )}
       {data?.data?.form &&
@@ -82,11 +111,25 @@ const EditForm = ({ formId }: { formId: string }) => {
                 )}
               </p>
             </Button>
-            <Button variant="secondary" size="sm" className="font-black">
-              Preview
-            </Button>
-            <Button variant="accent" size="sm" className="font-black">
-              Publish
+            <PreviewFormModal data={data.data.form?.data} />
+            <Button
+              variant="accent"
+              size="sm"
+              className="font-black"
+              onClick={() => {
+                publishMutation({
+                  formId: formData?.id!,
+                  formData: formData,
+                });
+              }}
+            >
+              {publishStatus === "pending" ? (
+                <span className="flex items-center gap-2">
+                  <Loader className="animate-spin" /> Publishing...
+                </span>
+              ) : (
+                "Publish"
+              )}
             </Button>
           </div>,
           slotEl,

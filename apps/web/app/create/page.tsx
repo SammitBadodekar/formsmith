@@ -8,8 +8,6 @@ const Page = () => {
     localStorage.setItem("formData", JSON.stringify(data));
   };
 
-  console.log("data", data);
-
   useEffect(() => {
     const formData = localStorage.getItem("formData");
     if (formData) {

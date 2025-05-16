@@ -3,6 +3,7 @@ import { createForm } from "./create-form";
 import { deleteForm } from "./delete-form";
 import { getForm } from "./get-form";
 import { updateForm } from "./update-form";
+import { publishForm } from "./publish-form";
 import { app } from "../..";
 
 export default (app: app) => {
@@ -11,4 +12,5 @@ export default (app: app) => {
   app.post("/forms", createForm);
   app.delete("/forms", deleteForm);
   app.put("/forms", updateForm);
+  app.post("/forms/publish", publishForm);
 };

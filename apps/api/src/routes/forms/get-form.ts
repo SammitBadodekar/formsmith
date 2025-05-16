@@ -2,10 +2,11 @@ import { Context } from "hono";
 import { getDB, validateSessionToken } from "../../helpers";
 import { and, eq } from "drizzle-orm";
 import { formTable } from "@formsmith/database";
+import { getCookie } from "hono/cookie";
 
 export const getForm = async (c: Context) => {
   try {
-    const sessionToken = c.req.header("x-session-token");
+    const sessionToken = getCookie(c, "session");
     const { session, user } = await validateSessionToken(sessionToken!, c);
     if (!user || !session)
       return c.json({ success: false, error: "Unauthorized" }, 403);

@@ -1,11 +1,10 @@
 import { Context } from "hono";
 import { getDB, validateSessionToken } from "../../helpers";
 import { eq } from "drizzle-orm";
-import { formTable } from "@formsmith/database";
-import { v4 as uuid } from "uuid";
+import { formTable, publishedFormTable } from "@formsmith/database";
 import { getCookie } from "hono/cookie";
 
-export const createForm = async (c: Context) => {
+export const publishForm = async (c: Context) => {
   try {
     const sessionToken = getCookie(c, "session");
     const { session, user } = await validateSessionToken(sessionToken!, c);
@@ -14,20 +13,31 @@ export const createForm = async (c: Context) => {
     const db = await getDB(c);
     const body = await c.req.json();
 
-    const formId = uuid();
+    const formId = body.id;
     await db
-      .insert(formTable)
+      .insert(publishedFormTable)
       .values({
         id: formId,
-        name: body.name || "",
-        description: body.description || "",
-        userId: user.id,
-        workspaceId: body.workspaceId,
-        data: [],
-        image: "",
-        logo: "",
+        data: body.data,
+        name: body.name,
+        description: body.description,
+        image: body.image,
+        logo: body.logo,
         createdAt: new Date(),
         updatedAt: new Date(),
+        userId: user.id,
+        workspaceId: body.workspaceId,
+      })
+      .onConflictDoUpdate({
+        target: publishedFormTable.id,
+        set: {
+          data: body.data,
+          name: body.name,
+          description: body.description,
+          image: body.image,
+          logo: body.logo,
+          updatedAt: new Date(),
+        },
       })
       .run();
 

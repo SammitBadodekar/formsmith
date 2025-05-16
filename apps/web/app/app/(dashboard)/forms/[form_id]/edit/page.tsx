@@ -7,7 +7,6 @@ export default async function Page({
 }: {
   params: Promise<{ form_id: string }>;
 }) {
-  console.log(await params);
   const { form_id } = await params;
   return (
     <>

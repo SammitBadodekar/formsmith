@@ -11,9 +11,10 @@ export async function GET(): Promise<Response> {
   cookieStore.set("github_oauth_state", state, {
     path: "/",
     secure: process.env.NODE_ENV === "production",
-    httpOnly: false,
+    httpOnly: true,
     maxAge: 60 * 10,
     sameSite: "lax",
+    domain: `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`,
   });
 
   return new Response(null, {

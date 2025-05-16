@@ -15,7 +15,7 @@ import {
   SideMenuController,
 } from "@blocknote/react";
 import Image from "next/image";
-import { getSlashMenuItems } from "./helpers";
+import { getSlashMenuItems, getSubmissionData } from "./helpers";
 import { Button } from "../ui/button";
 import { shortAnswer, Label, longAnswer } from "./blocks";
 import BlocksDragHandleMenu from "./components/drag-handle-menu";
@@ -33,12 +33,13 @@ export const schema = BlockNoteSchema.create({
 type EditorProps = {
   image: string;
   logo: string;
-  onSave: (data: any) => void;
+  onSave?: (data: unknown) => void;
   data: any[];
+  editable?: boolean;
 };
 
 export default function Editor(props: EditorProps) {
-  const { image, logo, data } = props;
+  const { image, logo, data, editable = true } = props;
   const editor = useCreateBlockNote({
     initialContent:
       data?.length > 0
@@ -72,15 +73,7 @@ export default function Editor(props: EditorProps) {
           className="flex w-full max-w-[600px] flex-col gap-4"
           onSubmit={(e) => {
             e.preventDefault();
-            const formData = new FormData(e.target as HTMLFormElement);
-            const labeledData: Record<string, FormDataEntryValue> = {};
-
-            for (const [key, value] of formData.entries()) {
-              console.log(`${key}: ${value}`);
-              // Here, 'key' will be 'username', 'email', etc. (from the 'name' attributes)
-              // 'value' will be the user's input
-            }
-            console.log(labeledData, formData.entries());
+            console.log("submitted", getSubmissionData(editor));
           }}
         >
           <BlockNoteView
@@ -88,8 +81,9 @@ export default function Editor(props: EditorProps) {
             theme={"light"}
             className="-mx-[54px] w-full p-0"
             onChange={() => {
-              props.onSave(editor.document);
+              props?.onSave?.(editor.document);
             }}
+            editable={editable}
             autoFocus={true}
           >
             <SuggestionMenuController
@@ -114,7 +108,7 @@ export default function Editor(props: EditorProps) {
               )}
             /> */}
           </BlockNoteView>
-          <Button className="w-fit px-3 font-black">
+          <Button className="w-fit px-3 font-black" type="submit">
             <p>Submit</p>
             <ArrowRight />
           </Button>

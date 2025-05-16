@@ -73,22 +73,24 @@ export async function setSessionTokenCookie(
 ): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set("session", token, {
-    httpOnly: false,
+    httpOnly: true,
     sameSite: "lax",
     secure: true,
     expires: expiresAt,
     path: "/",
+    domain: `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`,
   });
 }
 
 export async function deleteSessionTokenCookie(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set("session", "", {
-    httpOnly: false,
+    httpOnly: true,
     sameSite: "lax",
     secure: true,
     maxAge: 0,
     path: "/",
+    domain: `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`,
   });
 }
 

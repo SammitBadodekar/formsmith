@@ -15,17 +15,19 @@ export async function GET(): Promise<Response> {
   const cookieStore = await cookies();
   cookieStore.set("google_oauth_state", state, {
     path: "/",
-    httpOnly: false,
+    httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 10, // 10 minutes
     sameSite: "lax",
+    domain: `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`,
   });
   cookieStore.set("google_code_verifier", codeVerifier, {
     path: "/",
-    httpOnly: false,
+    httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 10, // 10 minutes
     sameSite: "lax",
+    domain: `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`,
   });
 
   return new Response(null, {

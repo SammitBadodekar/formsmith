@@ -22,8 +22,8 @@ app.use(
         : `https://${FRONTEND_DOMAIN}`;
     },
     credentials: true,
-    allowHeaders: ["Content-Type", "Authorization", "X-session-token"],
-    exposeHeaders: ["Content-Range", "X-Content-Range", "X-session-token"],
+    // allowHeaders: ["Content-Type", "Authorization", "X-session-token"],
+    // exposeHeaders: ["Content-Range", "X-Content-Range", "X-session-token"],
     maxAge: 600,
   })
 );

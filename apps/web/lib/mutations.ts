@@ -48,9 +48,22 @@ export const updateForm = async ({
   formId: string;
   formData: any;
 }) => {
-  console.log("formData", formData);
   const { data } = await formsmithAxios.put(`/forms`, {
-    data: formData,
+    ...formData,
+    id: formId,
+  });
+  return data;
+};
+
+export const publishForm = async ({
+  formId,
+  formData,
+}: {
+  formId: string;
+  formData: any;
+}) => {
+  const { data } = await formsmithAxios.post(`/forms/publish`, {
+    ...formData,
     id: formId,
   });
   return data;

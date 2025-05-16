@@ -40,3 +40,25 @@ export const getPlainText = (block: any) => {
     .replace(/\u200B/g, "")
     .trim();
 };
+
+export const inputTypes = ["shortAnswer", "longAnswer"];
+
+export const getSubmissionData = (editor: typeof schema.BlockNoteEditor) => {
+  const document = editor.document;
+
+  const submissions: Record<string, string | number>[] = [];
+
+  document.forEach((block) => {
+    if (inputTypes.includes(block.type)) {
+      // @ts-ignore
+      const { value, label } = block.props;
+      const labelBlock = document.find((b) => b.id === label);
+      let labelValue = `untitled ${block.type}`;
+      if (labelBlock) {
+        labelValue = getPlainText(labelBlock);
+      }
+      submissions.push({ label: labelValue, value });
+    }
+  });
+  return submissions;
+};

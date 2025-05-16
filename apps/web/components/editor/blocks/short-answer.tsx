@@ -23,6 +23,12 @@ export const shortAnswer = createReactBlockSpec(
       highlight: {
         default: false,
       },
+      value: {
+        default: "",
+      },
+      label: {
+        default: "",
+      },
     },
     content: "none",
   },
@@ -38,7 +44,10 @@ export const shortAnswer = createReactBlockSpec(
             onChange={(e) => {
               props.editor.updateBlock(props.block, {
                 props: {
-                  placeholder: e.target.value,
+                  ...props.block.props,
+                  ...(props.editor.isEditable
+                    ? { placeholder: e.target.value }
+                    : { value: e.target.value }),
                 },
               });
             }}
@@ -46,24 +55,24 @@ export const shortAnswer = createReactBlockSpec(
         </div>
       );
     },
-  }
+  },
 );
 
 export const getshortAnswerSlashCommand = (
-  editor: typeof schema.BlockNoteEditor
+  editor: typeof schema.BlockNoteEditor,
 ) => {
   return {
     title: "Short Answer",
     subtext: "",
     onItemClick: () => {
-      const inputId = uuid();
+      const labelId = uuid();
       const placeholder = "\u200B";
       const blocks = editor.insertBlocks(
         [
           {
             type: "label",
+            id: labelId,
             props: {
-              for: inputId,
               value: "Type a question",
             },
             content: [
@@ -78,11 +87,13 @@ export const getshortAnswerSlashCommand = (
           },
           {
             type: "shortAnswer",
-            id: inputId,
+            props: {
+              label: labelId,
+            },
           },
         ],
         editor.getTextCursorPosition().block, // Insert after current block
-        "after"
+        "after",
       );
       // @ts-ignore
       editor.removeBlocks([editor.getPrevBlock(blocks[0])]);

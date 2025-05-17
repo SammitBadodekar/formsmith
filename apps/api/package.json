@@ -2,7 +2,8 @@
   "name": "api",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy --minify"
+    "deploy": "wrangler deploy --minify",
+    "build": "wrangler build"
   },
   "dependencies": {
     "@formsmith/database": "workspace:*",

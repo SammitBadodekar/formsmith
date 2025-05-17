@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 const formsmithAxios = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL!,
@@ -21,6 +22,11 @@ formsmithAxios.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error("API Error:", error);
+    if (error.response.status === 429) {
+      toast.error(
+        "You have exceeded the rate limit. Please try again in a few minutes.",
+      );
+    }
     return Promise.reject(error);
   },
 );

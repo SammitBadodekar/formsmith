@@ -4,3 +4,7 @@ compatibility_date = "2025-01-12"
 
 [observability.logs]
 enabled = true
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "2bf3957c10b74faebb268b6c7623cc05"

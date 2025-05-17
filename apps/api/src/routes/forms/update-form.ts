@@ -1,6 +1,6 @@
 import { Context } from "hono";
 import { getDB, validateSessionToken } from "../../helpers";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { formTable } from "@formsmith/database";
 import { v4 as uuid } from "uuid";
 import { getCookie } from "hono/cookie";
@@ -26,7 +26,7 @@ export const updateForm = async (c: Context) => {
         logo: body.logo,
         updatedAt: new Date(),
       })
-      .where(eq(formTable.id, formId))
+      .where(and(eq(formTable.id, formId), eq(formTable.userId, user.id)))
       .run();
 
     return c.json({

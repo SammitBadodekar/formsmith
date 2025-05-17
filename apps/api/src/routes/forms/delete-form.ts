@@ -1,6 +1,6 @@
 import { Context } from "hono";
 import { getDB, validateSessionToken } from "../../helpers";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { formTable } from "@formsmith/database";
 import { getCookie } from "hono/cookie";
 
@@ -19,7 +19,10 @@ export const deleteForm = async (c: Context) => {
         400
       );
     }
-    await db.delete(formTable).where(eq(formTable.id, formId)).run();
+    await db
+      .delete(formTable)
+      .where(and(eq(formTable.id, formId), eq(formTable.userId, user.id)))
+      .run();
 
     return c.json({
       success: true,

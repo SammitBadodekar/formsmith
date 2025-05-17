@@ -100,18 +100,24 @@ const EditForm = ({ formId }: { formId: string }) => {
         slotEl &&
         createPortal(
           <div className="flex items-center gap-2 text-lg">
-            <Button disabled variant="ghost" size="sm" className="font-black">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="font-black"
+              onClick={() =>
+                mutate({
+                  formId: data?.data?.form.id,
+                  formData: formData.current,
+                })
+              }
+            >
               <p>
                 {status === "pending" ? (
                   <span className="flex items-center gap-2">
                     <Loader className="animate-spin" /> Saving...
                   </span>
-                ) : status === "success" ? (
-                  "Saved"
-                ) : status === "error" ? (
-                  "Error saving"
                 ) : (
-                  ""
+                  "Save"
                 )}
               </p>
             </Button>

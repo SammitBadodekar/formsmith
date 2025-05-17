@@ -19,7 +19,8 @@ import { getSlashMenuItems, getSubmissionData } from "./helpers";
 import { Button } from "../ui/button";
 import { shortAnswer, Label, longAnswer } from "./blocks";
 import BlocksDragHandleMenu from "./components/drag-handle-menu";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader } from "lucide-react";
+import { Form } from "@formsmith/database";
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
@@ -34,16 +35,16 @@ type EditorProps = {
   image: string;
   logo: string;
   onSave?: (data: unknown) => void;
-  data: any[];
+  formData: Form | null;
   editable?: boolean;
 };
 
 export default function Editor(props: EditorProps) {
-  const { image, logo, data, editable = true } = props;
+  const { image, logo, formData, editable = true } = props;
   const editor = useCreateBlockNote({
     initialContent:
-      data?.length > 0
-        ? data
+      (formData?.data as any[])?.length > 0
+        ? (formData?.data as any[])
         : [
             {
               type: "heading",

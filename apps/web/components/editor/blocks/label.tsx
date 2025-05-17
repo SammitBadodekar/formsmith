@@ -50,10 +50,7 @@ export const Label = createReactBlockSpec(
           )}
 
           {/* Editable Content */}
-          <div
-            className="inline-content relative z-10"
-            ref={props.contentRef}
-          />
+          <div className="inline-content relative" ref={props.contentRef} />
         </label>
       );
     },

@@ -1,7 +1,7 @@
 "use client";
 import Editor from "@/components/editor/editor";
 import { Button } from "@/components/ui/button";
-import { useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import debounce from "lodash.debounce";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -93,7 +93,7 @@ const EditForm = ({ formId }: { formId: string }) => {
             });
             await saveFormWithDebounce(saveForm, documents);
           }}
-          data={data?.data?.form?.data}
+          formData={data?.data?.form}
         />
       )}
       {data?.data?.form &&
@@ -115,7 +115,7 @@ const EditForm = ({ formId }: { formId: string }) => {
                 )}
               </p>
             </Button>
-            <PreviewFormModal data={data.data.form?.data} />
+            <PreviewFormModal ref={formData as RefObject<Form>} />
             <Button
               variant="accent"
               size="sm"

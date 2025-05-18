@@ -1,8 +1,7 @@
 import { Context } from "hono";
 import { getDB, validateSessionToken } from "../../helpers";
-import { eq } from "drizzle-orm";
 import { formTable } from "@formsmith/database";
-import { v4 as uuid } from "uuid";
+import cuid from "cuid";
 import { getCookie } from "hono/cookie";
 
 export const createWorkspace = async (c: Context) => {
@@ -14,7 +13,7 @@ export const createWorkspace = async (c: Context) => {
     const db = await getDB(c);
     const body = await c.req.json();
 
-    const formId = uuid();
+    const formId = cuid();
     await db
       .insert(formTable)
       .values({

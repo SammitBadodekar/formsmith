@@ -16,7 +16,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { deleteForm } from "@/lib/mutations";
 
-const DeleteFormModal = ({ form }: { form: Form }) => {
+const DeleteFormModal = ({
+  form,
+  onDelete,
+}: {
+  form: Form;
+  onDelete?: () => void;
+}) => {
   const queryClient = useQueryClient();
   const { isPending, mutate } = useMutation({
     mutationFn: deleteForm,

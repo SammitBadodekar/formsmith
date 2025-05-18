@@ -1,6 +1,7 @@
 import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
 
 import type { InferSelectModel } from "drizzle-orm";
+import path from "path";
 
 export const userTable = sqliteTable("user", {
   id: text("id").primaryKey(),
@@ -47,6 +48,8 @@ export const formTable = sqliteTable("form", {
     mode: "timestamp",
   }),
   isPublished: integer("is_published"),
+  domain: text("subdomain").unique(),
+  path: text("path"),
 });
 
 export const publishedFormTable = sqliteTable("published_form", {
@@ -55,6 +58,9 @@ export const publishedFormTable = sqliteTable("published_form", {
   description: text("description"),
   image: text("image"),
   logo: text("logo"),
+  formId: text("form_id")
+    .notNull()
+    .references(() => formTable.id),
   userId: text("user_id")
     .notNull()
     .references(() => userTable.id),
@@ -68,6 +74,8 @@ export const publishedFormTable = sqliteTable("published_form", {
   updatedAt: integer("updated_at", {
     mode: "timestamp",
   }),
+  domain: text("subdomain").unique(),
+  path: text("path"),
 });
 
 export type User = InferSelectModel<typeof userTable>;

@@ -13,6 +13,7 @@ import { Loader } from "lucide-react";
 import PreviewFormModal from "@/components/modals/preview-form";
 import { Form } from "@formsmith/database";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const saveFormWithDebounce = debounce(async (callback, payload) => {
   if (callback && payload) {
@@ -23,6 +24,7 @@ const saveFormWithDebounce = debounce(async (callback, payload) => {
 const EditForm = ({ formId }: { formId: string }) => {
   const [slotEl, setSlotEl] = useState<HTMLElement | null>(null);
   const formData = useRef<Form | null>(null);
+  const router = useRouter();
 
   const setFormData = (data: Form) => {
     formData.current = data;
@@ -76,6 +78,7 @@ const EditForm = ({ formId }: { formId: string }) => {
   useEffect(() => {
     if (publishStatus === "success") {
       toast.success("Form published successfully!");
+      router.push(`/forms/${formId}/share`);
     }
   }, [publishStatus]);
   return (

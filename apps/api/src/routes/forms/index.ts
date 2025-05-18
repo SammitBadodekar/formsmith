@@ -4,6 +4,7 @@ import { deleteForm } from "./delete-form";
 import { getForm } from "./get-form";
 import { updateForm } from "./update-form";
 import { publishForm } from "./publish-form";
+import { getPublishedForm } from "./get-published-form";
 import { app } from "../..";
 
 export default (app: app) => {
@@ -13,4 +14,5 @@ export default (app: app) => {
   app.delete("/forms", deleteForm);
   app.put("/forms", updateForm);
   app.post("/forms/publish", publishForm);
+  app.get("/forms/published", getPublishedForm);
 };

@@ -65,6 +65,7 @@ const WorkspaceItem = ({
   index: number;
 }) => {
   const [open, setOpen] = useState(index === 0);
+  const pathname = usePathname();
   return (
     <Collapsible key={workspace.name} open={open} onOpenChange={setOpen}>
       <SidebarMenuItem>
@@ -89,15 +90,24 @@ const WorkspaceItem = ({
         </SidebarMenuAction>
         <CollapsibleContent className="w-full">
           <SidebarMenuSub>
-            {workspace.forms.map((form) => (
-              <SidebarMenuSubItem key={form.name}>
-                <SidebarMenuSubButton asChild>
-                  <Link href="">
-                    <span>{form.name}</span>
-                  </Link>
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-            ))}
+            {workspace.forms
+              .sort((a, b) => {
+                const aDate = new Date(a.updatedAt!)?.getTime?.();
+                const bDate = new Date(b.updatedAt!)?.getTime?.();
+                return bDate - aDate;
+              })
+              .map((form) => (
+                <SidebarMenuSubItem key={form.name}>
+                  <SidebarMenuSubButton asChild>
+                    <Link
+                      href={`/forms/${form.id}/share`}
+                      className={`${pathname.includes(`/forms/${form.id}`) ? "bg-primary/5" : ""}`}
+                    >
+                      <span>{form.name}</span>
+                    </Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              ))}
           </SidebarMenuSub>
         </CollapsibleContent>
       </SidebarMenuItem>

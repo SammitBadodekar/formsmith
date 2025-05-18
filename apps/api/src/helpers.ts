@@ -6,6 +6,12 @@ import { Session, sessionTable, User, userTable } from "@formsmith/database";
 import { encodeHexLowerCase } from "@oslojs/encoding";
 import { sha256 } from "@oslojs/crypto/sha2";
 import { eq } from "drizzle-orm";
+import {
+  uniqueNamesGenerator,
+  adjectives,
+  colors,
+  starWars,
+} from "unique-names-generator";
 
 export const getDB = async (c: Context) => {
   const { DATABASE_URL, DATABASE_AUTH_TOKEN } = env<Env>(c);
@@ -52,3 +58,14 @@ export async function validateSessionToken(
   }
   return { session, user };
 }
+
+export const getUniqueName = () => {
+  const customConfig = {
+    dictionaries: [adjectives, colors, starWars],
+    separator: "-",
+    length: 2,
+    style: "lowerCase",
+  };
+
+  return uniqueNamesGenerator(customConfig as any);
+};

@@ -11,7 +11,7 @@ import type { OAuth2Tokens } from "arctic";
 import { db } from "@/lib/db";
 import { userTable, workspaceTable } from "@formsmith/database";
 import { eq } from "drizzle-orm";
-import { v4 as uuid } from "uuid";
+import cuid from "cuid";
 
 type googleCallbackClaims = {
   sub: string;
@@ -86,7 +86,7 @@ export async function GET(request: Request): Promise<Response> {
   await db
     .insert(workspaceTable)
     .values({
-      id: uuid(),
+      id: cuid(),
       userId: googleUserId,
       name: "My Workspace",
     })

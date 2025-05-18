@@ -18,7 +18,6 @@ const FormNotFound = () => {
       <Button asChild variant="accent" className="font-bold">
         <a href={"/"}>Reload page</a>
       </Button>
-      ß
     </div>
   );
 };

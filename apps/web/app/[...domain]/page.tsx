@@ -8,7 +8,7 @@ const Page = async ({ params }: { params: Promise<{ domain: string[] }> }) => {
     }, "") || "/";
   return (
     <div>
-      <p>domain {(await params).domain[0]}</p>
+      <p>domain {(await params).domain[0]?.split(".")[0]}</p>
       <p>path {path}</p>
     </div>
   );

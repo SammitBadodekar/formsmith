@@ -1,7 +1,7 @@
 import { createReactBlockSpec } from "@blocknote/react";
 import { schema } from "../editor";
 import { HiOutlineBars2 } from "react-icons/hi2";
-import { v4 as uuid } from "uuid";
+import cuid from "cuid";
 import { cn } from "@/lib/utils";
 import { getHighlightStyles } from "../helpers";
 import { Textarea } from "@/components/ui/textarea";
@@ -65,7 +65,7 @@ export const getLongAnswerSlashCommand = (
     title: "Long Answer",
     subtext: "",
     onItemClick: () => {
-      const labelId = uuid();
+      const labelId = cuid();
       const placeholder = "\u200B";
       const blocks = editor.insertBlocks(
         [

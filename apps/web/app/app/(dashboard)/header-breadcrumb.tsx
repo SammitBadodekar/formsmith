@@ -10,23 +10,15 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import { getForms, getWorkspaces } from "@/lib/queries";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Form } from "@formsmith/database";
+import { useGetFormsQuery, useGetWorkspacesQuery } from "@/hooks/use-queries";
 
 const DynamicBreadcrumb = () => {
   const pathname = usePathname();
   const queryClient = useQueryClient();
-  const { data } = useQuery({
-    queryKey: ["getForms"],
-    queryFn: getForms,
-    staleTime: 60000,
-  });
-  const { data: workspaceData } = useQuery({
-    queryKey: ["getWorkspaces"],
-    queryFn: getWorkspaces,
-    staleTime: 60000,
-  });
+  const { data } = useGetFormsQuery();
+  const { data: workspaceData } = useGetWorkspacesQuery();
 
   const generateBreadcrumbs = (): {
     href: string;

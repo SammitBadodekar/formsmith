@@ -17,23 +17,18 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { useQuery } from "@tanstack/react-query";
-import { getWorkspaces } from "@/lib/queries";
 import { Form, Workspace } from "@formsmith/database";
 import WorkspacesLoading from "@/components/skeletons/workspaces-loading";
 import { useState } from "react";
 import Link from "next/link";
 import CreateForm from "@/components/modals/create-form";
 import { usePathname } from "next/navigation";
+import { useGetWorkspacesQuery } from "@/hooks/use-queries";
 
 type WorkspaceWithForms = Workspace & { forms: Form[] };
 
 export function NavWorkspaces() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["getWorkspaces"],
-    queryFn: getWorkspaces,
-    staleTime: 60000,
-  });
+  const { data, isLoading } = useGetWorkspacesQuery();
   const workspaces: WorkspaceWithForms[] = data?.data?.workspaces;
   return (
     <SidebarGroup>

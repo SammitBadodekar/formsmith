@@ -1,9 +1,7 @@
 "use client";
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import CreateForm from "@/components/modals/create-form";
-import { getForms, getWorkspaces } from "@/lib/queries";
 import { Form } from "@formsmith/database";
 import { formatDistanceToNowStrict } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -12,18 +10,11 @@ import { PencilLine } from "lucide-react";
 import DeleteFormModal from "@/components/modals/delete-form";
 import FormsLoading from "@/components/skeletons/forms-loading";
 import { useRouter } from "next/navigation";
+import { useGetFormsQuery, useGetWorkspacesQuery } from "@/hooks/use-queries";
 
 const ShowForms = () => {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["getForms"],
-    queryFn: getForms,
-    staleTime: 60000,
-  });
-  const { data: workspaceData } = useQuery({
-    queryKey: ["getWorkspaces"],
-    queryFn: getWorkspaces,
-    staleTime: 60000,
-  });
+  const { data, isLoading, error } = useGetFormsQuery();
+  const { data: workspaceData } = useGetWorkspacesQuery();
   const workspaceId = workspaceData?.data?.workspaces[0]?.id;
 
   return (

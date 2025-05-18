@@ -60,7 +60,8 @@ export const publishedFormTable = sqliteTable("published_form", {
   logo: text("logo"),
   formId: text("form_id")
     .notNull()
-    .references(() => formTable.id),
+    .references(() => formTable.id)
+    .unique(),
   userId: text("user_id")
     .notNull()
     .references(() => userTable.id),

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Form } from "@formsmith/database";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ const DeleteFormModal = ({
   onDelete?: () => void;
 }) => {
   const queryClient = useQueryClient();
-  const { isPending, mutate } = useMutation({
+  const { isPending, mutate, isSuccess } = useMutation({
     mutationFn: deleteForm,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["getForms"] });
@@ -34,6 +34,12 @@ const DeleteFormModal = ({
   const handleDeleteForm = async () => {
     mutate(form.id);
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      onDelete?.();
+    }
+  }, [isSuccess]);
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>

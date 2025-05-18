@@ -8,6 +8,7 @@ export type Env = {
   DATABASE_URL: string;
   DATABASE_AUTH_TOKEN: string;
   FRONTEND_DOMAIN: string;
+  FORM_DOMAIN: string;
   CACHE: KVNamespace;
 };
 export type app = Hono<{ Bindings: Env }>;
@@ -17,10 +18,12 @@ app.use(
   "/*",
   cors({
     origin: (origin, c) => {
-      const { FRONTEND_DOMAIN } = env<Env>(c);
+      const { FRONTEND_DOMAIN, FORM_DOMAIN } = env<Env>(c);
       return origin.endsWith(`.${FRONTEND_DOMAIN}`)
-        ? origin
-        : `https://${FRONTEND_DOMAIN}`;
+        ? `${origin}`
+        : origin.endsWith(`.${FORM_DOMAIN}`)
+          ? `${origin}`
+          : `https://${FRONTEND_DOMAIN}`;
     },
     credentials: true,
     maxAge: 600,
@@ -35,3 +38,5 @@ formRoutes(app);
 workspaceRoutes(app);
 
 export default app;
+
+// //["https://formsmith.sbs", "https://formsmith.co.in"]

@@ -21,6 +21,7 @@ export const getWorkspaces = async (c: Context) => {
           workspaceId: formTable.workspaceId,
           createdAt: formTable.createdAt,
           updatedAt: formTable.updatedAt,
+          isPublished: formTable.isPublished,
         },
       })
       .from(workspaceTable)

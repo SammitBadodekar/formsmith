@@ -95,7 +95,7 @@ const WorkspaceItem = ({
                 <SidebarMenuSubItem key={form.name}>
                   <SidebarMenuSubButton asChild>
                     <Link
-                      href={`/forms/${form.id}/share`}
+                      href={`/forms/${form.id}/${form.isPublished ? "share" : "edit"}`}
                       className={`${pathname.includes(`/forms/${form.id}`) ? "bg-primary/5" : ""}`}
                     >
                       <span>{form.name}</span>

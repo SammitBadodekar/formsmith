@@ -1,4 +1,9 @@
-import { getForm, getForms, getWorkspaces } from "@/lib/queries";
+import {
+  getForm,
+  getForms,
+  getPublishedForm,
+  getWorkspaces,
+} from "@/lib/queries";
 import { useQuery } from "@tanstack/react-query";
 
 export const useFormQuery = ({ formId }: { formId: string }) => {
@@ -26,4 +31,19 @@ export const useGetWorkspacesQuery = () => {
     staleTime: 60000,
   });
   return workspacesQuery;
+};
+
+export const useGetPublishedFormQuery = ({
+  domain,
+  path,
+}: {
+  domain: string;
+  path: string;
+}) => {
+  const publishedFormQuery = useQuery({
+    queryKey: ["getPublishedForm"],
+    queryFn: ({ queryKey: [] }) => getPublishedForm(domain, path),
+    staleTime: 60000,
+  });
+  return publishedFormQuery;
 };

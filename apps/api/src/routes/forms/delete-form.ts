@@ -19,21 +19,20 @@ export const deleteForm = async (c: Context) => {
         400
       );
     }
-    await Promise.all([
-      db
-        .delete(formTable)
-        .where(and(eq(formTable.id, formId), eq(formTable.userId, user.id)))
-        .run(),
-      db
-        .delete(publishedFormTable)
-        .where(
-          and(
-            eq(publishedFormTable.id, formId),
-            eq(publishedFormTable.userId, user.id)
-          )
+
+    await db
+      .delete(publishedFormTable)
+      .where(
+        and(
+          eq(publishedFormTable.formId, formId),
+          eq(publishedFormTable.userId, user.id)
         )
-        .run(),
-    ]);
+      )
+      .run();
+    await db
+      .delete(formTable)
+      .where(and(eq(formTable.id, formId), eq(formTable.userId, user.id)))
+      .run();
 
     return c.json({
       success: true,

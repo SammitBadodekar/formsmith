@@ -17,7 +17,7 @@ const CopyButton = ({ text, props }: { text: string; props?: ButtonProps }) => {
   return (
     <Button onClick={handleCopy} {...props} className="flex items-center">
       {copied ? <Check /> : <Clipboard />}
-      <p>Copy</p>
+      <p className="font-bold">Copy</p>
     </Button>
   );
 };

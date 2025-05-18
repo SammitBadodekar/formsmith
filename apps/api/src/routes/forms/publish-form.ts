@@ -1,5 +1,9 @@
 import { Context } from "hono";
-import { getDB, getUniqueName, validateSessionToken } from "../../helpers";
+import {
+  getDB,
+  getUniqueDomainName,
+  validateSessionToken,
+} from "../../helpers";
 import { and, eq } from "drizzle-orm";
 import { formTable, publishedFormTable } from "@formsmith/database";
 import { getCookie } from "hono/cookie";
@@ -13,11 +17,16 @@ export const publishForm = async (c: Context) => {
       return c.json({ success: false, error: "Unauthorized" }, 403);
     const db = await getDB(c);
     const body = await c.req.json();
-    const domain = body.domain ?? getUniqueName();
-    const path = body.path ?? "/";
+    const domain = await getUniqueDomainName(body.name, c);
+    const path = "/";
 
     const formId = body.id;
-    await Promise.all([
+    const [res1, res2] = await Promise.all([
+      db
+        .update(formTable)
+        .set({ isPublished: 1, domain: domain, path: path })
+        .where(and(eq(formTable.id, formId), eq(formTable.userId, user.id)))
+        .run(),
       db
         .insert(publishedFormTable)
         .values({
@@ -36,7 +45,7 @@ export const publishForm = async (c: Context) => {
           path: path,
         })
         .onConflictDoUpdate({
-          target: publishedFormTable.id,
+          target: publishedFormTable.formId,
           set: {
             data: body.data,
             name: body.name,
@@ -49,13 +58,10 @@ export const publishForm = async (c: Context) => {
           },
         })
         .run(),
-      db
-        .update(formTable)
-        .set({ isPublished: 1, domain: domain, path: path })
-        .where(and(eq(formTable.id, formId), eq(formTable.userId, user.id)))
-        .run(),
     ]);
 
+    console.log("res1", res1);
+    console.log("res2", res2);
     return c.json({
       success: true,
       id: formId,

@@ -53,10 +53,11 @@ const EditForm = ({ formId }: { formId: string }) => {
   });
 
   const saveForm = async (formData: any[]) => {
+    const { isPublished, domain, path, ...rest } = data?.data?.form;
     mutate({
       formId: data?.data?.form.id,
       formData: {
-        ...data?.data?.form,
+        ...rest,
         data: formData,
       },
     });

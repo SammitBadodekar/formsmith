@@ -21,6 +21,7 @@ export const getForms = async (c: Context) => {
         updatedAt: formTable.updatedAt,
         userId: formTable.userId,
         workspaceId: formTable.workspaceId,
+        isPublished: formTable.isPublished,
       })
       .from(formTable)
       .where(eq(formTable.userId, user.id));

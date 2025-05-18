@@ -18,3 +18,13 @@ export const getWorkspaces = async () => {
   const { data } = await formsmithAxios.get("/workspaces");
   return data;
 };
+
+export const getPublishedForm = async (domain: string, path: string) => {
+  const { data } = await formsmithAxios.get(`/forms/published`, {
+    params: {
+      domain: domain,
+      path: path,
+    },
+  });
+  return data;
+};

@@ -52,9 +52,15 @@ const ShowForms = () => {
           </div>
           <div className="flex w-full flex-col gap-4 pt-8 sm:px-8 md:px-20 lg:px-32">
             <ul className="flex w-full flex-col gap-2">
-              {data?.data?.forms?.map((form: Form) => {
-                return <FormItem form={form} key={form.id} />;
-              })}
+              {data?.data?.forms
+                ?.sort((a: Form, b: Form) => {
+                  const aDate = new Date(a.updatedAt!)?.getTime?.();
+                  const bDate = new Date(b.updatedAt!)?.getTime?.();
+                  return bDate - aDate;
+                })
+                ?.map((form: Form) => {
+                  return <FormItem form={form} key={form.id} />;
+                })}
             </ul>
           </div>
         </>
@@ -72,11 +78,18 @@ const FormItem = ({ form }: { form: Form }) => {
       key={form.id}
       className="group relative flex w-full cursor-pointer rounded-lg p-2 px-4 hover:bg-primary/5"
       onClick={() => {
-        router.push(`/forms/${form.id}/share`);
+        router.push(`/forms/${form.id}/${form.isPublished ? "share" : "edit"}`);
       }}
     >
-      <div className="flex w-full flex-col gap-0">
-        <p className="font-semibold">{form.name}</p>
+      <div className="flex w-full flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <p className="font-semibold">{form.name}</p>
+          {!form.isPublished && (
+            <p className="rounded-full bg-primary/5 p-1 px-2 text-xs text-primary/50">
+              Draft
+            </p>
+          )}
+        </div>
         <p className="text-sm text-primary/50">Edited {timeAgo}</p>
       </div>
       <div

@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,8 +15,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -47,6 +44,7 @@ function CreateForm({
 }) {
   const [open, setOpen] = React.useState(false);
   const form = useForm<z.infer<typeof CreateFormSchema>>({
+    // @ts-ignore
     resolver: zodResolver(CreateFormSchema),
     defaultValues: {
       formName: "",
@@ -74,8 +72,8 @@ function CreateForm({
 
   function onSubmit(data: z.infer<typeof CreateFormSchema>) {
     mutate({
-      formName: data.formName,
-      formDescription: data.formDescription,
+      formName: data.formName.toLowerCase().trim(),
+      formDescription: data.formDescription?.trim(),
       workspaceId: workspaceId,
     });
   }

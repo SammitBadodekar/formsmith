@@ -2,16 +2,18 @@ import { Env } from ".";
 import { Context, Hono } from "hono";
 import { drizzle } from "drizzle-orm/libsql";
 import { env } from "hono/adapter";
-import { Session, sessionTable, User, userTable } from "@formsmith/database";
+import {
+  formTable,
+  Session,
+  sessionTable,
+  User,
+  userTable,
+} from "@formsmith/database";
 import { encodeHexLowerCase } from "@oslojs/encoding";
 import { sha256 } from "@oslojs/crypto/sha2";
 import { eq } from "drizzle-orm";
-import {
-  uniqueNamesGenerator,
-  adjectives,
-  colors,
-  starWars,
-} from "unique-names-generator";
+import { uniqueNamesGenerator, adjectives } from "unique-names-generator";
+import { nanoid } from "nanoid";
 
 export const getDB = async (c: Context) => {
   const { DATABASE_URL, DATABASE_AUTH_TOKEN } = env<Env>(c);
@@ -59,13 +61,29 @@ export async function validateSessionToken(
   return { session, user };
 }
 
-export const getUniqueName = () => {
+export const getUniqueDomainName = async (name: string, c: Context) => {
+  const nameExists = await checkIfDomainExists(name!, c);
+  if (!nameExists) {
+    return name;
+  }
+
   const customConfig = {
-    dictionaries: [adjectives, colors, starWars],
+    dictionaries: [[name], adjectives],
     separator: "-",
-    length: 2,
+    length: 1,
     style: "lowerCase",
   };
+  return (
+    uniqueNamesGenerator(customConfig as any) + `-${nanoid(5).toLowerCase()}`
+  );
+};
 
-  return uniqueNamesGenerator(customConfig as any);
+export const checkIfDomainExists = async (domain: string, c: Context) => {
+  const db = await getDB(c);
+  const result = await db
+    .select({ form_name: formTable.name })
+    .from(formTable)
+    .where(eq(formTable.domain, domain.toLowerCase().trim()))
+    .limit(1);
+  return result.length > 0;
 };

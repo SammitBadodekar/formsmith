@@ -1,15 +1,22 @@
 import React from "react";
+import ShowPublishedForm from "./show-published-form";
 
-const Page = async ({ params }: { params: Promise<{ domain: string[] }> }) => {
+const Page = async ({
+  params: pramsPromise,
+}: {
+  params: Promise<{ domain: string[] }>;
+}) => {
+  const params = await pramsPromise;
+  const domain = params.domain[0]?.split(".")[0];
   const path =
-    (await params).domain.reduce((acc, curr, index) => {
+    params.domain.reduce((acc, curr, index) => {
       if (index === 0) return acc;
       return acc + "/" + curr;
     }, "") || "/";
+
   return (
     <div>
-      <p>domain {(await params).domain[0]?.split(".")[0]}</p>
-      <p>path {path}</p>
+      <ShowPublishedForm domain={domain} path={path} />
     </div>
   );
 };

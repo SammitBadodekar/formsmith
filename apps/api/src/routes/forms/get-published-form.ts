@@ -1,7 +1,7 @@
 import { Context } from "hono";
-import { getDB, validateSessionToken } from "../../helpers";
+import { getDB } from "../../helpers";
 import { and, eq } from "drizzle-orm";
-import { formTable } from "@formsmith/database";
+import { publishedFormTable } from "@formsmith/database";
 
 export const getPublishedForm = async (c: Context) => {
   try {
@@ -9,11 +9,17 @@ export const getPublishedForm = async (c: Context) => {
     const domain = c.req.query("domain");
     const path = c.req.query("path");
 
+    console.log("domain", domain);
+    console.log("path", path);
+
     const form = await db
       .select()
-      .from(formTable)
+      .from(publishedFormTable)
       .where(
-        and(eq(formTable.domain, domain!), eq(formTable.path, path ?? "/"))
+        and(
+          eq(publishedFormTable.domain, domain!),
+          eq(publishedFormTable.path, path ?? "/")
+        )
       )
       .limit(1);
 
@@ -25,9 +31,14 @@ export const getPublishedForm = async (c: Context) => {
     });
   } catch (error) {
     console.log("error", error);
-    return c.json({
-      success: false,
-      error: error,
-    });
+    return c.json(
+      {
+        success: false,
+        error: error,
+      },
+      {
+        status: 500,
+      }
+    );
   }
 };

@@ -39,31 +39,33 @@ const ShowForms = () => {
         )}
       </div>
       {data?.data?.forms?.length > 0 && (
-        <>
-          <div className="flex w-full flex-col gap-4 sm:px-12 md:px-24 lg:px-36">
-            <div className="flex w-full items-center">
-              <h3 className="text-2xl font-black">Home</h3>
-              <div className="ml-auto flex items-center gap-4">
-                {/* <button>New workspace</button> */}
-                <CreateForm workspaceId={workspaceId} />
+        <div className="flex w-full flex-col items-center">
+          <div className="w-full max-w-[900px]">
+            <div className="flex w-full flex-col gap-4 px-4">
+              <div className="flex w-full items-center">
+                <h3 className="text-2xl font-black">Home</h3>
+                <div className="ml-auto flex items-center gap-4">
+                  {/* <button>New workspace</button> */}
+                  <CreateForm workspaceId={workspaceId} />
+                </div>
               </div>
+              <hr />
             </div>
-            <hr />
+            <div className="flex w-full flex-col gap-4 pt-8">
+              <ul className="flex w-full flex-col gap-2">
+                {data?.data?.forms
+                  ?.sort((a: Form, b: Form) => {
+                    const aDate = new Date(a.updatedAt!)?.getTime?.();
+                    const bDate = new Date(b.updatedAt!)?.getTime?.();
+                    return bDate - aDate;
+                  })
+                  ?.map((form: Form) => {
+                    return <FormItem form={form} key={form.id} />;
+                  })}
+              </ul>
+            </div>
           </div>
-          <div className="flex w-full flex-col gap-4 pt-8 sm:px-8 md:px-20 lg:px-32">
-            <ul className="flex w-full flex-col gap-2">
-              {data?.data?.forms
-                ?.sort((a: Form, b: Form) => {
-                  const aDate = new Date(a.updatedAt!)?.getTime?.();
-                  const bDate = new Date(b.updatedAt!)?.getTime?.();
-                  return bDate - aDate;
-                })
-                ?.map((form: Form) => {
-                  return <FormItem form={form} key={form.id} />;
-                })}
-            </ul>
-          </div>
-        </>
+        </div>
       )}
     </div>
   );

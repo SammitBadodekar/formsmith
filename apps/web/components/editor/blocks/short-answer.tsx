@@ -5,6 +5,7 @@ import { HiOutlineBars2 } from "react-icons/hi2";
 import cuid from "cuid";
 import { cn } from "@/lib/utils";
 import { getHighlightStyles } from "../helpers";
+import { shortAnswerSchema } from "../validator";
 
 export const shortAnswer = createReactBlockSpec(
   {
@@ -29,29 +30,119 @@ export const shortAnswer = createReactBlockSpec(
       label: {
         default: "",
       },
+      required: {
+        default: true,
+      },
+      pattern: {
+        default: "",
+      },
+      minLength: {
+        default: 0,
+      },
+      maxLength: {
+        default: Infinity,
+      },
+      customErrorMessage: {
+        default: "",
+      },
+      isValid: {
+        default: true,
+      },
+      errorMessage: {
+        default: "",
+      },
+      isDirty: {
+        default: false,
+      },
     },
     content: "none",
   },
   {
     render: (props) => {
+      const { editor, block } = props;
+      const { value, placeholder, required, isValid, errorMessage, isDirty } =
+        block.props;
       const highlight = props?.block?.props?.highlight;
+
+      const validateAndCommit = (currentValue: string) => {
+        const schema = shortAnswerSchema(block.props); // Pass all props
+        const validationResult = schema.safeParse(currentValue);
+
+        const newProps: Record<string, any> = {
+          value: currentValue,
+          isDirty: true,
+        };
+
+        if (!validationResult.success) {
+          newProps.isValid = false;
+          newProps.errorMessage =
+            validationResult.error.errors[0]?.message || "Invalid input.";
+        } else {
+          newProps.isValid = true;
+          newProps.errorMessage = "";
+        }
+
+        editor.updateBlock(block, {
+          props: { ...block.props, ...newProps },
+        });
+      };
+
+      const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value;
+        if (editor.isEditable) {
+          editor.updateBlock(block, {
+            props: { ...block.props, placeholder: newValue },
+          });
+        } else {
+          editor.updateBlock(block, {
+            props: { ...block.props, value: newValue, isDirty: true },
+          });
+          validateAndCommit(newValue);
+        }
+      };
+
+      const handleBlur = () => {
+        if (!editor.isEditable) {
+          validateAndCommit(block.props.value);
+        }
+      };
+
       return (
-        <div className={cn(`w-full`, highlight ? getHighlightStyles() : "")}>
+        <div
+          className={cn(
+            "relative flex w-full flex-col gap-2 pb-6",
+            highlight ? getHighlightStyles() : "",
+          )}
+        >
           <Input
             ref={props.contentRef}
-            placeholder={props?.block?.props?.placeholder}
-            className="min-w-full"
-            onChange={(e) => {
-              props.editor.updateBlock(props.block, {
-                props: {
-                  ...props.block.props,
-                  ...(props.editor.isEditable
-                    ? { placeholder: e.target.value }
-                    : { value: e.target.value }),
-                },
-              });
-            }}
+            placeholder={
+              editor.isEditable
+                ? placeholder
+                : placeholder || "Type your answer..."
+            }
+            value={editor.isEditable ? placeholder : value} // Display placeholder in edit mode, value in form mode
+            className={cn("min-w-full", {
+              "border-red-500": !isValid && isDirty,
+            })}
+            onChange={handleInputChange}
+            onBlur={handleBlur}
+            aria-invalid={!isValid && isDirty ? "true" : "false"}
+            aria-describedby={
+              !isValid && isDirty ? `${block.id}-error` : undefined
+            }
+            // disabled={
+            //   editor.isEditable &&
+            //   props.block.id === editor.getTextCursorPosition().block.id
+            //     ? false
+            //     : editor.isEditable
+            // }
           />
+          {!isValid && isDirty && errorMessage && (
+            <p id={`${block.id}-error`} className="text-xs text-red-600">
+              {errorMessage}
+            </p>
+          )}
         </div>
       );
     },

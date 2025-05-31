@@ -92,7 +92,7 @@ const WorkspaceItem = ({
                 return bDate - aDate;
               })
               .map((form) => (
-                <SidebarMenuSubItem key={form.name}>
+                <SidebarMenuSubItem key={form.id}>
                   <SidebarMenuSubButton asChild>
                     <Link
                       href={`/forms/${form.id}/${form.isPublished ? "share" : "edit"}`}

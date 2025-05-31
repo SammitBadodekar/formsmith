@@ -1,5 +1,6 @@
 import React from "react";
 import ShowPublishedForm from "./show-published-form";
+import { getPublishedForm } from "@/lib/queries";
 
 const Page = async ({
   params: pramsPromise,
@@ -14,9 +15,10 @@ const Page = async ({
       return acc + "/" + curr;
     }, "") || "/";
 
+  const data = await getPublishedForm(domain, path);
   return (
     <div>
-      <ShowPublishedForm domain={domain} path={path} />
+      <ShowPublishedForm data={data?.data?.form} />
     </div>
   );
 };

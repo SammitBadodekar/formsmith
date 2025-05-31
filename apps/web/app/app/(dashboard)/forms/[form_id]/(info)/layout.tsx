@@ -10,8 +10,10 @@ const FormInfoLayout = async ({
 }) => {
   const { form_id } = await params;
   return (
-    <div className="pt-8 sm:px-8 md:px-20 2xl:px-56">
-      <FormInfo formId={form_id} children={children} />
+    <div className="flex w-full flex-col items-center">
+      <div className="w-full max-w-[900px]">
+        <FormInfo formId={form_id} children={children} />
+      </div>
     </div>
   );
 };

@@ -1,33 +1,18 @@
 "use client";
 import Editor from "@/components/editor/editor";
 import PublishedFormNotFound from "@/components/error-components/published-form-not-found";
-import FormsLoading from "@/components/skeletons/forms-loading";
-import { useGetPublishedFormQuery } from "@/hooks/use-queries";
+import { Form } from "@formsmith/database";
 import React from "react";
 
-const ShowPublishedForm = ({
-  domain,
-  path,
-}: {
-  domain: string;
-  path: string;
-}) => {
-  const { data, isLoading } = useGetPublishedFormQuery({ domain, path });
-  console.log("data", data);
+const ShowPublishedForm = ({ data: form }: { data: Form }) => {
   return (
     <>
-      {isLoading && <FormsLoading />}
-      {!isLoading && !data?.data?.form && <PublishedFormNotFound />}
-      {!isLoading && data?.data?.form && (
+      {form && (
         <div>
-          <Editor
-            formData={data?.data?.form}
-            image=""
-            logo=""
-            editable={false}
-          />
+          <Editor formData={form} image="" logo="" editable={false} />
         </div>
       )}
+      {!form && <PublishedFormNotFound />}
     </>
   );
 };

@@ -17,7 +17,7 @@ export const publishForm = async (c: Context) => {
       return c.json({ success: false, error: "Unauthorized" }, 403);
     const db = await getDB(c);
     const body = await c.req.json();
-    const domain = await getUniqueDomainName(body.name, c);
+    const domain = body.domain || (await getUniqueDomainName(body.name, c));
     const path = "/";
 
     const formId = body.id;
@@ -53,7 +53,6 @@ export const publishForm = async (c: Context) => {
             image: body.image,
             logo: body.logo,
             updatedAt: new Date(),
-            domain: domain,
             path: path,
           },
         })

@@ -110,7 +110,7 @@ export const shortAnswer = createReactBlockSpec(
       return (
         <div
           className={cn(
-            "relative flex w-full flex-col gap-2 pb-6",
+            "relative mb-6 flex w-full flex-col gap-2",
             highlight ? getHighlightStyles() : "",
           )}
         >
@@ -121,7 +121,7 @@ export const shortAnswer = createReactBlockSpec(
                 ? placeholder
                 : placeholder || "Type your answer..."
             }
-            value={editor.isEditable ? placeholder : value} // Display placeholder in edit mode, value in form mode
+            value={editor.isEditable ? placeholder : value}
             className={cn("min-w-full", {
               "border-red-500": !isValid && isDirty,
             })}
@@ -190,7 +190,7 @@ export const getshortAnswerSlashCommand = (
       editor.removeBlocks([editor.getPrevBlock(blocks[0])]);
     },
     aliases: ["short input", "input", "text", "string"],
-    group: "Form Components",
+    group: "Questions",
     icon: <HiOutlineBars2 size={18} />,
   };
 };

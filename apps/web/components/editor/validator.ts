@@ -8,12 +8,12 @@ export const createStringSchema = (blockProps: any) => {
       message: blockProps.customErrorMessage || "This field is required.",
     });
   }
-  if (blockProps.minLength !== undefined) {
+  if (blockProps.minLength) {
     schema = schema.min(blockProps.minLength, {
       message: `Minimum length is ${blockProps.minLength}.`,
     });
   }
-  if (blockProps.maxLength !== undefined) {
+  if (blockProps.maxLength) {
     schema = schema.max(blockProps.maxLength, {
       message: `Maximum length is ${blockProps.maxLength}.`,
     });

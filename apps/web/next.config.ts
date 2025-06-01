@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["*"],
   images: {
     remotePatterns: [
       {
@@ -22,6 +21,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  reactStrictMode: false,
 };
 
 export default nextConfig;

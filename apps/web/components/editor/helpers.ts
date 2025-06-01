@@ -42,6 +42,7 @@ export const getPlainText = (block: any) => {
 };
 
 export const inputTypes = ["shortAnswer", "longAnswer"];
+export const customBlockTypes = ["label", ...inputTypes];
 
 export const getSubmissionData = (editor: typeof schema.BlockNoteEditor) => {
   const document = editor.document;

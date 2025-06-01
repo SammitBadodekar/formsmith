@@ -115,7 +115,14 @@ export const longAnswer = createReactBlockSpec(
         >
           <Textarea
             ref={props.contentRef}
-            placeholder={props?.block?.props?.placeholder}
+            placeholder={placeholder}
+            value={
+              editor.isEditable
+                ? placeholder !== "Type placeholder text..."
+                  ? placeholder
+                  : ""
+                : value
+            }
             className={cn("min-w-full", {
               "border-red-500": !isValid && isDirty,
             })}

@@ -1,11 +1,15 @@
 import { Input } from "@/components/ui/input";
-import { createReactBlockSpec } from "@blocknote/react";
+import { createReactBlockSpec, DragHandleMenuProps } from "@blocknote/react";
 import { schema } from "../editor";
 import { HiOutlineBars2 } from "react-icons/hi2";
 import cuid from "cuid";
 import { cn } from "@/lib/utils";
 import { getHighlightStyles } from "../helpers";
 import { shortAnswerSchema } from "../validator";
+import { Label } from "@/components/ui/label";
+import { Toggle } from "@/components/ui/toggle";
+import { Switch } from "@/components/ui/switch";
+import { useState } from "react";
 
 export const shortAnswer = createReactBlockSpec(
   {
@@ -121,7 +125,13 @@ export const shortAnswer = createReactBlockSpec(
                 ? placeholder
                 : placeholder || "Type your answer..."
             }
-            value={editor.isEditable ? placeholder : value}
+            value={
+              editor.isEditable
+                ? placeholder !== "Type placeholder text..."
+                  ? placeholder
+                  : ""
+                : value
+            }
             className={cn("min-w-full", {
               "border-red-500": !isValid && isDirty,
             })}
@@ -193,4 +203,117 @@ export const getshortAnswerSlashCommand = (
     group: "Questions",
     icon: <HiOutlineBars2 size={18} />,
   };
+};
+
+export const ShortAnswerDragHandleMenu = ({
+  props,
+  editor,
+  block: Block,
+}: {
+  props: DragHandleMenuProps;
+  editor: typeof schema.BlockNoteEditor;
+  block: typeof schema.Block;
+}) => {
+  const block = Block ?? props.block;
+  const [config, setConfig] = useState({
+    required: (block?.props as any)?.required,
+    defaultValue: (block?.props as any)?.value,
+    minLength: (block?.props as any)?.minLength,
+    maxLength: (block?.props as any)?.maxLength,
+    customErrorMessage: (block?.props as any)?.customErrorMessage,
+  });
+
+  const handleDefaultAnswerChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    editor.updateBlock(block, {
+      props: {
+        value: e.target.value,
+      },
+    });
+    setConfig({ ...config, defaultValue: e.target.value });
+  };
+
+  const handleRequiredChange = (value: boolean) => {
+    editor.updateBlock(block, {
+      props: {
+        required: value,
+      },
+    });
+    setConfig({ ...config, required: value });
+  };
+
+  const handleMinLengthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    editor.updateBlock(block, {
+      props: {
+        minLength: Number(e.target.value),
+      },
+    });
+    setConfig({ ...config, minLength: Number(e.target.value) });
+  };
+
+  const handleMaxLengthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    editor.updateBlock(block, {
+      props: {
+        maxLength: Number(e.target.value),
+      },
+    });
+    setConfig({ ...config, maxLength: Number(e.target.value) });
+  };
+
+  const handleCustomErrorMessageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    editor.updateBlock(block, {
+      props: {
+        customErrorMessage: e.target.value,
+      },
+    });
+    setConfig({ ...config, customErrorMessage: e.target.value });
+  };
+
+  return (
+    <div className="flex w-full flex-col gap-2 p-2">
+      <div className="flex justify-between gap-2 text-sm">
+        <Label className="text-primary/75">Required</Label>
+        <Switch
+          checked={config.required}
+          onCheckedChange={handleRequiredChange}
+        />
+      </div>
+      <div className="flex w-full items-center gap-2">
+        <Label className="w-2/4 text-primary/75">Min Length</Label>
+        <Input
+          className="h-8 w-full"
+          value={config.minLength}
+          onChange={handleMinLengthChange}
+        />
+      </div>
+      <div className="flex w-full items-center gap-2">
+        <Label className="w-2/4 text-primary/75">Max Length</Label>
+        <Input
+          className="h-8 w-full"
+          type="number"
+          value={config.maxLength ?? Infinity}
+          onChange={handleMaxLengthChange}
+        />
+      </div>
+      <div>
+        <Label className="text-primary/75">Default Answer</Label>
+        <Input
+          className="h-8 w-full"
+          value={config.defaultValue}
+          onChange={handleDefaultAnswerChange}
+        />
+      </div>
+      <div>
+        <Label className="text-primary/75">Custom Error Message</Label>
+        <Input
+          className="h-8 w-full"
+          value={config.customErrorMessage}
+          onChange={handleCustomErrorMessageChange}
+        />
+      </div>
+    </div>
+  );
 };

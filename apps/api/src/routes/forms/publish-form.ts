@@ -58,9 +58,6 @@ export const publishForm = async (c: Context) => {
         })
         .run(),
     ]);
-
-    console.log("res1", res1);
-    console.log("res2", res2);
     return c.json({
       success: true,
       id: formId,

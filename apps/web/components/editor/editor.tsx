@@ -13,15 +13,22 @@ import {
   DragHandleMenu,
   SideMenu,
   SideMenuController,
+  BlockColorsItem,
+  RemoveBlockItem,
 } from "@blocknote/react";
 import Image from "next/image";
-import { getSlashMenuItems, getSubmissionData, inputTypes } from "./helpers";
+import {
+  customBlockTypes,
+  getSlashMenuItems,
+  getSubmissionData,
+  inputTypes,
+} from "./helpers";
 import { Button } from "../ui/button";
 import { shortAnswer, Label, longAnswer } from "./blocks";
 import BlocksDragHandleMenu from "./components/drag-handle-menu";
-import { ArrowRight, Loader } from "lucide-react";
+import { ArrowRight, Loader, Trash2 } from "lucide-react";
 import { Form } from "@formsmith/database";
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { longAnswerSchema, shortAnswerSchema } from "./validator";
 
 export const schema = BlockNoteSchema.create({
@@ -50,7 +57,7 @@ type ValidatableBlock = typeof schema.PartialBlock & {
   };
 };
 
-export default function Editor(props: EditorProps) {
+function Editor(props: EditorProps) {
   const [isFormGloballyValid, setIsFormGloballyValid] = useState<boolean>(true);
   const { image, logo, formData, editable = true } = props;
   const editor = useCreateBlockNote({
@@ -191,20 +198,32 @@ export default function Editor(props: EditorProps) {
                 filterSuggestionItems(getSlashMenuItems(editor), query)
               }
             />
-            {/* <SideMenuController
-              sideMenu={(props) => (
-                <SideMenu
-                  {...props}
-                  dragHandleMenu={(props) => (
-                    <DragHandleMenu {...props}>
-                      <RemoveBlockItem {...props}>Delete</RemoveBlockItem>
-                      <BlockColorsItem {...props}>Colors</BlockColorsItem>
-                      <BlocksDragHandleMenu props={props} editor={editor} />
-                    </DragHandleMenu>
-                  )}
-                ></SideMenu>
-              )}
-            /> */}
+            <SideMenuController
+              sideMenu={(props) => {
+                return (
+                  <SideMenu
+                    {...props}
+                    dragHandleMenu={(props) => (
+                      <DragHandleMenu {...props}>
+                        <BlockColorsItem {...props}>Colors</BlockColorsItem>
+                        {customBlockTypes.includes(
+                          props.block.type as string,
+                        ) ? (
+                          <BlocksDragHandleMenu props={props} editor={editor} />
+                        ) : (
+                          <RemoveBlockItem {...props}>
+                            <div className="-ml-2 flex items-center gap-2 px-1">
+                              <Trash2 size={12} />
+                              <p className="text-xs font-medium">Delete</p>
+                            </div>
+                          </RemoveBlockItem>
+                        )}
+                      </DragHandleMenu>
+                    )}
+                  ></SideMenu>
+                );
+              }}
+            />
           </BlockNoteView>
           <Button className="w-fit px-3 font-black" type="submit">
             <p>Submit</p>
@@ -215,3 +234,5 @@ export default function Editor(props: EditorProps) {
     </div>
   );
 }
+
+export default memo(Editor, () => true);

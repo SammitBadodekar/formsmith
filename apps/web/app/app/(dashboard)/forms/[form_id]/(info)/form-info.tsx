@@ -58,7 +58,6 @@ const FormInfo = ({
               <DeleteFormModal
                 form={data?.data?.form}
                 onDelete={() => {
-                  console.log("form deleted, redirecting to home");
                   router.push("/");
                 }}
               />

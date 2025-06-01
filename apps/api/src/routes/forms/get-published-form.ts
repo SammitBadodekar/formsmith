@@ -9,9 +9,6 @@ export const getPublishedForm = async (c: Context) => {
     const domain = c.req.query("domain");
     const path = c.req.query("path");
 
-    console.log("domain", domain);
-    console.log("path", path);
-
     const form = await db
       .select()
       .from(publishedFormTable)

@@ -43,7 +43,7 @@ export const Label = createReactBlockSpec(
           )}
         >
           {/* Placeholder */}
-          {!hasContent && (
+          {!hasContent && props.editor.isEditable && (
             <span className="pointer-events-none absolute left-0 top-0 text-[1.25rem] leading-[1.25rem] text-muted-foreground opacity-50">
               {props.block.props.value}
             </span>

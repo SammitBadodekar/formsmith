@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DragHandleMenuProps } from "@blocknote/react";
 import { schema } from "../editor";
-import { getPlainText } from "../helpers";
+import { getPlainText, inputTypes } from "../helpers";
 import { Check } from "lucide-react";
 
 const DragHandleMenuTitle = ({
@@ -20,12 +20,21 @@ const DragHandleMenuTitle = ({
   let block = props.block;
 
   if ((block as any).type === "label") {
-    const correspondentInput = editor.document?.find(
-      (block) => block.id === (props.block as any)?.props?.for
+    const correspondentInput = editor.document.find(
+      // @ts-ignore
+      (b) => b?.props?.label === props.block?.id,
     );
     if (correspondentInput) {
       blockName = (correspondentInput as any).props.name;
       block = correspondentInput as any;
+    }
+  } else if (inputTypes.includes(block.type)) {
+    const correspondentLabel = editor.document.find(
+      // @ts-ignore
+      (b) => b?.id === props.block?.props?.label,
+    );
+    if (correspondentLabel) {
+      blockText = getPlainText(correspondentLabel as any);
     }
   }
 
@@ -44,7 +53,7 @@ const DragHandleMenuTitle = ({
     });
   };
   return (
-    <div className="flex gap-2 w-full">
+    <div className="flex w-full gap-2 px-2">
       <Input
         className="w-full"
         value={title}

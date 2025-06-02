@@ -24,7 +24,13 @@ import {
   inputTypes,
 } from "./helpers";
 import { Button } from "../ui/button";
-import { shortAnswer, Label, longAnswer } from "./blocks";
+import {
+  shortAnswer,
+  Label,
+  longAnswer,
+  NewPage,
+  ThankYouPage,
+} from "./blocks";
 import BlocksDragHandleMenu from "./components/drag-handle-menu";
 import { ArrowRight, Loader, Trash2 } from "lucide-react";
 import { Form } from "@formsmith/database";
@@ -37,15 +43,18 @@ export const schema = BlockNoteSchema.create({
     shortAnswer: shortAnswer,
     label: Label,
     longAnswer: longAnswer,
+    newPage: NewPage,
+    thankYouPage: ThankYouPage,
   },
 });
 
 type EditorProps = {
-  image: string;
-  logo: string;
   onSave?: (data: unknown) => void;
+  onSubmit?: (data: unknown) => void;
   formData: Form | null;
   editable?: boolean;
+  submitButtonText?: string;
+  isThankYou?: boolean;
 };
 
 type ValidatableBlock = typeof schema.PartialBlock & {
@@ -59,7 +68,13 @@ type ValidatableBlock = typeof schema.PartialBlock & {
 
 function Editor(props: EditorProps) {
   const [isFormGloballyValid, setIsFormGloballyValid] = useState<boolean>(true);
-  const { image, logo, formData, editable = true } = props;
+  const {
+    formData,
+    editable = true,
+    submitButtonText = "Submit",
+    isThankYou,
+  } = props;
+  const [isLastPageThankYou, setIsLastPageThankYou] = useState(false);
   const editor = useCreateBlockNote({
     initialContent:
       (formData?.data as any[])?.length > 0
@@ -146,35 +161,24 @@ function Editor(props: EditorProps) {
       return;
     }
 
-    // If all valid, proceed with submission
     console.log("Form is valid. Submitting data...");
-    const formData = editor.document
-      .filter((b) => b.type === "shortAnswer" || b.type === "longAnswer")
-      .map((b) => ({
-        id: b.id,
-        name: (b.props as any).name || `block-${b.id}`,
-        value: b.props.value,
-        labelId: (b.props as any).label,
-      }));
-
-    console.log("Formatted Data:", formData);
+    props?.onSubmit?.(editor.document);
   };
-
   return (
     <div className="h-full w-full">
-      {image && (
+      {formData?.image && (
         <Image
-          src={image}
+          src={formData?.image}
           height={200}
           width={400}
           alt="cover image"
           className="max-h-60 w-full"
         />
       )}
-      {!image && <div className="min-h-40 min-w-full"></div>}
+      {!formData?.image && <div className="min-h-40 min-w-full"></div>}
       <div className="flex h-full w-full justify-center">
         <form
-          className="flex w-full max-w-[600px] flex-col gap-4"
+          className="flex w-full max-w-[800px] flex-col gap-4"
           onSubmit={(e) => {
             e.preventDefault();
             console.log("submitted", getSubmissionData(editor));
@@ -184,9 +188,15 @@ function Editor(props: EditorProps) {
           <BlockNoteView
             editor={editor}
             theme={"light"}
-            className="-mx-[54px] w-full p-0"
+            className="m-0 w-full px-0"
             onChange={() => {
               props?.onSave?.(editor.document);
+              setIsLastPageThankYou(
+                editor.document.findLast((b) => b.type === "newPage")?.props
+                  ?.isThankYou
+                  ? true
+                  : false,
+              );
             }}
             editable={editable}
             autoFocus={true}
@@ -225,10 +235,15 @@ function Editor(props: EditorProps) {
               }}
             />
           </BlockNoteView>
-          <Button className="w-fit px-3 font-black" type="submit">
-            <p>Submit</p>
-            <ArrowRight />
-          </Button>
+          {!isThankYou && !isLastPageThankYou && (
+            <Button
+              className="w-fit px-3 font-black"
+              type={editable ? "button" : "submit"}
+            >
+              <p>{submitButtonText}</p>
+              <ArrowRight />
+            </Button>
+          )}
         </form>
       </div>
     </div>

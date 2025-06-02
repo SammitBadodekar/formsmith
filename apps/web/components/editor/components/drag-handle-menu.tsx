@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import DragHandleMenuTitle from "./drag-handle-menu-title";
 import { Trash2 } from "lucide-react";
 import DragHandleMenuContent from "./drag-handle-menu-content";
+import { skipBlockTitleEditor } from "../helpers";
 
 const BlocksDragHandleMenu = ({
   props,
@@ -71,8 +72,12 @@ const BlocksDragHandleMenu = ({
     <div ref={containerRef}>
       <Card className="w-full rounded-none border-none p-0 shadow-none">
         <CardContent className="flex flex-col gap-2 p-2">
-          <DragHandleMenuTitle props={props} editor={editor} />
-          <Separator className="" />
+          {!skipBlockTitleEditor.includes(props.block.type) && (
+            <>
+              <DragHandleMenuTitle props={props} editor={editor} />
+              <Separator className="" />
+            </>
+          )}
           <DragHandleMenuContent props={props} editor={editor} />
           <Separator className="" />
           <li className="flex flex-col gap-2">

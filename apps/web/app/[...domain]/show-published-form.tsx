@@ -9,7 +9,7 @@ const ShowPublishedForm = ({ data: form }: { data: Form }) => {
     <>
       {form && (
         <div>
-          <Editor formData={form} image="" logo="" editable={false} />
+          <Editor formData={form} editable={false} />
         </div>
       )}
       {!form && <PublishedFormNotFound />}

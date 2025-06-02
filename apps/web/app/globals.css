@@ -97,3 +97,11 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.bn-editor{
+  padding-inline: 0px !important;
+}
+
+.bn-block-content > * {
+  outline: none !important;
+}

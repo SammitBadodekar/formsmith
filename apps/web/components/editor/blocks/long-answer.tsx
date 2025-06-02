@@ -1,6 +1,6 @@
 import { createReactBlockSpec } from "@blocknote/react";
 import { schema } from "../editor";
-import { HiOutlineBars2 } from "react-icons/hi2";
+import { HiOutlineBars3 } from "react-icons/hi2";
 import cuid from "cuid";
 import { cn } from "@/lib/utils";
 import { getHighlightStyles } from "../helpers";
@@ -140,9 +140,9 @@ export const longAnswer = createReactBlockSpec(
             // }
           />
           {!isValid && isDirty && errorMessage && (
-            <p id={`${block.id}-error`} className="text-xs text-red-600">
+            <span id={`${block.id}-error`} className="text-sm text-red-600">
               {errorMessage}
-            </p>
+            </span>
           )}
         </div>
       );
@@ -192,6 +192,6 @@ export const getLongAnswerSlashCommand = (
     },
     aliases: ["short input", "input", "text", "string"],
     group: "Questions",
-    icon: <HiOutlineBars2 size={18} />,
+    icon: <HiOutlineBars3 size={18} />,
   };
 };

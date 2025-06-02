@@ -19,7 +19,7 @@ const Page = () => {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      {data && <Editor image="" logo="" onSave={onSave} formData={data} />}
+      {data && <Editor onSave={onSave} formData={data} />}
     </div>
   );
 };

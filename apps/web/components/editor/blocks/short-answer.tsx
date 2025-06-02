@@ -149,9 +149,9 @@ export const shortAnswer = createReactBlockSpec(
             // }
           />
           {!isValid && isDirty && errorMessage && (
-            <p id={`${block.id}-error`} className="text-xs text-red-600">
+            <span id={`${block.id}-error`} className="text-sm text-red-600">
               {errorMessage}
-            </p>
+            </span>
           )}
         </div>
       );

@@ -1,7 +1,7 @@
 import { DragHandleMenuProps } from "@blocknote/react";
 import React from "react";
 import { schema } from "../editor";
-import { ShortAnswerDragHandleMenu } from "../blocks";
+import { NewPageDragHandleMenu, ShortAnswerDragHandleMenu } from "../blocks";
 
 const DragHandleMenuContent = ({
   props,
@@ -31,7 +31,6 @@ const DragHandleMenuContent = ({
           block={block}
         />
       );
-      break;
     case "longAnswer":
       return (
         <ShortAnswerDragHandleMenu
@@ -40,8 +39,12 @@ const DragHandleMenuContent = ({
           block={block}
         />
       );
+    case "newPage":
+      return (
+        <NewPageDragHandleMenu props={props} editor={editor} block={block} />
+      );
     default:
-      return <div>Invalid block type</div>;
+      return <></>;
   }
 };
 

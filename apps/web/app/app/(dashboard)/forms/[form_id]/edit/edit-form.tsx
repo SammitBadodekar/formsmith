@@ -88,8 +88,6 @@ const EditForm = ({ formId }: { formId: string }) => {
       {!isLoading && !data?.data?.form && <FormNotFound />}
       {data?.data?.form && (
         <Editor
-          image=""
-          logo=""
           onSave={async (documents) => {
             setFormData({
               ...data?.data?.form,

@@ -2,8 +2,10 @@ import { getDefaultReactSlashMenuItems } from "@blocknote/react";
 import { schema } from "./editor";
 import {
   getLongAnswerSlashCommand,
+  getNewPageSlashCommand,
   getshortAnswerSlashCommand,
 } from "./blocks";
+import { Form } from "@formsmith/database";
 
 export const getSlashMenuItems = (editor: typeof schema.BlockNoteEditor) => {
   const itemsToExclude = ["table", "check_list"];
@@ -14,6 +16,7 @@ export const getSlashMenuItems = (editor: typeof schema.BlockNoteEditor) => {
   return [
     getshortAnswerSlashCommand(editor),
     getLongAnswerSlashCommand(editor),
+    getNewPageSlashCommand(editor),
     ...filteredItems,
   ];
 };
@@ -42,7 +45,8 @@ export const getPlainText = (block: any) => {
 };
 
 export const inputTypes = ["shortAnswer", "longAnswer"];
-export const customBlockTypes = ["label", ...inputTypes];
+export const customBlockTypes = ["label", "newPage", ...inputTypes];
+export const skipBlockTitleEditor = ["newPage"];
 
 export const getSubmissionData = (editor: typeof schema.BlockNoteEditor) => {
   const document = editor.document;
@@ -62,4 +66,40 @@ export const getSubmissionData = (editor: typeof schema.BlockNoteEditor) => {
     }
   });
   return submissions;
+};
+
+export const divideFormIntoPages = (formData: Form) => {
+  const pages: any[] = [];
+  const blocks = (formData?.data as any[]) ?? [];
+  let currentPage: any[] = [];
+  let isThankYou = false;
+  blocks.forEach((block) => {
+    if (block.type === "newPage") {
+      pages.push({
+        blocks: currentPage,
+        buttonText: block?.props?.buttonText,
+        isThankYou: pages.length !== 0 ? isThankYou : false,
+      });
+      currentPage = [];
+      isThankYou = block?.props?.isThankYou;
+    } else {
+      currentPage.push(block);
+    }
+  });
+  pages.push({
+    blocks: currentPage,
+    buttonText: "Submit",
+    isThankYou,
+  });
+  pages.push({
+    blocks: [
+      {
+        type: "thankYouPage",
+        props: {},
+      },
+    ],
+    isThankYou: true,
+  });
+  console.log("pages", pages);
+  return pages;
 };

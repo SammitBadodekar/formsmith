@@ -40,6 +40,7 @@ const ShowSubmissions = ({ formId }: { formId: string }) => {
   // Extract and normalize data
   const formattedData: Submission[][] =
     data?.map((submission: FormSubmission) => [
+      { label: "Submitted at", value: submission.createdAt },
       ...(submission.data as Submission[]),
     ]) ?? [];
 
@@ -61,7 +62,7 @@ const ShowSubmissions = ({ formId }: { formId: string }) => {
     accessorKey: label,
     header: label,
     cell: ({ row }) => (
-      <div className="min-w-20 truncate">{row.getValue(label)}</div>
+      <div className="min-w-20 truncate">{row.getValue(label) ?? "-"}</div>
     ),
   }));
 

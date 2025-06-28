@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import { env } from "hono/adapter";
 import formRoutes from "./routes/forms";
 import workspaceRoutes from "./routes/workspaces";
+import submissionRoutes from "./routes/submissions";
 
 export type Env = {
   DATABASE_URL: string;
@@ -34,9 +35,9 @@ app.get("/", async (c) => {
   return c.json({ serverUp: true });
 });
 
+// Routes
 formRoutes(app);
 workspaceRoutes(app);
+submissionRoutes(app);
 
 export default app;
-
-// //["https://formsmith.sbs", "https://formsmith.co.in"]

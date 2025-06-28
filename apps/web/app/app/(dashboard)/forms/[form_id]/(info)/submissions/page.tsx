@@ -1,7 +1,14 @@
-import React from "react";
+import ShowSubmissions from "./show-submissions";
 
-const Page = () => {
-  return <div>Submissions</div>;
-};
-
-export default Page;
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ form_id: string }>;
+}) {
+  const { form_id } = await params;
+  return (
+    <>
+      <ShowSubmissions formId={form_id} />
+    </>
+  );
+}

@@ -68,3 +68,17 @@ export const publishForm = async ({
   });
   return data;
 };
+
+export const submitForm = async ({
+  formId,
+  formData,
+}: {
+  formId: string;
+  formData: any;
+}) => {
+  const { data } = await formsmithAxios.post(`/submissions`, {
+    data: formData,
+    form_id: formId,
+  });
+  return data;
+};

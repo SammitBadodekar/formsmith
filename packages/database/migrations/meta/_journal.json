@@ -71,6 +71,13 @@
       "when": 1747572285122,
       "tag": "0009_previous_red_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1751098418363,
+      "tag": "0010_special_leader",
+      "breakpoints": true
     }
   ]
 }

@@ -2,6 +2,7 @@ import {
   getForm,
   getForms,
   getPublishedForm,
+  getSubmissions,
   getWorkspaces,
 } from "@/lib/queries";
 import { useQuery } from "@tanstack/react-query";
@@ -46,4 +47,13 @@ export const useGetPublishedFormQuery = ({
     staleTime: 60000,
   });
   return publishedFormQuery;
+};
+
+export const useGetSubmissionsQuery = ({ formId }: { formId: string }) => {
+  const submissionsQuery = useQuery({
+    queryKey: ["getSubmissions", formId],
+    queryFn: ({ queryKey: [, id] }) => getSubmissions(id),
+    staleTime: 60000,
+  });
+  return submissionsQuery;
 };

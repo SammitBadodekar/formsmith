@@ -13,7 +13,7 @@ export const ThankYouPage = createReactBlockSpec(
   {
     render: (props) => {
       return (
-        <div className="-mt-28 flex h-full w-full flex-col items-center justify-center">
+        <div className="flex h-full w-full flex-col items-center justify-center">
           <div className="mb-8 rounded-full bg-blue-50 p-4 font-black text-blue-500">
             <Check size={40} />
           </div>

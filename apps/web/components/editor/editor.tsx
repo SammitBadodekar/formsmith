@@ -33,9 +33,10 @@ import {
 } from "./blocks";
 import BlocksDragHandleMenu from "./components/drag-handle-menu";
 import { ArrowRight, Loader, Trash2 } from "lucide-react";
-import { Form } from "@formsmith/database";
+import { Form, PublishedForm } from "@formsmith/database";
 import { memo, useCallback, useState } from "react";
 import { longAnswerSchema, shortAnswerSchema } from "./validator";
+import { is } from "drizzle-orm";
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
@@ -50,8 +51,8 @@ export const schema = BlockNoteSchema.create({
 
 type EditorProps = {
   onSave?: (data: unknown) => void;
-  onSubmit?: (data: unknown) => void;
-  formData: Form | null;
+  onSubmit?: (submissionData: unknown, document: any) => void;
+  formData: PublishedForm | Form | null;
   editable?: boolean;
   submitButtonText?: string;
   isThankYou?: boolean;
@@ -75,6 +76,7 @@ function Editor(props: EditorProps) {
     isThankYou,
   } = props;
   const [isLastPageThankYou, setIsLastPageThankYou] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const editor = useCreateBlockNote({
     initialContent:
       (formData?.data as any[])?.length > 0
@@ -113,9 +115,14 @@ function Editor(props: EditorProps) {
   );
 
   const getBlockSchema = (type: string) => {
-    if (type === "shortAnswer") return shortAnswerSchema;
-    if (type === "longAnswer") return longAnswerSchema;
-    return null;
+    switch (type) {
+      case "shortAnswer":
+        return shortAnswerSchema;
+      case "longAnswer":
+        return longAnswerSchema;
+      default:
+        return null;
+    }
   };
 
   const handleSubmit = async () => {
@@ -162,7 +169,10 @@ function Editor(props: EditorProps) {
     }
 
     console.log("Form is valid. Submitting data...");
-    props?.onSubmit?.(editor.document);
+    setIsSubmitting(true);
+    const submissionData = getSubmissionData(editor);
+    await props?.onSubmit?.(submissionData, editor.document);
+    setIsSubmitting(false);
   };
   return (
     <div className="h-full w-full">
@@ -175,13 +185,12 @@ function Editor(props: EditorProps) {
           className="max-h-60 w-full"
         />
       )}
-      {!formData?.image && <div className="min-h-40 min-w-full"></div>}
+      {!formData?.image && <div className="min-h-32 min-w-full"></div>}
       <div className="flex h-full w-full justify-center">
         <form
           className="flex w-full max-w-[800px] flex-col gap-4"
           onSubmit={(e) => {
             e.preventDefault();
-            console.log("submitted", getSubmissionData(editor));
             handleSubmit();
           }}
         >
@@ -239,9 +248,16 @@ function Editor(props: EditorProps) {
             <Button
               className="w-fit px-3 font-black"
               type={editable ? "button" : "submit"}
+              disabled={isSubmitting}
             >
-              <p>{submitButtonText}</p>
-              <ArrowRight />
+              {isSubmitting ? (
+                <Loader className="mx-8 animate-spin" />
+              ) : (
+                <>
+                  <p>{submitButtonText}</p>
+                  <ArrowRight />
+                </>
+              )}
             </Button>
           )}
         </form>

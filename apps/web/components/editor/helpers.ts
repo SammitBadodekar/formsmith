@@ -5,7 +5,7 @@ import {
   getNewPageSlashCommand,
   getshortAnswerSlashCommand,
 } from "./blocks";
-import { Form } from "@formsmith/database";
+import { Form, PublishedForm } from "@formsmith/database";
 
 export const getSlashMenuItems = (editor: typeof schema.BlockNoteEditor) => {
   const itemsToExclude = ["table", "check_list"];
@@ -62,18 +62,23 @@ export const getSubmissionData = (editor: typeof schema.BlockNoteEditor) => {
       if (labelBlock) {
         labelValue = getPlainText(labelBlock);
       }
-      submissions.push({ label: labelValue, value });
+      submissions.push({
+        label: labelValue,
+        value,
+        input_id: block.id,
+        label_id: label,
+      });
     }
   });
   return submissions;
 };
 
-export const divideFormIntoPages = (formData: Form) => {
+export const divideFormIntoPages = (formData: Form | PublishedForm) => {
   const pages: any[] = [];
   const blocks = (formData?.data as any[]) ?? [];
   let currentPage: any[] = [];
   let isThankYou = false;
-  blocks.forEach((block) => {
+  blocks?.forEach((block) => {
     if (block.type === "newPage") {
       pages.push({
         blocks: currentPage,
@@ -100,6 +105,5 @@ export const divideFormIntoPages = (formData: Form) => {
     ],
     isThankYou: true,
   });
-  console.log("pages", pages);
   return pages;
 };

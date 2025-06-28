@@ -62,13 +62,14 @@ export async function validateSessionToken(
 }
 
 export const getUniqueDomainName = async (name: string, c: Context) => {
-  const nameExists = await checkIfDomainExists(name!, c);
+  let sanitizedName = sanitizeUrlString(name!);
+  const nameExists = await checkIfDomainExists(sanitizedName, c);
   if (!nameExists) {
-    return name;
+    return sanitizedName;
   }
 
   const customConfig = {
-    dictionaries: [[name], adjectives],
+    dictionaries: [[sanitizedName], adjectives],
     separator: "-",
     length: 1,
     style: "lowerCase",
@@ -83,7 +84,16 @@ export const checkIfDomainExists = async (domain: string, c: Context) => {
   const result = await db
     .select({ form_name: formTable.name })
     .from(formTable)
-    .where(eq(formTable.domain, domain.toLowerCase().trim()))
+    .where(eq(formTable.domain, domain))
     .limit(1);
   return result.length > 0;
+};
+
+export const sanitizeUrlString = (str: string) => {
+  return str
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-_]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 };

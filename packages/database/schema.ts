@@ -60,7 +60,7 @@ export const publishedFormTable = sqliteTable("published_form", {
   logo: text("logo"),
   formId: text("form_id")
     .notNull()
-    .references(() => formTable.id)
+    .references(() => formTable.id, { onDelete: "cascade" })
     .unique(),
   userId: text("user_id")
     .notNull()
@@ -83,7 +83,7 @@ export const formSubmissionTable = sqliteTable("form_submission", {
   id: text("id").primaryKey(),
   formId: text("form_id")
     .notNull()
-    .references(() => formTable.id),
+    .references(() => formTable.id, { onDelete: "cascade" }),
   data: text({ mode: "json" }),
   createdAt: integer("created_at", {
     mode: "timestamp",

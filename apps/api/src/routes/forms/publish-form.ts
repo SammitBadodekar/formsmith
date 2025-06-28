@@ -2,6 +2,7 @@ import { Context } from "hono";
 import {
   getDB,
   getUniqueDomainName,
+  sanitizeUrlString,
   validateSessionToken,
 } from "../../helpers";
 import { and, eq } from "drizzle-orm";
@@ -17,11 +18,13 @@ export const publishForm = async (c: Context) => {
       return c.json({ success: false, error: "Unauthorized" }, 403);
     const db = await getDB(c);
     const body = await c.req.json();
-    const domain = body.domain || (await getUniqueDomainName(body.name, c));
+    const domain =
+      (body.domain ? sanitizeUrlString(body.domain) : body.domain) ||
+      (await getUniqueDomainName(body.name, c));
     const path = "/";
 
     const formId = body.id;
-    const [res1, res2] = await Promise.all([
+    await Promise.all([
       db
         .update(formTable)
         .set({ isPublished: 1, domain: domain, path: path })

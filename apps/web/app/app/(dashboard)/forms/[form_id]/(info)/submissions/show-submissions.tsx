@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -31,16 +31,25 @@ import {
 import { useGetSubmissionsQuery } from "@/hooks/use-queries";
 import { Submission } from "@/app/[...domain]/show-published-form";
 import { FormSubmission } from "@formsmith/database";
+import { format, isThisYear } from "date-fns";
 
 type NormalizedRow = Record<string, string>;
 
 const ShowSubmissions = ({ formId }: { formId: string }) => {
+  const [searchTerm, setSearchTerm] = React.useState("");
   const { data, isLoading, isError } = useGetSubmissionsQuery({ formId });
+
+  function formatCustomDate(date: Date) {
+    const baseFormat = isThisYear(date)
+      ? "MMM d, hh:mm a"
+      : "MMM d, yyyy, hh:mm a";
+    return format(date, baseFormat);
+  }
 
   // Extract and normalize data
   const formattedData: Submission[][] =
     data?.map((submission: FormSubmission) => [
-      { label: "Submitted at", value: submission.createdAt },
+      { label: "Submitted at", value: formatCustomDate(submission.createdAt!) },
       ...(submission.data as Submission[]),
     ]) ?? [];
 
@@ -62,7 +71,9 @@ const ShowSubmissions = ({ formId }: { formId: string }) => {
     accessorKey: label,
     header: label,
     cell: ({ row }) => (
-      <div className="min-w-20 truncate">{row.getValue(label) ?? "-"}</div>
+      <div className="w-max min-w-20 truncate text-nowrap">
+        {row.getValue(label) ?? "-"}
+      </div>
     ),
   }));
 
@@ -75,6 +86,13 @@ const ShowSubmissions = ({ formId }: { formId: string }) => {
     getFilteredRowModel: getFilteredRowModel(),
   });
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      table.setGlobalFilter(searchTerm);
+    }, 300); // debounce delay
+    return () => clearTimeout(timeout);
+  }, [searchTerm]);
+
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading submissions.</div>;
 
@@ -83,7 +101,7 @@ const ShowSubmissions = ({ formId }: { formId: string }) => {
       <div className="flex items-center py-4">
         <Input
           placeholder="Search..."
-          onChange={(e) => table.setGlobalFilter(e.target.value)}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-sm"
         />
 
@@ -112,12 +130,12 @@ const ShowSubmissions = ({ formId }: { formId: string }) => {
       </div>
 
       <div className="rounded-md border">
-        <Table>
+        <Table className="mb-2">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="w-full text-nowrap">
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext(),

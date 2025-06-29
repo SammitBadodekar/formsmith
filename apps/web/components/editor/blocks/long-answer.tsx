@@ -115,7 +115,13 @@ export const longAnswer = createReactBlockSpec(
         >
           <Textarea
             ref={props.contentRef}
-            placeholder={placeholder}
+            placeholder={
+              editor.isEditable
+                ? placeholder
+                : placeholder !== "Type placeholder text..."
+                  ? placeholder
+                  : "Type your answer..."
+            }
             value={
               editor.isEditable
                 ? placeholder !== "Type placeholder text..."
@@ -132,12 +138,6 @@ export const longAnswer = createReactBlockSpec(
             aria-describedby={
               !isValid && isDirty ? `${block.id}-error` : undefined
             }
-            // disabled={
-            //   editor.isEditable &&
-            //   props.block.id === editor.getTextCursorPosition().block.id
-            //     ? false
-            //     : editor.isEditable
-            // }
           />
           {!isValid && isDirty && errorMessage && (
             <span id={`${block.id}-error`} className="text-sm text-red-600">

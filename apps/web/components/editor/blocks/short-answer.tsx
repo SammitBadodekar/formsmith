@@ -123,7 +123,9 @@ export const shortAnswer = createReactBlockSpec(
             placeholder={
               editor.isEditable
                 ? placeholder
-                : placeholder || "Type your answer..."
+                : placeholder !== "Type placeholder text..."
+                  ? placeholder
+                  : "Type your answer..."
             }
             value={
               editor.isEditable
@@ -141,12 +143,6 @@ export const shortAnswer = createReactBlockSpec(
             aria-describedby={
               !isValid && isDirty ? `${block.id}-error` : undefined
             }
-            // disabled={
-            //   editor.isEditable &&
-            //   props.block.id === editor.getTextCursorPosition().block.id
-            //     ? false
-            //     : editor.isEditable
-            // }
           />
           {!isValid && isDirty && errorMessage && (
             <span id={`${block.id}-error`} className="text-sm text-red-600">

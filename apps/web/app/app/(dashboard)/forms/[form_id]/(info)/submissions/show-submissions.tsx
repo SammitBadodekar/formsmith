@@ -98,7 +98,7 @@ const ShowSubmissions = ({ formId }: { formId: string }) => {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      {/* <div className="flex items-center py-4">
         <Input
           placeholder="Search..."
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -127,7 +127,7 @@ const ShowSubmissions = ({ formId }: { formId: string }) => {
               ))}
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
+      </div> */}
 
       <div className="rounded-md border">
         <Table className="mb-2">

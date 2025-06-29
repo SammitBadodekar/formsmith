@@ -1,7 +1,11 @@
 "use client";
 import React, { RefObject, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import Editor, { schema } from "../editor/editor";
 import { Minimize2 } from "lucide-react";
 import { Form } from "@formsmith/database";
@@ -27,18 +31,30 @@ const PreviewFormModal = ({ ref }: { ref: RefObject<Form> | null }) => {
 
   const pages = divideFormIntoPages(formData as Form);
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
         <Button variant="secondary" size="sm" className="font-black">
           Preview
         </Button>
-      </DialogTrigger>
-      <DialogContent className="flex h-[90%] w-screen max-w-[90vw] items-center justify-center overflow-y-scroll rounded-2xl p-0">
+      </AlertDialogTrigger>
+      <AlertDialogContent className="flex h-dvh w-screen max-w-[95vw] items-center justify-center overflow-y-scroll rounded-2xl p-0">
         {pages.map((page: any, index) => {
           return (
             <div
-              className={`${currentPage === index ? "" : "hidden"} flex w-full items-center justify-center`}
+              className={`${currentPage === index ? "" : "hidden"} relative flex h-full w-full items-center justify-center`}
+              key={index}
             >
+              <Button
+                variant="secondary"
+                size="sm"
+                className="absolute right-4 top-4 z-10"
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
+                <Minimize2 />
+                <p>Back to editor</p>
+              </Button>
               <Editor
                 editable={false}
                 formData={{
@@ -54,8 +70,8 @@ const PreviewFormModal = ({ ref }: { ref: RefObject<Form> | null }) => {
             </div>
           );
         })}
-      </DialogContent>
-    </Dialog>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 

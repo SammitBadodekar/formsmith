@@ -32,11 +32,11 @@ import {
   ThankYouPage,
 } from "./blocks";
 import BlocksDragHandleMenu from "./components/drag-handle-menu";
-import { ArrowRight, Loader, Trash2 } from "lucide-react";
+import { ArrowRight, Hexagon, Loader, PanelTop, Trash2 } from "lucide-react";
 import { Form, PublishedForm } from "@formsmith/database";
 import { memo, useCallback, useState } from "react";
 import { longAnswerSchema, shortAnswerSchema } from "./validator";
-import { is } from "drizzle-orm";
+import { Uploader } from "../modals/uploader";
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
@@ -52,7 +52,8 @@ export const schema = BlockNoteSchema.create({
 type EditorProps = {
   onSave?: (data: unknown) => void;
   onSubmit?: (submissionData: unknown, document: any) => void;
-  formData: PublishedForm | Form | null;
+  formData: Form | null;
+  setFormData?: (data: Form) => void;
   editable?: boolean;
   submitButtonText?: string;
   isThankYou?: boolean;
@@ -74,9 +75,15 @@ function Editor(props: EditorProps) {
     editable = true,
     submitButtonText = "Submit",
     isThankYou,
+    setFormData,
+    onSave,
   } = props;
   const [isLastPageThankYou, setIsLastPageThankYou] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customizations, setCustomizations] = useState<Record<string, any>>({
+    image: formData?.image,
+    logo: formData?.logo,
+  });
   const editor = useCreateBlockNote({
     initialContent:
       (formData?.data as any[])?.length > 0
@@ -126,7 +133,7 @@ function Editor(props: EditorProps) {
   };
 
   const handleSubmit = async () => {
-    if (!editor) return;
+    if (!editor || editable) return;
 
     let allFieldsValidAfterFinalCheck = true;
     const currentBlocks = editor.document;
@@ -174,19 +181,59 @@ function Editor(props: EditorProps) {
     await props?.onSubmit?.(submissionData, editor.document);
     setIsSubmitting(false);
   };
+
+  const handleUpdateCustomizations = (customizations: Record<string, any>) => {
+    setFormData?.({ ...formData!, ...customizations });
+    setCustomizations((prev) => ({ ...prev, ...customizations }));
+    onSave?.(editor.document);
+  };
   return (
     <div className="h-full w-full">
-      {formData?.image && (
-        <Image
-          src={formData?.image}
-          height={200}
-          width={400}
-          alt="cover image"
-          className="max-h-60 w-full"
-        />
+      {customizations?.image ? (
+        <div className="relative">
+          <img
+            src={customizations?.image}
+            height={200}
+            width={400}
+            alt="cover image"
+            className="max-h-60 w-full object-cover"
+          />
+          {editable && (
+            <div className="absolute bottom-4 right-4 flex gap-4">
+              <Uploader
+                callback={(url) => {
+                  handleUpdateCustomizations({ image: url });
+                }}
+              >
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="flex items-center gap-2 font-black"
+                >
+                  <PanelTop />
+                  <p>Change</p>
+                </Button>
+              </Uploader>
+              <Button
+                variant="secondary"
+                className="flex items-center gap-2 font-black"
+                size="sm"
+                onClick={() => {
+                  handleUpdateCustomizations({
+                    image: "",
+                  });
+                }}
+              >
+                <Trash2 />
+                Remove
+              </Button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="min-h-40 w-full"></div>
       )}
-      {!formData?.image && <div className="min-h-32 min-w-full"></div>}
-      <div className="flex h-full w-full justify-center">
+      <div className="flex h-full w-full flex-col items-center">
         <form
           className="flex w-full max-w-[800px] flex-col gap-4"
           onSubmit={(e) => {
@@ -194,12 +241,65 @@ function Editor(props: EditorProps) {
             handleSubmit();
           }}
         >
+          {customizations?.logo && (
+            <Uploader
+              callback={(url) => {
+                handleUpdateCustomizations({ logo: url });
+              }}
+            >
+              <img
+                src={customizations?.logo}
+                height={100}
+                width={100}
+                alt="cover image"
+                className="relative z-10 -mt-10 h-[100px] w-[100px] rounded-full object-cover"
+              />
+            </Uploader>
+          )}
+          {editable && (
+            <div
+              className={`${customizations?.image && formData?.logo ? "hidden" : "mt-2 flex w-full gap-4"}`}
+            >
+              {!customizations?.logo && (
+                <Uploader
+                  callback={(url) => {
+                    handleUpdateCustomizations({ logo: url });
+                  }}
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center gap-2 font-black"
+                  >
+                    <Hexagon />
+                    <p> Add logo</p>
+                  </Button>
+                </Uploader>
+              )}
+              {!customizations?.image && (
+                <Uploader
+                  callback={(url) => {
+                    handleUpdateCustomizations({ image: url });
+                  }}
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center gap-2 font-black"
+                  >
+                    <PanelTop />
+                    <p> Add cover</p>
+                  </Button>
+                </Uploader>
+              )}
+            </div>
+          )}
           <BlockNoteView
             editor={editor}
             theme={"light"}
             className="m-0 w-full px-0"
             onChange={() => {
-              props?.onSave?.(editor.document);
+              onSave?.(editor.document);
               setIsLastPageThankYou(
                 editor.document.findLast((b) => b.type === "newPage")?.props
                   ?.isThankYou

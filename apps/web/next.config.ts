@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
         search: "",
       },
       {
-        hostname: "tally.so",
+        hostname: "cdn.formsmith.in",
         port: "",
         search: "",
         protocol: "https",

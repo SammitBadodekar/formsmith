@@ -71,7 +71,7 @@ const DynamicBreadcrumb = () => {
   const breadcrumbs = generateBreadcrumbs();
 
   return (
-    <div className="flex w-full items-center justify-between">
+    <div className="z-40 flex w-full items-center justify-between">
       <Breadcrumb>
         <BreadcrumbList className="flex w-full items-center gap-2">
           <BreadcrumbItem>

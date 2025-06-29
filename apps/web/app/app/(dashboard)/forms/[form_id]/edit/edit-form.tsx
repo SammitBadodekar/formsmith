@@ -52,13 +52,13 @@ const EditForm = ({ formId }: { formId: string }) => {
     },
   });
 
-  const saveForm = async (formData: any[]) => {
-    const { isPublished, domain, path, ...rest } = data?.data?.form;
+  const saveForm = async (documents: any[]) => {
+    const { isPublished, domain, path, ...rest } = formData.current!;
     mutate({
       formId: data?.data?.form.id,
       formData: {
         ...rest,
-        data: formData,
+        data: documents,
       },
     });
   };
@@ -90,12 +90,13 @@ const EditForm = ({ formId }: { formId: string }) => {
         <Editor
           onSave={async (documents) => {
             setFormData({
-              ...data?.data?.form,
+              ...formData.current!,
               data: documents,
             });
             await saveFormWithDebounce(saveForm, documents);
           }}
           formData={data?.data?.form}
+          setFormData={setFormData}
         />
       )}
       {data?.data?.form &&

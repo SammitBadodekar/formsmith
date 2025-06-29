@@ -135,7 +135,7 @@ const ShowSubmissions = ({ formId }: { formId: string }) => {
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="w-full text-nowrap">
+                  <TableHead key={header.id} className="w-max text-nowrap">
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext(),

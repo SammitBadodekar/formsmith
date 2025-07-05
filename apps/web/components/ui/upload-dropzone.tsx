@@ -3,27 +3,22 @@
 import type React from "react";
 
 import { Button } from "@/components/ui/button";
-import type { UploadHookControl } from "better-upload/client";
 import { Loader2, Upload } from "lucide-react";
 import { useId, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 
 type UploadDropzoneProps = {
-  control: UploadHookControl<false>;
+  onFileSelect: (file: File) => void | Promise<void>;
+  isUploading?: boolean;
   accept?: string;
-  metadata?: Record<string, unknown>;
-  uploadOverride?: (
-    ...args: Parameters<UploadHookControl<false>["upload"]>
-  ) => void;
   maxSize?: string;
   recommendedDimensions?: string;
 };
 
 export function UploadDropzone({
-  control: { upload, isPending },
+  onFileSelect,
+  isUploading = false,
   accept,
-  metadata,
-  uploadOverride,
   maxSize = "10 MB",
   recommendedDimensions = "minimum 1500 pixels wide",
 }: UploadDropzoneProps) {
@@ -31,14 +26,10 @@ export function UploadDropzone({
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleFile = useCallback(
-    (file: File) => {
-      if (uploadOverride) {
-        uploadOverride(file, { metadata });
-      } else {
-        upload(file, { metadata });
-      }
+    async (file: File) => {
+      await onFileSelect(file);
     },
-    [upload, uploadOverride, metadata],
+    [onFileSelect],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -60,21 +51,21 @@ export function UploadDropzone({
       setIsDragOver(false);
 
       const files = Array.from(e.dataTransfer.files);
-      if (files.length > 0 && !isPending) {
+      if (files.length > 0 && !isUploading) {
         handleFile(files[0]);
       }
     },
-    [handleFile, isPending],
+    [handleFile, isUploading],
   );
 
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files?.[0] && !isPending) {
+      if (e.target.files?.[0] && !isUploading) {
         handleFile(e.target.files[0]);
       }
       e.target.value = "";
     },
-    [handleFile, isPending],
+    [handleFile, isUploading],
   );
 
   return (
@@ -83,7 +74,7 @@ export function UploadDropzone({
         "relative h-full w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center transition-colors",
         "focus-within:border-blue-500 hover:border-gray-400",
         isDragOver && "border-blue-500 bg-blue-50",
-        isPending && "pointer-events-none opacity-50",
+        isUploading && "pointer-events-none opacity-50",
       )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -94,12 +85,12 @@ export function UploadDropzone({
         type="file"
         accept={accept}
         onChange={handleFileChange}
-        disabled={isPending}
+        disabled={isUploading}
         className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
       />
 
       <div className="flex flex-col items-center space-y-4">
-        {isPending ? (
+        {isUploading ? (
           <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
         ) : (
           <Upload className="h-12 w-12 text-gray-400" />
@@ -107,7 +98,9 @@ export function UploadDropzone({
 
         <div className="space-y-2">
           <p className="text-lg font-medium text-gray-700">
-            {isPending ? "Uploading..." : "Click to choose a file or drag here"}
+            {isUploading
+              ? "Uploading..."
+              : "Click to choose a file or drag here"}
           </p>
 
           <div className="space-y-1 text-sm text-gray-500">
@@ -116,7 +109,7 @@ export function UploadDropzone({
           </div>
         </div>
 
-        {!isPending && (
+        {!isUploading && (
           <Button
             type="button"
             variant="outline"

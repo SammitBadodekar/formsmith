@@ -4,6 +4,7 @@ import { env } from "hono/adapter";
 import formRoutes from "./routes/forms";
 import workspaceRoutes from "./routes/workspaces";
 import submissionRoutes from "./routes/submissions";
+import uploadRoutes from "./routes/upload";
 
 export type Env = {
   DATABASE_URL: string;
@@ -39,5 +40,6 @@ app.get("/", async (c) => {
 formRoutes(app);
 workspaceRoutes(app);
 submissionRoutes(app);
+uploadRoutes(app);
 
 export default app;

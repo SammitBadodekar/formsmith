@@ -1,5 +1,4 @@
 "use client";
-import { useUploadFile } from "better-upload/client";
 import { UploadDropzone } from "@/components/ui/upload-dropzone";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,6 +6,7 @@ import { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function Uploader({
   children,
@@ -22,19 +22,42 @@ export function Uploader({
   recommendedDimensions?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const [ImgLink, setImgLink] = useState("");
-  const { control } = useUploadFile({
-    route: "formsmithCdn",
-    onUploadComplete: ({ file }) => {
-      const url = `https://cdn.formsmith.in/${file?.objectKey}`;
+  const [imgLink, setImgLink] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileUpload = async (file: File) => {
+    try {
+      setIsUploading(true);
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/upload`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      const url = data.image.url;
+
       console.log("Upload complete:", url);
       callback?.(url);
       setOpen(false);
-    },
-    onUploadProgress: (data) => {
-      console.log("Upload progress:", data);
-    },
-  });
+      toast.success("Image uploaded successfully!");
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   return (
     <>
@@ -67,7 +90,8 @@ export function Uploader({
 
             <TabsContent value="upload">
               <UploadDropzone
-                control={control}
+                onFileSelect={handleFileUpload}
+                isUploading={isUploading}
                 accept="image/*"
                 maxSize={maxSize}
                 recommendedDimensions={recommendedDimensions}
@@ -82,7 +106,7 @@ export function Uploader({
               <Button
                 className="mt-4 w-full"
                 onClick={() => {
-                  callback?.(ImgLink);
+                  callback?.(imgLink);
                   setOpen(false);
                 }}
               >

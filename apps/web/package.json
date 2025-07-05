@@ -43,7 +43,6 @@
     "arctic": "^3.5.0",
     "axios": "^1.7.9",
     "better-auth": "^1.2.4",
-    "better-upload": "^0.3.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cuid": "^3.0.0",

@@ -3,8 +3,9 @@ import { getDB, validateSessionToken } from "../../helpers";
 import { eq } from "drizzle-orm";
 import { formTable, workspaceTable } from "@formsmith/database";
 import { getCookie } from "hono/cookie";
+import { FormsmithContext } from "../..";
 
-export const getWorkspaces = async (c: Context) => {
+export const getWorkspaces = async (c: FormsmithContext) => {
   try {
     const sessionToken = getCookie(c, "session");
     const { session, user } = await validateSessionToken(sessionToken!, c);

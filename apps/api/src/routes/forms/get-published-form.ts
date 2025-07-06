@@ -2,8 +2,9 @@ import { Context } from "hono";
 import { getDB } from "../../helpers";
 import { and, eq } from "drizzle-orm";
 import { publishedFormTable } from "@formsmith/database";
+import { FormsmithContext } from "../..";
 
-export const getPublishedForm = async (c: Context) => {
+export const getPublishedForm = async (c: FormsmithContext) => {
   try {
     const db = await getDB(c);
     const domain = c.req.query("domain");

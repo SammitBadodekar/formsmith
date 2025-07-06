@@ -27,7 +27,7 @@ const EditForm = ({ formId }: { formId: string }) => {
   const router = useRouter();
 
   const setFormData = (data: Form) => {
-    formData.current = data;
+    formData.current = { ...(formData.current ?? {}), ...data };
   };
 
   const { data, isLoading } = useQuery({

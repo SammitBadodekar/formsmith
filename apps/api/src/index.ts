@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { Context, Hono } from "hono";
 import { cors } from "hono/cors";
 import { env } from "hono/adapter";
 import formRoutes from "./routes/forms";
@@ -11,9 +11,13 @@ export type Env = {
   DATABASE_AUTH_TOKEN: string;
   FRONTEND_DOMAIN: string;
   FORM_DOMAIN: string;
-  CACHE: KVNamespace;
+  FORMSMITH_CDN: R2Bucket;
+  CDN_URL: string;
 };
-export type app = Hono<{ Bindings: Env }>;
+export type App = Hono<{ Bindings: Env }>;
+export type FormsmithContext = Context<{
+  Bindings: Env;
+}>;
 const app = new Hono<{ Bindings: Env }>();
 
 app.use(

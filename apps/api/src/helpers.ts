@@ -15,7 +15,7 @@ import { eq } from "drizzle-orm";
 import { uniqueNamesGenerator, adjectives } from "unique-names-generator";
 import { nanoid } from "nanoid";
 
-export const getDB = async (c: Context) => {
+export const getDB = async (c: FormsmithContext) => {
   const { DATABASE_URL, DATABASE_AUTH_TOKEN } = env<Env>(c);
   const db = drizzle({
     connection: {
@@ -32,7 +32,7 @@ export type SessionValidationResult =
 
 export async function validateSessionToken(
   token: string,
-  c: Context
+  c: FormsmithContext
 ): Promise<SessionValidationResult> {
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
   const db = await getDB(c);
@@ -61,7 +61,10 @@ export async function validateSessionToken(
   return { session, user };
 }
 
-export const getUniqueDomainName = async (name: string, c: Context) => {
+export const getUniqueDomainName = async (
+  name: string,
+  c: FormsmithContext
+) => {
   let sanitizedName = sanitizeUrlString(name!);
   const nameExists = await checkIfDomainExists(sanitizedName, c);
   if (!nameExists) {
@@ -79,7 +82,10 @@ export const getUniqueDomainName = async (name: string, c: Context) => {
   );
 };
 
-export const checkIfDomainExists = async (domain: string, c: Context) => {
+export const checkIfDomainExists = async (
+  domain: string,
+  c: FormsmithContext
+) => {
   const db = await getDB(c);
   const result = await db
     .select({ form_name: formTable.name })

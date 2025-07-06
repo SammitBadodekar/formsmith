@@ -5,10 +5,7 @@ compatibility_date = "2025-01-12"
 [observability.logs]
 enabled = true
 
-[[kv_namespaces]]
-binding = "CACHE"
-id = "2bf3957c10b74faebb268b6c7623cc05"
-
 [[r2_buckets]]
 binding = "FORMSMITH_CDN"
 bucket_name = "formsmith-cdn"
+preview_bucket_name = "dev-formsmith-cdn"

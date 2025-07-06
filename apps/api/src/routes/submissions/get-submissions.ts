@@ -5,8 +5,9 @@ import { getDB, validateSessionToken } from "../../helpers";
 import { and, desc, eq } from "drizzle-orm";
 import { formSubmissionTable, formTable } from "@formsmith/database";
 import { getCookie } from "hono/cookie";
+import { FormsmithContext } from "../..";
 
-export const getSubmissions = async (c: Context) => {
+export const getSubmissions = async (c: FormsmithContext) => {
   try {
     const sessionToken = getCookie(c, "session");
     const { session, user } = await validateSessionToken(sessionToken!, c);

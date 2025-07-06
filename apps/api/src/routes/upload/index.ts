@@ -1,6 +1,6 @@
-import { app } from "../..";
+import { App } from "../..";
 import { upload } from "./upload";
 
-export default (app: app) => {
+export default (app: App) => {
   app.post("/upload", upload);
 };

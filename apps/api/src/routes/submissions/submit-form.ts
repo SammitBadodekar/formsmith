@@ -3,6 +3,7 @@ import { getDB } from "../../helpers";
 import { and, eq } from "drizzle-orm";
 import { z, ZodError } from "zod";
 import { formSubmissionTable } from "@formsmith/database";
+import { FormsmithContext } from "../..";
 import cuid from "cuid";
 
 const schema = z.object({
@@ -17,7 +18,7 @@ const schema = z.object({
   ),
 });
 
-export const submitForm = async (c: Context) => {
+export const submitForm = async (c: FormsmithContext) => {
   try {
     const db = await getDB(c);
     const body = await c.req.json();

@@ -5,9 +5,9 @@ import { getForm } from "./get-form";
 import { updateForm } from "./update-form";
 import { publishForm } from "./publish-form";
 import { getPublishedForm } from "./get-published-form";
-import { app } from "../..";
+import { App } from "../..";
 
-export default (app: app) => {
+export default (app: App) => {
   app.get("/form", getForm);
   app.get("/forms", getForms);
   app.post("/forms", createForm);

@@ -183,8 +183,8 @@ function Editor(props: EditorProps) {
   };
 
   const handleUpdateCustomizations = (customizations: Record<string, any>) => {
-    setFormData?.({ ...formData!, ...customizations });
-    setCustomizations((prev) => ({ ...prev, ...customizations }));
+    setFormData?.({ ...(customizations as any) });
+    setCustomizations?.((prev) => ({ ...prev, ...customizations }));
     onSave?.(editor.document);
   };
   return (

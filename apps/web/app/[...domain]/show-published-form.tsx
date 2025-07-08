@@ -29,7 +29,7 @@ const ShowPublishedForm = ({ data: form }: { data: Form }) => {
               page.isThankYou ?? index === pages.length - 1;
             return (
               <div
-                className={`${currentPage === index ? "" : "hidden"} flex w-full items-center justify-center`}
+                className={`${currentPage === index ? "" : "hidden"} flex h-full min-h-svh w-full justify-center`}
               >
                 <Editor
                   editable={false}

@@ -212,14 +212,9 @@ function Editor(props: EditorProps) {
       customizations.color,
     );
   }, [formData?.customizations]);
-
-  console.log("here in editorRef", {
-    "--editor-background": customizations?.backgroundColor,
-    "--editor-text": customizations?.color,
-  });
   return (
     <div
-      className="h-full min-h-[calc(100svh_-_56px)] w-full pb-12"
+      className={`h-full ${editable ? "min-h-[calc(100svh_-_56px)]" : "min-h-svh"} w-full pb-12`}
       style={{ ...(formData?.customizations ?? {}), ...customizations }}
     >
       {imageConfig?.image ? (

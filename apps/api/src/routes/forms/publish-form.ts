@@ -47,11 +47,13 @@ export const publishForm = async (c: FormsmithContext) => {
           workspaceId: body.workspaceId,
           domain: domain,
           path: path,
+          customizations: body.customizations,
         })
         .onConflictDoUpdate({
           target: publishedFormTable.formId,
           set: {
             data: body.data,
+            customizations: body.customizations,
             name: body.name,
             description: body.description,
             image: body.image,

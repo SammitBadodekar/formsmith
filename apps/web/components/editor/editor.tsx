@@ -202,27 +202,20 @@ function Editor(props: EditorProps) {
     setCustomizations({
       ...(formData?.customizations ?? {}),
     });
-    // const { backgroundColor, color } = formData?.customizations ?? ({} as any);
 
-    // const editorElement: any = document.querySelector(".bn-editor");
-    // if (editorElement) {
-    //   console.log(
-    //     "Setting editor styles:",
-    //     { backgroundColor, color },
-    //     editorElement,
-    //   );
-    //   if (backgroundColor) {
-    //     editorElement.style.backgroundColor = backgroundColor;
-    //   }
-    //   if (color) {
-    //     editorElement.style.color = color;
-    //   }
-    // }
+    document.documentElement.style.setProperty(
+      "--editor-background",
+      customizations.backgroundColor,
+    );
+    document.documentElement.style.setProperty(
+      "--editor-text",
+      customizations.color,
+    );
   }, [formData?.customizations]);
 
   console.log("here in editorRef", {
-    ...(formData?.customizations ?? {}),
-    ...customizations,
+    "--editor-background": customizations?.backgroundColor,
+    "--editor-text": customizations?.color,
   });
   return (
     <div
@@ -337,6 +330,7 @@ function Editor(props: EditorProps) {
           <BlockNoteView
             ref={editorRef}
             editor={editor}
+            data-theming-formsmith
             theme={customizations?.theme ?? "light"}
             className="m-0 w-full px-0"
             onChange={() => {
@@ -350,6 +344,12 @@ function Editor(props: EditorProps) {
             }}
             editable={editable}
             autoFocus={true}
+            style={
+              {
+                "--editor-background": customizations?.backgroundColor,
+                "--editor-text": customizations?.color,
+              } as any
+            }
           >
             <SuggestionMenuController
               triggerCharacter={"/"}

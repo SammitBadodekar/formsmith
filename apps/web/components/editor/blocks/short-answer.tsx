@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Toggle } from "@/components/ui/toggle";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
+import { useAtom } from "jotai";
+import { formCustomizationAtom } from "@/lib/atoms";
 
 export const shortAnswer = createReactBlockSpec(
   {
@@ -66,6 +68,7 @@ export const shortAnswer = createReactBlockSpec(
       const { editor, block } = props;
       const { value, placeholder, required, isValid, errorMessage, isDirty } =
         block.props;
+      const [customizations] = useAtom(formCustomizationAtom);
       const highlight = props?.block?.props?.highlight;
 
       const validateAndCommit = (currentValue: string) => {
@@ -134,9 +137,12 @@ export const shortAnswer = createReactBlockSpec(
                   : ""
                 : value
             }
-            className={cn("min-w-full", {
-              "border-red-500": !isValid && isDirty,
-            })}
+            className={cn(
+              `min-w-full ${customizations?.theme === "dark" ? "border-primary/25" : ""}`,
+              {
+                "border-red-500": !isValid && isDirty,
+              },
+            )}
             onChange={handleInputChange}
             onBlur={handleBlur}
             aria-invalid={!isValid && isDirty ? "true" : "false"}

@@ -49,6 +49,8 @@
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.4",
+    "framer-motion": "^12.23.0",
+    "jotai": "^2.12.5",
     "js-cookie": "^3.0.5",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.474.0",

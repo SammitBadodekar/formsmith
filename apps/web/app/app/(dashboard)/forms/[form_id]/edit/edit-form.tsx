@@ -14,6 +14,9 @@ import PreviewFormModal from "@/components/modals/preview-form";
 import { Form } from "@formsmith/database";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import FormCustomization from "@/components/editor/components/form-customization";
+import { formCustomizationAtom } from "@/lib/atoms";
+import { useAtom } from "jotai";
 
 const saveFormWithDebounce = debounce(async (callback, payload) => {
   if (callback && payload) {
@@ -23,11 +26,13 @@ const saveFormWithDebounce = debounce(async (callback, payload) => {
 
 const EditForm = ({ formId }: { formId: string }) => {
   const [slotEl, setSlotEl] = useState<HTMLElement | null>(null);
+  const [showCustomization, setShowCustomization] = useState(false);
+  const [customizations] = useAtom(formCustomizationAtom);
   const formData = useRef<Form | null>(null);
   const router = useRouter();
 
   const setFormData = (data: Form) => {
-    formData.current = { ...(formData.current ?? {}), ...data };
+    formData.current = { ...(formData.current ?? {}), ...data, customizations };
   };
 
   const { data, isLoading } = useQuery({
@@ -59,6 +64,7 @@ const EditForm = ({ formId }: { formId: string }) => {
       formData: {
         ...rest,
         data: documents,
+        customizations,
       },
     });
   };
@@ -77,6 +83,13 @@ const EditForm = ({ formId }: { formId: string }) => {
   }, [data?.data?.form]);
 
   useEffect(() => {
+    setFormData({
+      customizations,
+    } as any);
+    saveFormWithDebounce(saveForm, formData.current?.data);
+  }, [customizations]);
+
+  useEffect(() => {
     if (publishStatus === "success") {
       toast.success("Form published successfully!");
       router.push(`/forms/${formId}/share`);
@@ -87,17 +100,20 @@ const EditForm = ({ formId }: { formId: string }) => {
       {isLoading && <FormsLoading />}
       {!isLoading && !data?.data?.form && <FormNotFound />}
       {data?.data?.form && (
-        <Editor
-          onSave={async (documents) => {
-            setFormData({
-              ...formData.current!,
-              data: documents,
-            });
-            await saveFormWithDebounce(saveForm, documents);
-          }}
-          formData={data?.data?.form}
-          setFormData={setFormData}
-        />
+        <div className="flex">
+          <Editor
+            onSave={async (documents) => {
+              setFormData({
+                ...formData.current!,
+                data: documents,
+              });
+              await saveFormWithDebounce(saveForm, documents);
+            }}
+            formData={data?.data?.form}
+            setFormData={setFormData}
+          />
+          <FormCustomization showCustomization={showCustomization} />
+        </div>
       )}
       {data?.data?.form &&
         slotEl &&
@@ -123,6 +139,14 @@ const EditForm = ({ formId }: { formId: string }) => {
                   "Save"
                 )}
               </p>
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="font-black"
+              onClick={() => setShowCustomization((prev) => !prev)}
+            >
+              Customize
             </Button>
             <PreviewFormModal ref={formData as RefObject<Form>} />
             <Button

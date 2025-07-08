@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { getHighlightStyles } from "../helpers";
 import { Textarea } from "@/components/ui/textarea";
 import { longAnswerSchema } from "../validator";
+import { useAtom } from "jotai";
+import { formCustomizationAtom } from "@/lib/atoms";
 
 export const longAnswer = createReactBlockSpec(
   {
@@ -62,6 +64,8 @@ export const longAnswer = createReactBlockSpec(
       const { editor, block } = props;
       const { value, placeholder, required, isValid, errorMessage, isDirty } =
         block.props;
+      const [customizations] = useAtom(formCustomizationAtom);
+
       const highlight = props?.block?.props?.highlight;
 
       const validateAndCommit = (currentValue: string) => {
@@ -129,9 +133,12 @@ export const longAnswer = createReactBlockSpec(
                   : ""
                 : value
             }
-            className={cn("min-w-full", {
-              "border-red-500": !isValid && isDirty,
-            })}
+            className={cn(
+              `min-w-full ${customizations?.theme === "dark" ? "border-primary/25" : ""}`,
+              {
+                "border-red-500": !isValid && isDirty,
+              },
+            )}
             onChange={handleInputChange}
             onBlur={handleBlur}
             aria-invalid={!isValid && isDirty ? "true" : "false"}

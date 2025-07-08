@@ -9,6 +9,8 @@ import { schema } from "../editor";
 import { Button } from "@/components/ui/button";
 import { Label } from "@radix-ui/react-label";
 import { useEffect, useState } from "react";
+import { useAtom } from "jotai";
+import { formCustomizationAtom } from "@/lib/atoms";
 
 export const NewPage = createReactBlockSpec(
   {
@@ -37,6 +39,7 @@ export const NewPage = createReactBlockSpec(
     render: (props) => {
       const { editor, block } = props;
       const { isThankYou, buttonText, pageName, hideButton } = block.props;
+      const [customizations] = useAtom(formCustomizationAtom);
 
       return (
         <div className="flex w-full flex-col gap-2">
@@ -50,8 +53,19 @@ export const NewPage = createReactBlockSpec(
             </Button>
           )}
           <div className="relative flex w-full items-center gap-2 py-8 text-primary/75">
-            <hr className="h-1 w-full" />
-            <span className="absolute left-[calc(50%_-_2rem)] top-7 z-10 w-fit bg-white px-4 text-center text-sm">
+            <hr
+              className="h-0.5 w-full"
+              style={{
+                backgroundColor: customizations.color,
+              }}
+            />
+            <span
+              className="absolute left-[calc(50%_-_2rem)] top-7 z-10 w-fit px-4 text-center text-sm"
+              style={{
+                backgroundColor: customizations.backgroundColor,
+                color: customizations.color,
+              }}
+            >
               {pageName}
             </span>
             <span className="w-max min-w-28 flex-1 text-center text-xs font-bold">

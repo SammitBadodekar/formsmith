@@ -50,6 +50,7 @@ export const formTable = sqliteTable("form", {
   isPublished: integer("is_published"),
   domain: text("subdomain").unique(),
   path: text("path"),
+  customizations: text({ mode: "json" }),
 });
 
 export const publishedFormTable = sqliteTable("published_form", {
@@ -77,6 +78,7 @@ export const publishedFormTable = sqliteTable("published_form", {
   }),
   domain: text("subdomain").unique(),
   path: text("path"),
+  customizations: text({ mode: "json" }),
 });
 
 export const formSubmissionTable = sqliteTable("form_submission", {

@@ -16,7 +16,6 @@ import {
   BlockColorsItem,
   RemoveBlockItem,
 } from "@blocknote/react";
-import Image from "next/image";
 import {
   customBlockTypes,
   getSlashMenuItems,
@@ -34,9 +33,18 @@ import {
 import BlocksDragHandleMenu from "./components/drag-handle-menu";
 import { ArrowRight, Hexagon, Loader, PanelTop, Trash2 } from "lucide-react";
 import { Form, PublishedForm } from "@formsmith/database";
-import { memo, useCallback, useState } from "react";
+import {
+  memo,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { longAnswerSchema, shortAnswerSchema } from "./validator";
 import { Uploader } from "../modals/uploader";
+import { useAtom } from "jotai";
+import { formCustomizationAtom } from "@/lib/atoms";
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
@@ -80,10 +88,12 @@ function Editor(props: EditorProps) {
   } = props;
   const [isLastPageThankYou, setIsLastPageThankYou] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [customizations, setCustomizations] = useState<Record<string, any>>({
+  const [customizations, setCustomizations] = useAtom(formCustomizationAtom);
+  const [imageConfig, setImageConfig] = useState<Record<string, any>>({
     image: formData?.image,
     logo: formData?.logo,
   });
+  const editorRef = useRef<HTMLDivElement>(null);
   const editor = useCreateBlockNote({
     initialContent:
       (formData?.data as any[])?.length > 0
@@ -184,15 +194,45 @@ function Editor(props: EditorProps) {
 
   const handleUpdateCustomizations = (customizations: Record<string, any>) => {
     setFormData?.({ ...(customizations as any) });
-    setCustomizations?.((prev) => ({ ...prev, ...customizations }));
+    setImageConfig?.((prev) => ({ ...prev, ...customizations }));
     onSave?.(editor.document);
   };
+
+  useEffect(() => {
+    setCustomizations({
+      ...(formData?.customizations ?? {}),
+    });
+    // const { backgroundColor, color } = formData?.customizations ?? ({} as any);
+
+    // const editorElement: any = document.querySelector(".bn-editor");
+    // if (editorElement) {
+    //   console.log(
+    //     "Setting editor styles:",
+    //     { backgroundColor, color },
+    //     editorElement,
+    //   );
+    //   if (backgroundColor) {
+    //     editorElement.style.backgroundColor = backgroundColor;
+    //   }
+    //   if (color) {
+    //     editorElement.style.color = color;
+    //   }
+    // }
+  }, [formData?.customizations]);
+
+  console.log("here in editorRef", {
+    ...(formData?.customizations ?? {}),
+    ...customizations,
+  });
   return (
-    <div className="h-full w-full">
-      {customizations?.image ? (
+    <div
+      className="h-full min-h-[calc(100svh_-_56px)] w-full pb-12"
+      style={{ ...(formData?.customizations ?? {}), ...customizations }}
+    >
+      {imageConfig?.image ? (
         <div className="relative">
           <img
-            src={customizations?.image}
+            src={imageConfig?.image}
             height={200}
             width={400}
             alt="cover image"
@@ -233,7 +273,7 @@ function Editor(props: EditorProps) {
       ) : (
         <div className="min-h-40 w-full"></div>
       )}
-      <div className="flex h-full w-full flex-col items-center">
+      <div className="flex w-full flex-col items-center">
         <form
           className="flex w-full max-w-[800px] flex-col gap-4"
           onSubmit={(e) => {
@@ -241,14 +281,14 @@ function Editor(props: EditorProps) {
             handleSubmit();
           }}
         >
-          {customizations?.logo && (
+          {imageConfig?.logo && (
             <Uploader
               callback={(url) => {
                 handleUpdateCustomizations({ logo: url });
               }}
             >
               <img
-                src={customizations?.logo}
+                src={imageConfig?.logo}
                 height={100}
                 width={100}
                 alt="cover image"
@@ -258,9 +298,9 @@ function Editor(props: EditorProps) {
           )}
           {editable && (
             <div
-              className={`${customizations?.image && formData?.logo ? "hidden" : "mt-2 flex w-full gap-4"}`}
+              className={`${imageConfig?.image && formData?.logo ? "hidden" : "mt-2 flex w-full gap-4"}`}
             >
-              {!customizations?.logo && (
+              {!imageConfig?.logo && (
                 <Uploader
                   callback={(url) => {
                     handleUpdateCustomizations({ logo: url });
@@ -276,7 +316,7 @@ function Editor(props: EditorProps) {
                   </Button>
                 </Uploader>
               )}
-              {!customizations?.image && (
+              {!imageConfig?.image && (
                 <Uploader
                   callback={(url) => {
                     handleUpdateCustomizations({ image: url });
@@ -295,8 +335,9 @@ function Editor(props: EditorProps) {
             </div>
           )}
           <BlockNoteView
+            ref={editorRef}
             editor={editor}
-            theme={"light"}
+            theme={customizations?.theme ?? "light"}
             className="m-0 w-full px-0"
             onChange={() => {
               onSave?.(editor.document);
@@ -346,7 +387,7 @@ function Editor(props: EditorProps) {
           </BlockNoteView>
           {!isThankYou && !isLastPageThankYou && (
             <Button
-              className="w-fit px-3 font-black"
+              className={`${customizations?.theme === "dark" ? "bg-primary-foreground text-primary hover:bg-primary-foreground/80" : ""} w-fit px-3 font-black`}
               type={editable ? "button" : "submit"}
               disabled={isSubmitting}
             >

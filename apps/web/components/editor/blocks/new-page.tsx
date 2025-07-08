@@ -47,6 +47,10 @@ export const NewPage = createReactBlockSpec(
             <Button
               className="w-fit px-3 font-semibold"
               type={editor.isEditable ? "button" : "submit"}
+              style={{
+                backgroundColor: customizations.buttonColor,
+                color: customizations.buttonText,
+              }}
             >
               <p>{buttonText}</p>
               <ArrowRight />

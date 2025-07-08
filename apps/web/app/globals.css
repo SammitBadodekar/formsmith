@@ -102,6 +102,7 @@ body {
 
 .bn-default-styles {
   font-family: inherit !important;
+  font-size: inherit !important;
 }
 
 .bn-container[data-theming-formsmith] .bn-editor {

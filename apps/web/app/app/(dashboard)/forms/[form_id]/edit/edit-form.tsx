@@ -112,7 +112,10 @@ const EditForm = ({ formId }: { formId: string }) => {
             formData={data?.data?.form}
             setFormData={setFormData}
           />
-          <FormCustomization showCustomization={showCustomization} />
+          <FormCustomization
+            showCustomization={showCustomization}
+            setShowCustomization={setShowCustomization}
+          />
         </div>
       )}
       {data?.data?.form &&

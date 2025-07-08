@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { formCustomizationAtom } from "@/lib/atoms";
 import { createReactBlockSpec } from "@blocknote/react";
+import { useAtom } from "jotai";
 import { Check } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -12,6 +14,7 @@ export const ThankYouPage = createReactBlockSpec(
   },
   {
     render: (props) => {
+      const [customizations] = useAtom(formCustomizationAtom);
       return (
         <div className="flex h-full w-full flex-col items-center justify-center">
           <div className="mb-8 rounded-full bg-blue-50 p-4 font-black text-blue-500">
@@ -27,7 +30,14 @@ export const ThankYouPage = createReactBlockSpec(
             className="mt-8"
             target="_blank"
           >
-            <Button variant="accent" className="font-semiBold" type="button">
+            <Button
+              variant="accent"
+              className="font-semiBold"
+              type="button"
+              style={{
+                backgroundColor: customizations.accentColor,
+              }}
+            >
               Create your own form
             </Button>
           </a>

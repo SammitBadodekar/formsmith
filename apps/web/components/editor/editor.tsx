@@ -89,10 +89,6 @@ function Editor(props: EditorProps) {
   const [isLastPageThankYou, setIsLastPageThankYou] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customizations, setCustomizations] = useAtom(formCustomizationAtom);
-  const [imageConfig, setImageConfig] = useState<Record<string, any>>({
-    image: formData?.image,
-    logo: formData?.logo,
-  });
   const editorRef = useRef<HTMLDivElement>(null);
   const editor = useCreateBlockNote({
     initialContent:
@@ -194,13 +190,15 @@ function Editor(props: EditorProps) {
 
   const handleUpdateCustomizations = (customizations: Record<string, any>) => {
     setFormData?.({ ...(customizations as any) });
-    setImageConfig?.((prev) => ({ ...prev, ...customizations }));
+    setCustomizations?.((prev) => ({ ...prev, ...customizations }));
     onSave?.(editor.document);
   };
 
   useEffect(() => {
     setCustomizations({
       ...(formData?.customizations ?? {}),
+      logo: formData?.logo,
+      image: formData?.image,
     });
 
     document.documentElement.style.setProperty(
@@ -217,10 +215,10 @@ function Editor(props: EditorProps) {
       className={`h-full ${editable ? "min-h-[calc(100svh_-_56px)]" : "min-h-svh"} w-full pb-12`}
       style={{ ...(formData?.customizations ?? {}), ...customizations }}
     >
-      {imageConfig?.image ? (
+      {customizations?.image ? (
         <div className="relative">
           <img
-            src={imageConfig?.image}
+            src={customizations?.image}
             height={200}
             width={400}
             alt="cover image"
@@ -263,32 +261,39 @@ function Editor(props: EditorProps) {
       )}
       <div className="flex w-full flex-col items-center">
         <form
-          className="flex w-full max-w-[800px] flex-col gap-4"
+          className="flex w-full flex-col gap-4"
           onSubmit={(e) => {
             e.preventDefault();
             handleSubmit();
           }}
+          style={{
+            maxWidth: `${customizations.pageWidth ?? 800}px`,
+            fontSize: `${customizations.baseFontSize ?? 16}px`,
+          }}
         >
-          {imageConfig?.logo && (
+          {customizations?.logo && (
             <Uploader
               callback={(url) => {
                 handleUpdateCustomizations({ logo: url });
               }}
             >
               <img
-                src={imageConfig?.logo}
-                height={100}
-                width={100}
+                src={customizations?.logo}
                 alt="cover image"
-                className="relative z-10 -mt-10 h-[100px] w-[100px] rounded-full object-cover"
+                className="relative z-10 -mt-10 object-cover"
+                style={{
+                  borderRadius: `${customizations?.logoCornerRadius ?? 50}%`,
+                  height: `${customizations?.logoHeight ?? 100}px`,
+                  width: `${customizations?.logoWidth ?? 100}px`,
+                }}
               />
             </Uploader>
           )}
           {editable && (
             <div
-              className={`${imageConfig?.image && formData?.logo ? "hidden" : "mt-2 flex w-full gap-4"}`}
+              className={`${customizations?.image && formData?.logo ? "hidden" : "mt-2 flex w-full gap-4"}`}
             >
-              {!imageConfig?.logo && (
+              {!customizations?.logo && (
                 <Uploader
                   callback={(url) => {
                     handleUpdateCustomizations({ logo: url });
@@ -304,7 +309,7 @@ function Editor(props: EditorProps) {
                   </Button>
                 </Uploader>
               )}
-              {!imageConfig?.image && (
+              {!customizations?.image && (
                 <Uploader
                   callback={(url) => {
                     handleUpdateCustomizations({ image: url });
@@ -385,6 +390,10 @@ function Editor(props: EditorProps) {
               className={`${customizations?.theme === "dark" ? "bg-primary-foreground text-primary hover:bg-primary-foreground/80" : ""} w-fit px-3 font-black`}
               type={editable ? "button" : "submit"}
               disabled={isSubmitting}
+              style={{
+                backgroundColor: customizations.buttonColor,
+                color: customizations.buttonText,
+              }}
             >
               {isSubmitting ? (
                 <Loader className="mx-8 animate-spin" />

@@ -148,18 +148,25 @@ const FormCustomization = ({
           </div>
         </div>
 
-        <div className="mt-2 flex w-full items-center">
-          <div className="flex w-max flex-grow flex-col items-start gap-2 px-2">
+        <div className="mt-2 flex w-full justify-between gap-2">
+          <div className="flex w-max flex-col gap-2">
             <p className="font-medium">Logo</p>
-            <Uploader>
+            <Uploader
+              callback={(url) => {
+                setCustomizations((prev) => ({
+                  ...prev,
+                  logo: url,
+                }));
+              }}
+            >
               <img
                 src={customizations.logo}
                 alt="logo"
-                className="h-8 w-8 rounded-lg"
+                className="aspect-square h-[36px] w-[36px] rounded-lg"
               />
             </Uploader>
           </div>
-          <div className="flex w-full flex-col gap-2">
+          <div className="flex w-fit flex-col items-center gap-2">
             <p className="font-medium">Width</p>
             <Input
               type="number"
@@ -170,10 +177,10 @@ const FormCustomization = ({
                   logoWidth: e.target.value,
                 }));
               }}
-              className="text-xs"
+              className="max-w-[50px] px-1 text-xs"
             ></Input>
           </div>
-          <div className="flex w-full flex-col gap-2">
+          <div className="flex w-fit flex-col items-center gap-2">
             <p className="font-medium">Height</p>
             <Input
               type="number"
@@ -184,10 +191,10 @@ const FormCustomization = ({
                   logoHeight: e.target.value,
                 }));
               }}
-              className="text-xs"
+              className="max-w-[50px] px-1 text-xs"
             ></Input>
           </div>
-          <div className="flex w-full flex-col gap-2">
+          <div className="flex w-fit flex-col items-center gap-2">
             <p className="font-medium">Radius</p>
             <Input
               type="number"
@@ -198,7 +205,7 @@ const FormCustomization = ({
                   logoCornerRadius: e.target.value,
                 }));
               }}
-              className="text-xs"
+              className="max-w-[50px] px-1 text-xs"
             ></Input>
           </div>
         </div>

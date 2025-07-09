@@ -121,35 +121,45 @@ const FormCustomization = ({
         <p className="py-4 text-base font-bold">Layout</p>
         <div className="grid grid-cols-2 gap-2">
           <div className="flex flex-col gap-2">
-            <p className="font-medium">Page width {` (px)`}</p>
-            <Input
-              type="number"
-              value={customizations.pageWidth ?? "800"}
-              onChange={(e) => {
-                setCustomizations((prev) => ({
-                  ...prev,
-                  pageWidth: e.target.value,
-                }));
-              }}
-            ></Input>
+            <p className="font-medium">Page width</p>
+            <div className="relative">
+              <Input
+                type="number"
+                value={customizations.pageWidth ?? "800"}
+                onChange={(e) => {
+                  setCustomizations((prev) => ({
+                    ...prev,
+                    pageWidth: e.target.value,
+                  }));
+                }}
+              ></Input>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                {`px`}
+              </span>
+            </div>
           </div>
           <div className="flex flex-col gap-2">
-            <p className="font-medium">Base font size {` (px)`}</p>
-            <Input
-              type="number"
-              value={customizations.baseFontSize ?? "16"}
-              onChange={(e) => {
-                setCustomizations((prev) => ({
-                  ...prev,
-                  baseFontSize: e.target.value,
-                }));
-              }}
-            ></Input>
+            <p className="font-medium">Base font size</p>
+            <div className="relative">
+              <Input
+                type="number"
+                value={customizations.baseFontSize ?? "16"}
+                onChange={(e) => {
+                  setCustomizations((prev) => ({
+                    ...prev,
+                    baseFontSize: e.target.value,
+                  }));
+                }}
+              ></Input>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                {`px`}
+              </span>
+            </div>
           </div>
         </div>
 
         <div className="mt-2 flex w-full justify-between gap-2">
-          <div className="flex w-max flex-col gap-2">
+          <div className="flex w-max flex-col gap-1">
             <p className="font-medium">Logo</p>
             <Uploader
               callback={(url) => {
@@ -166,47 +176,62 @@ const FormCustomization = ({
               />
             </Uploader>
           </div>
-          <div className="flex w-fit flex-col items-center gap-2">
+          <div className="flex w-fit flex-col items-center gap-1">
             <p className="font-medium">Width</p>
-            <Input
-              type="number"
-              value={customizations.logoWidth ?? "100"}
-              onChange={(e) => {
-                setCustomizations((prev) => ({
-                  ...prev,
-                  logoWidth: e.target.value,
-                }));
-              }}
-              className="max-w-[50px] px-1 text-xs"
-            ></Input>
+            <div className="relative">
+              <Input
+                type="number"
+                value={customizations.logoWidth ?? "100"}
+                onChange={(e) => {
+                  setCustomizations((prev) => ({
+                    ...prev,
+                    logoWidth: e.target.value,
+                  }));
+                }}
+                className="max-w-[60px] px-1 text-xs"
+              ></Input>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                {`px`}
+              </span>
+            </div>
           </div>
-          <div className="flex w-fit flex-col items-center gap-2">
+          <div className="flex w-fit flex-col items-center gap-1">
             <p className="font-medium">Height</p>
-            <Input
-              type="number"
-              value={customizations.logoHeight ?? "100"}
-              onChange={(e) => {
-                setCustomizations((prev) => ({
-                  ...prev,
-                  logoHeight: e.target.value,
-                }));
-              }}
-              className="max-w-[50px] px-1 text-xs"
-            ></Input>
+            <div className="relative">
+              <Input
+                type="number"
+                value={customizations.logoHeight ?? "100"}
+                onChange={(e) => {
+                  setCustomizations((prev) => ({
+                    ...prev,
+                    logoHeight: e.target.value,
+                  }));
+                }}
+                className="max-w-[60px] px-1 text-xs"
+              ></Input>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                {`px`}
+              </span>
+            </div>
           </div>
-          <div className="flex w-fit flex-col items-center gap-2">
+          <div className="flex w-fit flex-col items-center gap-1">
             <p className="font-medium">Radius</p>
-            <Input
-              type="number"
-              value={customizations.logoCornerRadius ?? 50}
-              onChange={(e) => {
-                setCustomizations((prev) => ({
-                  ...prev,
-                  logoCornerRadius: e.target.value,
-                }));
-              }}
-              className="max-w-[50px] px-1 text-xs"
-            ></Input>
+            <div className="relative">
+              <Input
+                type="number"
+                value={customizations.logoCornerRadius ?? 50}
+                onChange={(e) => {
+                  setCustomizations((prev) => ({
+                    ...prev,
+                    logoCornerRadius: e.target.value,
+                  }));
+                }}
+                className="max-w-[50px] px-1 text-xs"
+              ></Input>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                {`%`}
+              </span>
+            </div>
           </div>
         </div>
       </div>

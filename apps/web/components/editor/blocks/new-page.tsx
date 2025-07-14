@@ -72,11 +72,20 @@ export const NewPage = createReactBlockSpec(
             >
               {pageName}
             </span>
-            <span className="w-max min-w-28 flex-1 text-center text-xs font-bold">
+            <span
+              className="w-max min-w-28 flex-1 text-center text-xs font-bold"
+              style={{
+                color: customizations.color,
+              }}
+            >
               'Thank you' page
             </span>
             <Switch
               checked={isThankYou}
+              style={{
+                backgroundColor: customizations.color,
+                filter: "brightness(90%)",
+              }}
               onCheckedChange={() => {
                 editor.updateBlock(block, {
                   props: {

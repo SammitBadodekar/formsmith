@@ -27,7 +27,7 @@ const hslToHex = (h: number, s: number, l: number) => {
   return `#${f(0)}${f(8)}${f(4)}`;
 };
 
-const hexToHsl = (hex: string): [number, number, number] => {
+export const hexToHsl = (hex: string): [number, number, number] => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!result) return [0, 0, 0];
 

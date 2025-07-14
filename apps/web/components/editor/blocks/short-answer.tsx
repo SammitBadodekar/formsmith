@@ -138,7 +138,7 @@ export const shortAnswer = createReactBlockSpec(
                 : value
             }
             className={cn(
-              `min-w-full ${customizations?.theme === "dark" ? "border-primary/25" : ""}`,
+              `placeholder:text-editorText min-w-full placeholder:opacity-50 ${customizations?.theme === "dark" ? "border-primary/25" : ""}`,
               {
                 "border-red-500": !isValid && isDirty,
               },

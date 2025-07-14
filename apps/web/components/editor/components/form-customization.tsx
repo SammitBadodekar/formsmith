@@ -84,7 +84,11 @@ const FormCustomization = ({
           <div className="flex flex-col gap-2">
             <p className="font-medium">Button Color</p>
             <ColorPicker
-              color={customizations.buttonColor ?? "#FFFFFF"}
+              color={
+                (customizations.buttonColor ?? customizations.theme === "dark")
+                  ? "#FFFFFF"
+                  : "#000000"
+              }
               onChange={(color) => {
                 setCustomizations((prev) => ({
                   ...prev,
@@ -96,7 +100,11 @@ const FormCustomization = ({
           <div className="flex flex-col gap-2">
             <p className="font-medium">Button Text</p>
             <ColorPicker
-              color={customizations.buttonText ?? "#000000"}
+              color={
+                (customizations.buttonText ?? customizations.theme === "dark")
+                  ? "#000000"
+                  : "#FFFFFF"
+              }
               onChange={(color) => {
                 setCustomizations((prev) => ({
                   ...prev,
@@ -158,82 +166,84 @@ const FormCustomization = ({
           </div>
         </div>
 
-        <div className="mt-2 flex w-full justify-between gap-2">
-          <div className="flex w-max flex-col gap-1">
-            <p className="font-medium">Logo</p>
-            <Uploader
-              callback={(url) => {
-                setCustomizations((prev) => ({
-                  ...prev,
-                  logo: url,
-                }));
-              }}
-            >
-              <img
-                src={customizations.logo}
-                alt="logo"
-                className="aspect-square h-[36px] w-[36px] rounded-lg"
-              />
-            </Uploader>
-          </div>
-          <div className="flex w-fit flex-col items-center gap-1">
-            <p className="font-medium">Width</p>
-            <div className="relative">
-              <Input
-                type="number"
-                value={customizations.logoWidth ?? "100"}
-                onChange={(e) => {
+        {customizations.logo && (
+          <div className="mt-2 flex w-full justify-between gap-2">
+            <div className="flex w-max flex-col gap-1">
+              <p className="font-medium">Logo</p>
+              <Uploader
+                callback={(url) => {
                   setCustomizations((prev) => ({
                     ...prev,
-                    logoWidth: e.target.value,
+                    logo: url,
                   }));
                 }}
-                className="max-w-[60px] px-1 text-xs"
-              ></Input>
-              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
-                {`px`}
-              </span>
+              >
+                <img
+                  src={customizations.logo}
+                  alt="logo"
+                  className="aspect-square h-[36px] w-[36px] rounded-lg"
+                />
+              </Uploader>
+            </div>
+            <div className="flex w-fit flex-col items-center gap-1">
+              <p className="font-medium">Width</p>
+              <div className="relative">
+                <Input
+                  type="number"
+                  value={customizations.logoWidth ?? "100"}
+                  onChange={(e) => {
+                    setCustomizations((prev) => ({
+                      ...prev,
+                      logoWidth: e.target.value,
+                    }));
+                  }}
+                  className="max-w-[60px] px-1 text-xs"
+                ></Input>
+                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                  {`px`}
+                </span>
+              </div>
+            </div>
+            <div className="flex w-fit flex-col items-center gap-1">
+              <p className="font-medium">Height</p>
+              <div className="relative">
+                <Input
+                  type="number"
+                  value={customizations.logoHeight ?? "100"}
+                  onChange={(e) => {
+                    setCustomizations((prev) => ({
+                      ...prev,
+                      logoHeight: e.target.value,
+                    }));
+                  }}
+                  className="max-w-[60px] px-1 text-xs"
+                ></Input>
+                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                  {`px`}
+                </span>
+              </div>
+            </div>
+            <div className="flex w-fit flex-col items-center gap-1">
+              <p className="font-medium">Radius</p>
+              <div className="relative">
+                <Input
+                  type="number"
+                  value={customizations.logoCornerRadius ?? 50}
+                  onChange={(e) => {
+                    setCustomizations((prev) => ({
+                      ...prev,
+                      logoCornerRadius: e.target.value,
+                    }));
+                  }}
+                  className="max-w-[50px] px-1 text-xs"
+                ></Input>
+                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                  {`%`}
+                </span>
+              </div>
             </div>
           </div>
-          <div className="flex w-fit flex-col items-center gap-1">
-            <p className="font-medium">Height</p>
-            <div className="relative">
-              <Input
-                type="number"
-                value={customizations.logoHeight ?? "100"}
-                onChange={(e) => {
-                  setCustomizations((prev) => ({
-                    ...prev,
-                    logoHeight: e.target.value,
-                  }));
-                }}
-                className="max-w-[60px] px-1 text-xs"
-              ></Input>
-              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
-                {`px`}
-              </span>
-            </div>
-          </div>
-          <div className="flex w-fit flex-col items-center gap-1">
-            <p className="font-medium">Radius</p>
-            <div className="relative">
-              <Input
-                type="number"
-                value={customizations.logoCornerRadius ?? 50}
-                onChange={(e) => {
-                  setCustomizations((prev) => ({
-                    ...prev,
-                    logoCornerRadius: e.target.value,
-                  }));
-                }}
-                className="max-w-[50px] px-1 text-xs"
-              ></Input>
-              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
-                {`%`}
-              </span>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

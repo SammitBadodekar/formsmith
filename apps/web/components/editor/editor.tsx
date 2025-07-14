@@ -45,6 +45,7 @@ import { longAnswerSchema, shortAnswerSchema } from "./validator";
 import { Uploader } from "../modals/uploader";
 import { useAtom } from "jotai";
 import { formCustomizationAtom } from "@/lib/atoms";
+import { hexToHsl } from "../ui/color-picker";
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
@@ -209,6 +210,14 @@ function Editor(props: EditorProps) {
       "--editor-text",
       customizations.color,
     );
+    document.documentElement.style.setProperty(
+      "--editor-background-hsl",
+      `${hexToHsl(customizations.backgroundColor)}`,
+    );
+    document.documentElement.style.setProperty(
+      "--editor-text-hsl",
+      `${hexToHsl(customizations.color)}`,
+    );
   }, [formData?.customizations]);
   return (
     <div
@@ -348,6 +357,10 @@ function Editor(props: EditorProps) {
               {
                 "--editor-background": customizations?.backgroundColor,
                 "--editor-text": customizations?.color,
+                "--editor-background-hsl": hexToHsl(
+                  customizations?.backgroundColor,
+                ),
+                "--editor-text-hsl": hexToHsl(customizations?.color),
               } as any
             }
           >

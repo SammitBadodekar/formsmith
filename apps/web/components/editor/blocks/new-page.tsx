@@ -86,6 +86,7 @@ export const NewPage = createReactBlockSpec(
                 backgroundColor: customizations.color,
                 filter: "brightness(90%)",
               }}
+              thumbClassName="bg-editorBackground"
               onCheckedChange={() => {
                 editor.updateBlock(block, {
                   props: {

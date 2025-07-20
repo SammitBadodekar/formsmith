@@ -198,8 +198,8 @@ function Editor(props: EditorProps) {
   useEffect(() => {
     setCustomizations({
       ...(formData?.customizations ?? {}),
-      logo: formData?.logo,
-      image: formData?.image,
+      // logo: formData?.logo,
+      // image: formData?.image,
     });
 
     document.documentElement.style.setProperty(
@@ -280,7 +280,7 @@ function Editor(props: EditorProps) {
             fontSize: `${customizations.baseFontSize ?? 16}px`,
           }}
         >
-          {customizations?.logo && (
+          {customizations?.logo !== "" && (
             <Uploader
               callback={(url) => {
                 handleUpdateCustomizations({ logo: url });
@@ -300,7 +300,7 @@ function Editor(props: EditorProps) {
           )}
           {editable && (
             <div
-              className={`${customizations?.image && formData?.logo ? "hidden" : "mt-2 flex w-full gap-4"}`}
+              className={`${customizations?.image && customizations?.logo ? "hidden" : "mt-2 flex w-full gap-4"}`}
             >
               {!customizations?.logo && (
                 <Uploader

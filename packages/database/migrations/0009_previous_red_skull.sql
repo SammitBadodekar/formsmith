@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX `published_form_form_id_unique` ON `published_form` (`form_id`);

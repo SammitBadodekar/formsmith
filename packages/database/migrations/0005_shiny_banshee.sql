@@ -1,1 +1,0 @@
-ALTER TABLE `published_form` ADD `updated_at` integer;

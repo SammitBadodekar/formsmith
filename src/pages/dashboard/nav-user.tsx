@@ -30,7 +30,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { user } = useCurrentUser();
+  const { user, isLoading } = useCurrentUser();
   const { signOut } = useAuthActions();
 
   console.log("here in user", user);
@@ -48,10 +48,20 @@ export function NavUser() {
                 <AvatarImage src={(user?.image as string)!} alt={user?.name!} />
                 <AvatarFallback className="animate-pulse rounded-full"></AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user?.name}</span>
-                <span className="truncate text-xs">{user?.email}</span>
-              </div>
+              {isLoading ? (
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold h-4 w-4 animate-pulse rounded-full bg-muted"></span>
+                  <span className="truncate font-semibold h-4 w-4 animate-pulse rounded-full bg-muted">
+                    {user?.email}
+                  </span>
+                </div>
+              ) : (
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">{user?.name}</span>
+                  <span className="truncate text-xs">{user?.email}</span>
+                </div>
+              )}
+
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -68,7 +78,7 @@ export function NavUser() {
                     src={(user?.image as string) ?? ""}
                     alt={user?.name!}
                   />
-                  <AvatarFallback className="rounded-full">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-full">FS</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user?.name}</span>

@@ -2,10 +2,9 @@
 import React from "react";
 import { SessionProvider } from "./session-provider";
 import { SessionValidationResult } from "@/lib/auth";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "jotai";
-
-const queryClient = new QueryClient();
+import { getQueryClient } from "./get-query-client";
 
 const Providers = ({
   children,
@@ -14,6 +13,7 @@ const Providers = ({
   children: React.ReactNode;
   sessionData: SessionValidationResult;
 }) => {
+  const queryClient = getQueryClient();
   return (
     <SessionProvider value={sessionData}>
       <QueryClientProvider client={queryClient}>

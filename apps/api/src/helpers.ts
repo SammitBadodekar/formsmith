@@ -1,4 +1,4 @@
-import { Env } from ".";
+import { Env, FormsmithContext } from ".";
 import { Context, Hono } from "hono";
 import { drizzle } from "drizzle-orm/libsql";
 import { env } from "hono/adapter";

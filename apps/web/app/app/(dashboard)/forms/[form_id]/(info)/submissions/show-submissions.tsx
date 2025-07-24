@@ -1,15 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  ColumnDef,
-  flexRender,
-} from "@tanstack/react-table";
-
+import React, { useEffect, useState, useMemo } from "react";
 import {
   Table,
   TableHeader,
@@ -18,25 +8,22 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
+import { Input } from "@/components/ui/input";
 import { useGetSubmissionsQuery } from "@/hooks/use-queries";
 import { Submission } from "@/app/[...domain]/show-published-form";
 import { FormSubmission } from "@formsmith/database";
 import { format, isThisYear } from "date-fns";
+import Loader from "@/components/ui/loader";
 
 type NormalizedRow = Record<string, string>;
 
+const ITEMS_PER_PAGE = 10;
+
 const ShowSubmissions = ({ formId }: { formId: string }) => {
-  const [searchTerm, setSearchTerm] = React.useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+
   const { data, isLoading, isError } = useGetSubmissionsQuery({ formId });
 
   function formatCustomDate(date: Date) {
@@ -46,7 +33,6 @@ const ShowSubmissions = ({ formId }: { formId: string }) => {
     return format(date, baseFormat);
   }
 
-  // Extract and normalize data
   const formattedData: Submission[][] =
     data?.map((submission: FormSubmission) => [
       { label: "Submitted at", value: formatCustomDate(submission.createdAt!) },
@@ -66,96 +52,62 @@ const ShowSubmissions = ({ formId }: { formId: string }) => {
     return rowObj;
   });
 
-  // Dynamic column definitions
-  const columns: ColumnDef<NormalizedRow>[] = allLabels.map((label) => ({
-    accessorKey: label,
-    header: label,
-    cell: ({ row }) => (
-      <div className="w-max min-w-20 truncate text-nowrap">
-        {row.getValue(label) ?? "-"}
-      </div>
-    ),
-  }));
+  // Filtering
+  const filteredRows = useMemo(() => {
+    if (!searchTerm) return normalizedRows;
+    return normalizedRows.filter((row) =>
+      Object.values(row).some((val) =>
+        val.toLowerCase().includes(searchTerm.toLowerCase()),
+      ),
+    );
+  }, [searchTerm, normalizedRows]);
 
-  const table = useReactTable({
-    data: normalizedRows,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-  });
+  // Pagination
+  const paginatedRows = useMemo(() => {
+    const start = currentPage * ITEMS_PER_PAGE;
+    return filteredRows.slice(start, start + ITEMS_PER_PAGE);
+  }, [currentPage, filteredRows]);
+
+  const totalPages = Math.ceil(filteredRows.length / ITEMS_PER_PAGE);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      table.setGlobalFilter(searchTerm);
-    }, 300); // debounce delay
-    return () => clearTimeout(timeout);
-  }, [searchTerm]);
+    if (currentPage >= totalPages) {
+      setCurrentPage(0);
+    }
+  }, [totalPages, currentPage]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loader />;
   if (isError) return <div>Error loading submissions.</div>;
 
   return (
-    <div className="w-full">
-      {/* <div className="flex items-center py-4">
-        <Input
-          placeholder="Search..."
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
-        />
+    <div className="w-full space-y-4">
+      {/* Search */}
+      <Input
+        placeholder="Search..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="max-w-sm"
+      />
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                  className="capitalize"
-                >
-                  {column.id}
-                </DropdownMenuCheckboxItem>
-              ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div> */}
-
+      {/* Table */}
       <div className="rounded-md border">
-        <Table className="mb-2">
+        <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="w-max text-nowrap">
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext(),
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
+            <TableRow>
+              {allLabels.map((label) => (
+                <TableHead key={label} className="text-nowrap">
+                  {label}
+                </TableHead>
+              ))}
+            </TableRow>
           </TableHeader>
-
           <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+            {paginatedRows.length > 0 ? (
+              paginatedRows.map((row, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  {allLabels.map((label) => (
+                    <TableCell key={label} className="whitespace-nowrap">
+                      {row[label] || "-"}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -171,20 +123,23 @@ const ShowSubmissions = ({ formId }: { formId: string }) => {
         </Table>
       </div>
 
-      <div className="flex justify-end gap-2 py-4">
+      {/* Pagination */}
+      <div className="flex justify-end gap-2">
         <Button
           variant="outline"
           size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+          disabled={currentPage === 0}
         >
           Previous
         </Button>
         <Button
           variant="outline"
           size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
+          onClick={() =>
+            setCurrentPage((prev) => (prev + 1 < totalPages ? prev + 1 : prev))
+          }
+          disabled={currentPage + 1 >= totalPages}
         >
           Next
         </Button>

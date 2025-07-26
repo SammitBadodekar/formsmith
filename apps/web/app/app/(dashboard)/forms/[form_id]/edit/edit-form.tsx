@@ -18,6 +18,8 @@ import FormCustomization from "@/components/editor/components/form-customization
 import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
 import { useAtom } from "jotai";
 
+export const dynamic = "force-dynamic";
+
 const saveFormWithDebounce = debounce(async (callback, payload) => {
   if (callback && payload) {
     await callback(payload);

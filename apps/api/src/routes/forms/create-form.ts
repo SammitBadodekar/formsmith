@@ -5,6 +5,7 @@ import { formTable } from "@formsmith/database";
 import cuid from "cuid";
 import { getCookie } from "hono/cookie";
 import { FormsmithContext } from "../..";
+import { defaultFormCustomizations } from "@formsmith/shared";
 
 export const createForm = async (c: FormsmithContext) => {
   try {
@@ -25,6 +26,9 @@ export const createForm = async (c: FormsmithContext) => {
         userId: user.id,
         workspaceId: body.workspaceId,
         data: [],
+        customizations: {
+          ...defaultFormCustomizations,
+        },
         image: "",
         logo: "",
         createdAt: new Date(),

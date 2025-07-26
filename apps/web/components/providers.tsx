@@ -16,9 +16,7 @@ const Providers = ({
   const queryClient = getQueryClient();
   return (
     <SessionProvider value={sessionData}>
-      <QueryClientProvider client={queryClient}>
-        <Provider>{children}</Provider>
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </SessionProvider>
   );
 };

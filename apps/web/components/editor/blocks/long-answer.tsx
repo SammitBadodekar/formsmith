@@ -7,7 +7,7 @@ import { getHighlightStyles } from "../helpers";
 import { Textarea } from "@/components/ui/textarea";
 import { longAnswerSchema } from "../validator";
 import { useAtom } from "jotai";
-import { formCustomizationAtom } from "@/lib/atoms";
+import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
 
 export const longAnswer = createReactBlockSpec(
   {
@@ -134,7 +134,7 @@ export const longAnswer = createReactBlockSpec(
                 : value
             }
             className={cn(
-              `placeholder:text-editorText min-w-full placeholder:opacity-50 ${customizations?.theme === "dark" ? "border-primary/25" : ""}`,
+              `min-w-full placeholder:text-editorText placeholder:opacity-50 ${customizations?.theme === "dark" ? "border-primary/25" : ""}`,
               {
                 "border-red-500": !isValid && isDirty,
               },

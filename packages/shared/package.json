@@ -1,0 +1,10 @@
+{
+  "name": "@formsmith/shared",
+  "version": "0.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {}
+}

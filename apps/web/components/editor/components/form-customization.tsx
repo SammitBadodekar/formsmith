@@ -1,8 +1,8 @@
 import { ColorPicker } from "@/components/ui/color-picker";
 import { Input } from "@/components/ui/input";
-import { formCustomizationAtom } from "@/lib/atoms";
+import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
 import { useAtom } from "jotai";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/select";
 import { ChevronDown, X } from "lucide-react";
 import { Uploader } from "@/components/modals/uploader";
+import { FormCustomizations } from "@formsmith/shared";
+import { GenericAlertDialog } from "@/components/ui/generic-alert-dialog";
 
 const FormCustomization = ({
   showCustomization,
@@ -21,12 +23,33 @@ const FormCustomization = ({
   setShowCustomization: (value: boolean) => void;
 }) => {
   const [customizations, setCustomizations] = useAtom(formCustomizationAtom);
+  const [open, setOpen] = useState(false);
+  const [theme, setTheme] = useState(customizations.theme || "light");
   if (!showCustomization) return <></>;
 
+  console.log("here in custom", customizations);
   return (
     <div
       className={`relative flex w-[320px] justify-center border-l-2 border-gray-50 p-4`}
     >
+      <GenericAlertDialog
+        open={open}
+        onOpenChange={setOpen}
+        title="Changing the theme will reset all customizations"
+        description="Are you sure you want to continue?"
+        confirmLabel="Yes, change theme"
+        cancelLabel="Cancel"
+        onConfirm={() => {
+          setCustomizations((prev: any) => ({
+            ...prev,
+            backgroundColor: theme === "light" ? "#ffffff" : "#1f1f1f",
+            color: theme === "light" ? "#3f3f3f" : "#cfcfcf",
+            buttonColor: theme === "light" ? "#000000" : "#FFFFFF",
+            buttonText: theme === "light" ? "#FFFFFF" : "#000000",
+            theme: theme,
+          }));
+        }}
+      />
       <div className="fixed bottom-0 top-0 mt-16 flex w-full max-w-[240px] flex-col gap-2 text-xs">
         <div className="flex w-full items-center justify-between pb-4">
           <p className="text-base font-bold">Customizations</p>
@@ -39,10 +62,26 @@ const FormCustomization = ({
         <Select
           value={customizations.theme ?? "light"}
           onValueChange={(value) => {
-            setCustomizations((prev) => ({
+            if (value === "custom") {
+              setCustomizations((prev: any) => ({
+                ...prev,
+                theme: value,
+              }));
+              return;
+            }
+
+            if (customizations.theme === "custom") {
+              setTheme(value as any);
+              setOpen(true);
+              return;
+            }
+
+            setCustomizations((prev: any) => ({
               ...prev,
               backgroundColor: value === "light" ? "#ffffff" : "#1f1f1f",
               color: value === "light" ? "#3f3f3f" : "#cfcfcf",
+              buttonColor: value === "light" ? "#000000" : "#FFFFFF",
+              buttonText: value === "light" ? "#FFFFFF" : "#000000",
               theme: value,
             }));
           }}
@@ -53,6 +92,7 @@ const FormCustomization = ({
           <SelectContent>
             <SelectItem value="light">Light</SelectItem>
             <SelectItem value="dark">Dark</SelectItem>
+            <SelectItem value="custom">Custom</SelectItem>
           </SelectContent>
         </Select>
 
@@ -65,6 +105,7 @@ const FormCustomization = ({
                 setCustomizations((prev) => ({
                   ...prev,
                   backgroundColor: color,
+                  theme: "custom",
                 }));
               }}
             />
@@ -77,6 +118,7 @@ const FormCustomization = ({
                 setCustomizations((prev) => ({
                   ...prev,
                   color: color,
+                  theme: "custom",
                 }));
               }}
             />
@@ -84,15 +126,12 @@ const FormCustomization = ({
           <div className="flex flex-col gap-2">
             <p className="font-medium">Button Color</p>
             <ColorPicker
-              color={
-                (customizations.buttonColor ?? customizations.theme === "dark")
-                  ? "#FFFFFF"
-                  : "#000000"
-              }
+              color={customizations.buttonColor}
               onChange={(color) => {
                 setCustomizations((prev) => ({
                   ...prev,
                   buttonColor: color,
+                  theme: "custom",
                 }));
               }}
             />
@@ -100,15 +139,12 @@ const FormCustomization = ({
           <div className="flex flex-col gap-2">
             <p className="font-medium">Button Text</p>
             <ColorPicker
-              color={
-                (customizations.buttonText ?? customizations.theme === "dark")
-                  ? "#000000"
-                  : "#FFFFFF"
-              }
+              color={customizations.buttonText}
               onChange={(color) => {
                 setCustomizations((prev) => ({
                   ...prev,
                   buttonText: color,
+                  theme: "custom",
                 }));
               }}
             />
@@ -122,6 +158,7 @@ const FormCustomization = ({
             setCustomizations((prev) => ({
               ...prev,
               accentColor: color,
+              theme: "custom",
             }));
           }}
         />
@@ -135,7 +172,7 @@ const FormCustomization = ({
                 type="number"
                 value={customizations.pageWidth ?? "800"}
                 onChange={(e) => {
-                  setCustomizations((prev) => ({
+                  setCustomizations((prev: any) => ({
                     ...prev,
                     pageWidth: e.target.value,
                   }));
@@ -153,7 +190,7 @@ const FormCustomization = ({
                 type="number"
                 value={customizations.baseFontSize ?? "16"}
                 onChange={(e) => {
-                  setCustomizations((prev) => ({
+                  setCustomizations((prev: any) => ({
                     ...prev,
                     baseFontSize: e.target.value,
                   }));
@@ -192,7 +229,7 @@ const FormCustomization = ({
                   type="number"
                   value={customizations.logoWidth ?? "100"}
                   onChange={(e) => {
-                    setCustomizations((prev) => ({
+                    setCustomizations((prev: any) => ({
                       ...prev,
                       logoWidth: e.target.value,
                     }));
@@ -211,7 +248,7 @@ const FormCustomization = ({
                   type="number"
                   value={customizations.logoHeight ?? "100"}
                   onChange={(e) => {
-                    setCustomizations((prev) => ({
+                    setCustomizations((prev: any) => ({
                       ...prev,
                       logoHeight: e.target.value,
                     }));
@@ -230,7 +267,7 @@ const FormCustomization = ({
                   type="number"
                   value={customizations.logoCornerRadius ?? 50}
                   onChange={(e) => {
-                    setCustomizations((prev) => ({
+                    setCustomizations((prev: any) => ({
                       ...prev,
                       logoCornerRadius: e.target.value,
                     }));

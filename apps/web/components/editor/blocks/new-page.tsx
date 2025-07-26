@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@radix-ui/react-label";
 import { useEffect, useState } from "react";
 import { useAtom } from "jotai";
-import { formCustomizationAtom } from "@/lib/atoms";
+import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
 
 export const NewPage = createReactBlockSpec(
   {

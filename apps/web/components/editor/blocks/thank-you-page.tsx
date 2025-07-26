@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { formCustomizationAtom } from "@/lib/atoms";
+import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
 import { createReactBlockSpec } from "@blocknote/react";
 import { useAtom } from "jotai";
 import { Check } from "lucide-react";
@@ -35,7 +35,8 @@ export const ThankYouPage = createReactBlockSpec(
               className="font-semiBold"
               type="button"
               style={{
-                backgroundColor: customizations.accentColor,
+                backgroundColor: customizations.buttonColor,
+                color: customizations.buttonText,
               }}
             >
               Create your own form

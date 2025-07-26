@@ -44,8 +44,9 @@ import {
 import { longAnswerSchema, shortAnswerSchema } from "./validator";
 import { Uploader } from "../modals/uploader";
 import { useAtom } from "jotai";
-import { formCustomizationAtom } from "@/lib/atoms";
+import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
 import { hexToHsl } from "../ui/color-picker";
+import { FormCustomizations } from "@formsmith/shared";
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
@@ -197,7 +198,7 @@ function Editor(props: EditorProps) {
 
   useEffect(() => {
     setCustomizations({
-      ...(formData?.customizations ?? {}),
+      ...(formData?.customizations as FormCustomizations),
       // logo: formData?.logo,
       // image: formData?.image,
     });
@@ -219,6 +220,8 @@ function Editor(props: EditorProps) {
       `${hexToHsl(customizations.color)}`,
     );
   }, [formData?.customizations]);
+
+  console.log("here in custom", customizations);
   return (
     <div
       className={`h-full ${editable ? "min-h-[calc(100svh_-_56px)]" : "min-h-svh"} w-full pb-12`}
@@ -280,7 +283,7 @@ function Editor(props: EditorProps) {
             fontSize: `${customizations.baseFontSize ?? 16}px`,
           }}
         >
-          {customizations?.logo !== "" && (
+          {customizations?.logo && (
             <Uploader
               callback={(url) => {
                 handleUpdateCustomizations({ logo: url });
@@ -340,7 +343,7 @@ function Editor(props: EditorProps) {
             ref={editorRef}
             editor={editor}
             data-theming-formsmith
-            theme={customizations?.theme ?? "light"}
+            theme={customizations?.theme === "dark" ? "dark" : "light"}
             className="m-0 w-full px-0"
             onChange={() => {
               onSave?.(editor.document);

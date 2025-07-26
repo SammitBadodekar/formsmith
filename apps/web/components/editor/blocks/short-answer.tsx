@@ -11,7 +11,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { useAtom } from "jotai";
-import { formCustomizationAtom } from "@/lib/atoms";
+import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
 
 export const shortAnswer = createReactBlockSpec(
   {
@@ -138,7 +138,7 @@ export const shortAnswer = createReactBlockSpec(
                 : value
             }
             className={cn(
-              `placeholder:text-editorText min-w-full placeholder:opacity-50 ${customizations?.theme === "dark" ? "border-primary/25" : ""}`,
+              `min-w-full placeholder:text-editorText placeholder:opacity-50 ${customizations?.theme === "dark" ? "border-primary/25" : ""}`,
               {
                 "border-red-500": !isValid && isDirty,
               },

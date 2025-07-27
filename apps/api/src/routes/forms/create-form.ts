@@ -31,6 +31,7 @@ export const createForm = async (c: FormsmithContext) => {
         },
         image: "",
         logo: "",
+        isPublished: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       })

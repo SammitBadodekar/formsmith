@@ -92,7 +92,9 @@ const EditForm = ({ formId }: { formId: string }) => {
   useEffect(() => {
     if (publishStatus === "success") {
       toast.success("Form published successfully!");
-      router.push(`/forms/${formId}/share`);
+      if (formData?.current?.isPublished === 0) {
+        router.push(`/forms/${formId}/share`);
+      }
     }
   }, [publishStatus]);
   return (

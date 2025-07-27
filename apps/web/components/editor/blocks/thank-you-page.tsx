@@ -21,7 +21,9 @@ export const ThankYouPage = createReactBlockSpec(
             <Check size={40} />
           </div>
           <h2 className="font-bold">Thanks for completing this form!</h2>
-          <p>Made with Formsmith, the simplest way to create forms for free.</p>
+          <p className="text-center">
+            Made with Formsmith, the simplest way to create forms for free.
+          </p>
 
           <a
             href={

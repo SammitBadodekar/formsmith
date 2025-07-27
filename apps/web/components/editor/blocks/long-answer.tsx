@@ -139,6 +139,15 @@ export const longAnswer = createReactBlockSpec(
                 "border-red-500": !isValid && isDirty,
               },
             )}
+            style={{
+              borderRadius: `${customizations?.inputsRadius}px`,
+              borderWidth: `${customizations?.inputsBorderWidth}px`,
+              backgroundColor: customizations?.inputsBackgroundColor,
+              color: customizations?.inputsTextColor,
+              borderColor: customizations?.inputsBorderColor,
+              marginBottom: `${customizations?.inputsMarginBottom}px`,
+              paddingInline: `${customizations?.inputsHorizontalPadding}px`,
+            }}
             onChange={handleInputChange}
             onBlur={handleBlur}
             aria-invalid={!isValid && isDirty ? "true" : "false"}

@@ -138,11 +138,28 @@ export const shortAnswer = createReactBlockSpec(
                 : value
             }
             className={cn(
-              `min-w-full placeholder:text-editorText placeholder:opacity-50 ${customizations?.theme === "dark" ? "border-primary/25" : ""}`,
+              `placeholder:text-editorText placeholder:opacity-50 ${customizations?.theme === "dark" ? "border-primary/25" : ""}`,
               {
                 "border-red-500": !isValid && isDirty,
               },
             )}
+            style={{
+              ...(customizations.inputsWidthType === "full"
+                ? { width: "100%" }
+                : customizations.inputsWidthType === "auto"
+                  ? { width: "auto" }
+                  : {
+                      width: `${customizations?.inputsWidth}px`,
+                    }),
+              height: `${customizations?.inputsHeight}px`,
+              borderRadius: `${customizations?.inputsRadius}px`,
+              borderWidth: `${customizations?.inputsBorderWidth}px`,
+              backgroundColor: customizations?.inputsBackgroundColor,
+              color: customizations?.inputsTextColor,
+              borderColor: customizations?.inputsBorderColor,
+              marginBottom: `${customizations?.inputsMarginBottom}px`,
+              paddingInline: `${customizations?.inputsHorizontalPadding}px`,
+            }}
             onChange={handleInputChange}
             onBlur={handleBlur}
             aria-invalid={!isValid && isDirty ? "true" : "false"}

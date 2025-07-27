@@ -2,7 +2,7 @@ import { ColorPicker } from "@/components/ui/color-picker";
 import { Input } from "@/components/ui/input";
 import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
 import { useAtom } from "jotai";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -10,10 +10,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronDown, X } from "lucide-react";
+import {
+  ArrowDownToDot,
+  ArrowRightFromLine,
+  MoveHorizontal,
+  X,
+} from "lucide-react";
 import { Uploader } from "@/components/modals/uploader";
-import { FormCustomizations } from "@formsmith/shared";
 import { GenericAlertDialog } from "@/components/ui/generic-alert-dialog";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { H4, Muted, P } from "@/components/ui/typography";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  darkModeCustomizations,
+  lightModeCustomizations,
+} from "@formsmith/shared";
 
 const FormCustomization = ({
   showCustomization,
@@ -27,10 +43,9 @@ const FormCustomization = ({
   const [theme, setTheme] = useState(customizations.theme || "light");
   if (!showCustomization) return <></>;
 
-  console.log("here in custom", customizations);
   return (
     <div
-      className={`relative flex w-[320px] justify-center border-l-2 border-gray-50 p-4`}
+      className={`relative flex w-[360px] justify-center border-l-2 border-gray-50 p-4`}
     >
       <GenericAlertDialog
         open={open}
@@ -42,23 +57,22 @@ const FormCustomization = ({
         onConfirm={() => {
           setCustomizations((prev: any) => ({
             ...prev,
-            backgroundColor: theme === "light" ? "#ffffff" : "#1f1f1f",
-            color: theme === "light" ? "#3f3f3f" : "#cfcfcf",
-            buttonColor: theme === "light" ? "#000000" : "#FFFFFF",
-            buttonText: theme === "light" ? "#FFFFFF" : "#000000",
+            ...(theme === "light"
+              ? lightModeCustomizations
+              : darkModeCustomizations),
             theme: theme,
           }));
         }}
       />
-      <div className="fixed bottom-0 top-0 mt-16 flex w-full max-w-[240px] flex-col gap-2 text-xs">
+      <div className="hide-scrollbar fixed bottom-0 top-0 mt-16 flex h-[calc(100dvh_-_56px)] w-full max-w-[260px] flex-col gap-2 overflow-y-scroll pb-8 text-xs">
         <div className="flex w-full items-center justify-between pb-4">
-          <p className="text-base font-bold">Customizations</p>
+          <H4>Customizations</H4>
           <X
             className="h-4 w-4 cursor-pointer"
             onClick={() => setShowCustomization(false)}
           />
         </div>
-        <p className="font-medium">Theme</p>
+        <Muted className="text-xs">Theme</Muted>
         <Select
           value={customizations.theme ?? "light"}
           onValueChange={(value) => {
@@ -78,10 +92,9 @@ const FormCustomization = ({
 
             setCustomizations((prev: any) => ({
               ...prev,
-              backgroundColor: value === "light" ? "#ffffff" : "#1f1f1f",
-              color: value === "light" ? "#3f3f3f" : "#cfcfcf",
-              buttonColor: value === "light" ? "#000000" : "#FFFFFF",
-              buttonText: value === "light" ? "#FFFFFF" : "#000000",
+              ...(value === "light"
+                ? lightModeCustomizations
+                : darkModeCustomizations),
               theme: value,
             }));
           }}
@@ -98,7 +111,7 @@ const FormCustomization = ({
 
         <div className="grid grid-cols-2 gap-2">
           <div className="flex flex-col gap-2">
-            <p className="font-medium">Background</p>
+            <Muted className="text-xs">Background</Muted>
             <ColorPicker
               color={customizations.backgroundColor ?? "#FFFFFF"}
               onChange={(color) => {
@@ -111,7 +124,7 @@ const FormCustomization = ({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <p className="font-medium">Text</p>
+            <Muted className="text-xs">Text</Muted>
             <ColorPicker
               color={customizations.color ?? "#000000"}
               onChange={(color) => {
@@ -124,7 +137,7 @@ const FormCustomization = ({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <p className="font-medium">Button Color</p>
+            <Muted className="text-xs">Button Color</Muted>
             <ColorPicker
               color={customizations.buttonColor}
               onChange={(color) => {
@@ -137,7 +150,7 @@ const FormCustomization = ({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <p className="font-medium">Button Text</p>
+            <Muted className="text-xs">Button Text</Muted>
             <ColorPicker
               color={customizations.buttonText}
               onChange={(color) => {
@@ -151,7 +164,7 @@ const FormCustomization = ({
           </div>
         </div>
 
-        {/* <p className="font-medium">Accent</p>
+        {/* <Muted className="text-xs">Accent</Muted>
         <ColorPicker
           color={customizations.accentColor ?? "#026fd7"}
           onChange={(color) => {
@@ -163,10 +176,10 @@ const FormCustomization = ({
           }}
         /> */}
 
-        <p className="py-4 text-base font-bold">Layout</p>
+        <H4 className="py-4">Layout</H4>
         <div className="grid grid-cols-2 gap-2">
           <div className="flex flex-col gap-2">
-            <p className="font-medium">Page width</p>
+            <Muted className="text-xs">Page width</Muted>
             <div className="relative">
               <Input
                 type="number"
@@ -184,7 +197,7 @@ const FormCustomization = ({
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <p className="font-medium">Base font size</p>
+            <Muted className="text-xs">Base font size</Muted>
             <div className="relative">
               <Input
                 type="number"
@@ -206,7 +219,7 @@ const FormCustomization = ({
         {customizations.logo && (
           <div className="mt-2 flex w-full justify-between gap-2">
             <div className="flex w-max flex-col gap-1">
-              <p className="font-medium">Logo</p>
+              <Muted className="text-xs">Logo</Muted>
               <Uploader
                 callback={(url) => {
                   setCustomizations((prev) => ({
@@ -223,7 +236,7 @@ const FormCustomization = ({
               </Uploader>
             </div>
             <div className="flex w-fit flex-col items-center gap-1">
-              <p className="font-medium">Width</p>
+              <Muted className="text-xs">Width</Muted>
               <div className="relative">
                 <Input
                   type="number"
@@ -242,7 +255,7 @@ const FormCustomization = ({
               </div>
             </div>
             <div className="flex w-fit flex-col items-center gap-1">
-              <p className="font-medium">Height</p>
+              <Muted className="text-xs">Height</Muted>
               <div className="relative">
                 <Input
                   type="number"
@@ -261,7 +274,7 @@ const FormCustomization = ({
               </div>
             </div>
             <div className="flex w-fit flex-col items-center gap-1">
-              <p className="font-medium">Radius</p>
+              <Muted className="text-xs">Radius</Muted>
               <div className="relative">
                 <Input
                   type="number"
@@ -285,7 +298,7 @@ const FormCustomization = ({
         {customizations.image && (
           <div className="mt-2 grid w-full grid-cols-2 gap-2">
             <div className="flex w-full flex-col gap-1">
-              <p className="font-medium">Cover image</p>
+              <Muted className="text-xs">Cover image</Muted>
               <Uploader
                 callback={(url) => {
                   setCustomizations((prev) => ({
@@ -302,7 +315,7 @@ const FormCustomization = ({
               </Uploader>
             </div>
             <div className="flex w-fit flex-col items-center gap-1">
-              <p className="font-medium">Height</p>
+              <Muted className="text-xs">Height</Muted>
               <div className="relative">
                 <Input
                   type="number"
@@ -322,6 +335,215 @@ const FormCustomization = ({
             </div>
           </div>
         )}
+
+        <H4 className="py-4">Inputs</H4>
+        <div className="flex w-full gap-2">
+          <div className="col-start-1 col-end-3 flex flex-col gap-2">
+            <Muted className="text-xs">Width</Muted>
+            <div className="flex justify-center rounded-md bg-primary/5 p-0.5">
+              <ToggleGroup
+                type="single"
+                variant="outline"
+                size="sm"
+                value={customizations.inputsWidthType}
+              >
+                <ToggleGroupItem
+                  value="auto"
+                  onClick={() =>
+                    setCustomizations((prev) => ({
+                      ...prev,
+                      inputsWidthType: "auto",
+                    }))
+                  }
+                >
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <ArrowRightFromLine />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs font-bold">Auto width</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="full"
+                  onClick={() =>
+                    setCustomizations((prev) => ({
+                      ...prev,
+                      inputsWidthType: "full",
+                    }))
+                  }
+                >
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <MoveHorizontal />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs font-bold">Full width</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="fixed"
+                  onClick={() =>
+                    setCustomizations((prev) => ({
+                      ...prev,
+                      inputsWidthType: "fixed",
+                    }))
+                  }
+                >
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <ArrowDownToDot />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs font-bold">Fixed width</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+          </div>
+
+          <div className="flex flex-col justify-end gap-2">
+            <div className="relative">
+              <Input
+                type="number"
+                value={customizations.inputsWidth ?? "320"}
+                onChange={(e) => {
+                  setCustomizations((prev: any) => ({
+                    ...prev,
+                    inputsWidth: e.target.value,
+                  }));
+                }}
+              ></Input>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                {`px`}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Muted className="text-xs">Height</Muted>
+            <div className="relative">
+              <Input
+                type="number"
+                value={customizations.inputsHeight ?? "16"}
+                onChange={(e) => {
+                  setCustomizations((prev: any) => ({
+                    ...prev,
+                    inputsHeight: e.target.value,
+                  }));
+                }}
+              ></Input>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                {`px`}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-col gap-2">
+            <Muted className="text-xs">Background</Muted>
+            <ColorPicker
+              color={customizations.inputsBackgroundColor ?? "#FFFFFF"}
+              onChange={(color) => {
+                setCustomizations((prev) => ({
+                  ...prev,
+                  inputsBackgroundColor: color,
+                  theme: "custom",
+                }));
+              }}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Muted className="text-xs">Border</Muted>
+            <ColorPicker
+              color={customizations.inputsBorderColor}
+              onChange={(color) => {
+                setCustomizations((prev) => ({
+                  ...prev,
+                  inputsBorderColor: color,
+                  theme: "custom",
+                }));
+              }}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Muted className="text-xs">Border width</Muted>
+            <div className="relative">
+              <Input
+                type="number"
+                value={customizations.inputsBorderWidth ?? "1"}
+                onChange={(e) => {
+                  setCustomizations((prev: any) => ({
+                    ...prev,
+                    inputsBorderWidth: e.target.value,
+                  }));
+                }}
+              ></Input>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                {`px`}
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Muted className="text-xs">Corner radius</Muted>
+            <div className="relative">
+              <Input
+                type="number"
+                value={customizations.inputsRadius ?? "16"}
+                onChange={(e) => {
+                  setCustomizations((prev: any) => ({
+                    ...prev,
+                    inputsRadius: e.target.value,
+                  }));
+                }}
+              ></Input>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                {`px`}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-col gap-2">
+            <Muted className="text-xs">Margin bottom</Muted>
+            <div className="relative">
+              <Input
+                type="number"
+                value={customizations.inputsMarginBottom ?? "10"}
+                onChange={(e) => {
+                  setCustomizations((prev: any) => ({
+                    ...prev,
+                    inputsMarginBottom: e.target.value,
+                  }));
+                }}
+              ></Input>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                {`px`}
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Muted className="text-xs">Horizontal padding</Muted>
+            <div className="relative">
+              <Input
+                type="number"
+                value={customizations.inputsHorizontalPadding ?? "10"}
+                onChange={(e) => {
+                  setCustomizations((prev: any) => ({
+                    ...prev,
+                    inputsHorizontalPadding: e.target.value,
+                  }));
+                }}
+              ></Input>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                {`px`}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

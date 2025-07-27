@@ -102,7 +102,7 @@ const EditForm = ({ formId }: { formId: string }) => {
       {isLoading && <FormsLoading />}
       {!isLoading && !data?.data?.form && <FormNotFound />}
       {data?.data?.form && (
-        <div className="flex">
+        <div className="flex h-dvh overflow-hidden">
           <Editor
             onSave={async (documents) => {
               setFormData({

@@ -225,8 +225,6 @@ function Editor(props: EditorProps) {
       `${hexToHsl(customizations.color)}`,
     );
   }, [formData?.customizations]);
-
-  console.log("here in custom", customizations);
   return (
     <div
       className={`h-full ${editable ? "min-h-[calc(100svh_-_56px)]" : "min-h-svh"} w-full pb-12`}

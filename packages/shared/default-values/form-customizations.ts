@@ -15,4 +15,41 @@ export const defaultFormCustomizations: FormCustomizations = {
   logoCornerRadius: 50,
   image: "",
   imageHeight: 200,
+  inputsWidthType: "fixed",
+  inputsWidth: 320,
+  inputsHeight: 36,
+  inputsRadius: 8,
+  inputsBackgroundColor: "#FFFFFF",
+  inputsTextColor: "#000000",
+  inputsBorderColor: "#000000",
+  inputsBorderWidth: 1,
+  inputsPlaceholderColor: "#000000",
+  inputsMarginBottom: 10,
+  inputsHorizontalPadding: 10,
+};
+
+export const lightModeCustomizations: FormCustomizations = {
+  theme: "light",
+  backgroundColor: "#FFFFFF",
+  color: "#000000",
+  buttonColor: "#000000",
+  buttonText: "#FFFFFF",
+  accentColor: "#026FD7",
+  inputsBackgroundColor: "#FFFFFF",
+  inputsTextColor: "#000000",
+  inputsBorderColor: "#e5e5e5",
+  inputsPlaceholderColor: "#000000",
+};
+
+export const darkModeCustomizations: FormCustomizations = {
+  theme: "dark",
+  backgroundColor: "#1F1F1F",
+  color: "#CFCFCF",
+  buttonColor: "#CFCFCF",
+  buttonText: "#1F1F1F",
+  accentColor: "#026FD7",
+  inputsBackgroundColor: "#1F1F1F",
+  inputsTextColor: "#CFCFCF",
+  inputsBorderColor: "#565656",
+  inputsPlaceholderColor: "#CFCFCF",
 };

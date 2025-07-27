@@ -32,10 +32,11 @@ import {
 } from "./blocks";
 import BlocksDragHandleMenu from "./components/drag-handle-menu";
 import { ArrowRight, Hexagon, Loader, PanelTop, Trash2 } from "lucide-react";
-import { Form, PublishedForm } from "@formsmith/database";
+import { Form } from "@formsmith/database";
 import {
+  Dispatch,
   memo,
-  ReactNode,
+  SetStateAction,
   useCallback,
   useEffect,
   useRef,
@@ -47,6 +48,7 @@ import { useAtom } from "jotai";
 import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
 import { hexToHsl } from "../ui/color-picker";
 import { FormCustomizations } from "@formsmith/shared";
+import { MdOutlineDashboardCustomize } from "react-icons/md";
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
@@ -67,6 +69,7 @@ type EditorProps = {
   editable?: boolean;
   submitButtonText?: string;
   isThankYou?: boolean;
+  setShowCustomization?: Dispatch<SetStateAction<boolean>>;
 };
 
 type ValidatableBlock = typeof schema.PartialBlock & {
@@ -79,7 +82,6 @@ type ValidatableBlock = typeof schema.PartialBlock & {
 };
 
 function Editor(props: EditorProps) {
-  const [isFormGloballyValid, setIsFormGloballyValid] = useState<boolean>(true);
   const {
     formData,
     editable = true,
@@ -87,7 +89,10 @@ function Editor(props: EditorProps) {
     isThankYou,
     setFormData,
     onSave,
+    setShowCustomization,
   } = props;
+
+  const [isFormGloballyValid, setIsFormGloballyValid] = useState<boolean>(true);
   const [isLastPageThankYou, setIsLastPageThankYou] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customizations, setCustomizations] = useAtom(formCustomizationAtom);
@@ -231,10 +236,13 @@ function Editor(props: EditorProps) {
         <div className="relative">
           <img
             src={customizations?.image}
-            height={200}
+            height={customizations.imageHeight ?? 200}
             width={400}
             alt="cover image"
-            className="max-h-60 w-full object-cover"
+            className="w-full object-cover"
+            style={{
+              height: `${customizations.imageHeight ?? 200}px`,
+            }}
           />
           {editable && (
             <div className="absolute bottom-4 right-4 flex gap-4">
@@ -302,9 +310,7 @@ function Editor(props: EditorProps) {
             </Uploader>
           )}
           {editable && (
-            <div
-              className={`${customizations?.image && customizations?.logo ? "hidden" : "mt-2 flex w-full gap-4"}`}
-            >
+            <div className={`mt-2 flex w-full gap-4`}>
               {!customizations?.logo && (
                 <Uploader
                   callback={(url) => {
@@ -337,6 +343,13 @@ function Editor(props: EditorProps) {
                   </Button>
                 </Uploader>
               )}
+              <Button
+                variant="ghost"
+                onClick={() => setShowCustomization?.((prev: boolean) => !prev)}
+              >
+                <MdOutlineDashboardCustomize />
+                <p>Customize</p>
+              </Button>
             </div>
           )}
           <BlockNoteView

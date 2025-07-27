@@ -10,8 +10,9 @@ export const defaultFormCustomizations: FormCustomizations = {
   pageWidth: 800,
   baseFontSize: 16,
   logo: "",
-  image: "",
   logoWidth: 100,
   logoHeight: 100,
   logoCornerRadius: 50,
+  image: "",
+  imageHeight: 200,
 };

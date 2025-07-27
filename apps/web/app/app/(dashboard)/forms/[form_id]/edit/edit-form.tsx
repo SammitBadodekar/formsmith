@@ -111,6 +111,7 @@ const EditForm = ({ formId }: { formId: string }) => {
             }}
             formData={data?.data?.form}
             setFormData={setFormData}
+            setShowCustomization={setShowCustomization}
           />
           <FormCustomization
             showCustomization={showCustomization}

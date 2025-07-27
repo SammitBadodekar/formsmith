@@ -1,11 +1,7 @@
 "use client";
 import React, { RefObject, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import Editor, { schema } from "../editor/editor";
 import { Minimize2 } from "lucide-react";
 import { Form } from "@formsmith/database";
@@ -31,13 +27,13 @@ const PreviewFormModal = ({ ref }: { ref: RefObject<Form> | null }) => {
 
   const pages = divideFormIntoPages(formData as Form);
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <Button variant="secondary" size="sm" className="font-black">
           Preview
         </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent className="flex h-dvh w-screen max-w-[95vw] items-center justify-center overflow-y-scroll rounded-2xl p-0">
+      </DialogTrigger>
+      <DialogContent className="flex h-full max-h-[90dvh] w-screen max-w-[95vw] items-center justify-center overflow-y-scroll rounded-2xl p-0">
         {pages.map((page: any, index) => {
           return (
             <div
@@ -47,7 +43,7 @@ const PreviewFormModal = ({ ref }: { ref: RefObject<Form> | null }) => {
               <Button
                 variant="secondary"
                 size="sm"
-                className="absolute right-4 top-4 z-10"
+                className="absolute right-4 top-4 z-10 hover:bg-secondary"
                 onClick={() => {
                   setOpen(false);
                 }}
@@ -70,8 +66,8 @@ const PreviewFormModal = ({ ref }: { ref: RefObject<Form> | null }) => {
             </div>
           );
         })}
-      </AlertDialogContent>
-    </AlertDialog>
+      </DialogContent>
+    </Dialog>
   );
 };
 

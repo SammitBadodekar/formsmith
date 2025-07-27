@@ -151,7 +151,7 @@ const FormCustomization = ({
           </div>
         </div>
 
-        <p className="font-medium">Accent</p>
+        {/* <p className="font-medium">Accent</p>
         <ColorPicker
           color={customizations.accentColor ?? "#026fd7"}
           onChange={(color) => {
@@ -161,7 +161,7 @@ const FormCustomization = ({
               theme: "custom",
             }));
           }}
-        />
+        /> */}
 
         <p className="py-4 text-base font-bold">Layout</p>
         <div className="grid grid-cols-2 gap-2">
@@ -276,6 +276,47 @@ const FormCustomization = ({
                 ></Input>
                 <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
                   {`%`}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {customizations.image && (
+          <div className="mt-2 grid w-full grid-cols-2 gap-2">
+            <div className="flex w-full flex-col gap-1">
+              <p className="font-medium">Cover image</p>
+              <Uploader
+                callback={(url) => {
+                  setCustomizations((prev) => ({
+                    ...prev,
+                    image: url,
+                  }));
+                }}
+              >
+                <img
+                  src={customizations.image}
+                  alt="logo"
+                  className="h-[36px] w-full rounded-lg object-cover"
+                />
+              </Uploader>
+            </div>
+            <div className="flex w-fit flex-col items-center gap-1">
+              <p className="font-medium">Height</p>
+              <div className="relative">
+                <Input
+                  type="number"
+                  value={customizations.imageHeight ?? "200"}
+                  onChange={(e) => {
+                    setCustomizations((prev: any) => ({
+                      ...prev,
+                      imageHeight: e.target.value,
+                    }));
+                  }}
+                  className="px-1 text-xs"
+                ></Input>
+                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 transform text-xs text-gray-500">
+                  {`px`}
                 </span>
               </div>
             </div>

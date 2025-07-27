@@ -8,8 +8,9 @@ export type FormCustomizations = {
   pageWidth: number;
   baseFontSize: number;
   logo: string;
-  image: string;
   logoWidth: number;
   logoHeight: number;
   logoCornerRadius: number;
+  image: string;
+  imageHeight: number;
 };

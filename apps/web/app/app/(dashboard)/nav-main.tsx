@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useInvalidateFormCache } from "./use-invalidate-cache";
 
 export function NavMain({
   items,
@@ -22,6 +23,7 @@ export function NavMain({
   }[];
 }) {
   const pathName = usePathname();
+  const { invalidateFormCache } = useInvalidateFormCache();
   const { toggleSidebar, isMobile } = useSidebar();
   return (
     <SidebarMenu className="p-2">
@@ -41,7 +43,7 @@ export function NavMain({
               }
             }}
           >
-            <Link href={item.url}>
+            <Link href={item.url} onClick={invalidateFormCache}>
               <item.icon />
               <span>{item.title}</span>
             </Link>

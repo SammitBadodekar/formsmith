@@ -13,10 +13,12 @@ import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { Form } from "@formsmith/database";
 import { useGetFormsQuery, useGetWorkspacesQuery } from "@/hooks/use-queries";
+import { useInvalidateFormCache } from "./use-invalidate-cache";
 
 const DynamicBreadcrumb = () => {
   const pathname = usePathname();
   const queryClient = useQueryClient();
+  const { invalidateFormCache } = useInvalidateFormCache();
   const { data } = useGetFormsQuery();
   const { data: workspaceData } = useGetWorkspacesQuery();
 
@@ -36,9 +38,7 @@ const DynamicBreadcrumb = () => {
       );
 
       const invalidateQuery = () => {
-        queryClient.invalidateQueries({
-          queryKey: ["getForm", formId] as const,
-        });
+        invalidateFormCache();
         queryClient.invalidateQueries({ queryKey: ["getForms"] });
       };
       return [

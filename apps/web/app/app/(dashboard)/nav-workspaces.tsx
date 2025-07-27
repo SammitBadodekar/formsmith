@@ -24,6 +24,7 @@ import Link from "next/link";
 import CreateForm from "@/components/modals/create-form";
 import { usePathname } from "next/navigation";
 import { useGetWorkspacesQuery } from "@/hooks/use-queries";
+import { useInvalidateFormCache } from "./use-invalidate-cache";
 
 type WorkspaceWithForms = Workspace & { forms: Form[] };
 
@@ -61,6 +62,7 @@ const WorkspaceItem = ({
 }) => {
   const [open, setOpen] = useState(index === 0);
   const pathname = usePathname();
+  const { invalidateFormCache } = useInvalidateFormCache();
   return (
     <Collapsible key={workspace.name} open={open} onOpenChange={setOpen}>
       <SidebarMenuItem>
@@ -95,8 +97,9 @@ const WorkspaceItem = ({
                 <SidebarMenuSubItem key={form.id}>
                   <SidebarMenuSubButton asChild>
                     <Link
-                      href={`/forms/${form.id}/${form.isPublished ? "share" : "edit"}`}
                       className={`${pathname.includes(`/forms/${form.id}`) ? "bg-primary/5" : ""}`}
+                      href={`/forms/${form.id}/${form.isPublished ? "share" : "edit"}`}
+                      onClick={invalidateFormCache}
                     >
                       <span>{form.name}</span>
                     </Link>

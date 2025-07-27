@@ -3,7 +3,6 @@ import React from "react";
 import { SessionProvider } from "./session-provider";
 import { SessionValidationResult } from "@/lib/auth";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Provider } from "jotai";
 import { getQueryClient } from "./get-query-client";
 
 const Providers = ({

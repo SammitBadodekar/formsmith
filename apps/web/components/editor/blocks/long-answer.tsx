@@ -7,7 +7,7 @@ import { getHighlightStyles } from "../helpers";
 import { Textarea } from "@/components/ui/textarea";
 import { longAnswerSchema } from "../validator";
 import { useAtom } from "jotai";
-import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
+import { formCustomizationAtom } from "@/lib/atoms";
 
 export const longAnswer = createReactBlockSpec(
   {

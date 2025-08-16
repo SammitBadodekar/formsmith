@@ -4,8 +4,7 @@ export const defaultFormCustomizations: FormCustomizations = {
   theme: "light",
   backgroundColor: "#FFFFFF",
   color: "#000000",
-  buttonColor: "#000000",
-  buttonText: "#FFFFFF",
+
   accentColor: "#026FD7",
   pageWidth: 800,
   baseFontSize: 16,
@@ -26,6 +25,16 @@ export const defaultFormCustomizations: FormCustomizations = {
   inputsPlaceholderColor: "#000000",
   inputsMarginBottom: 10,
   inputsHorizontalPadding: 10,
+  buttonColor: "#000000",
+  buttonText: "#FFFFFF",
+  buttonWidth: 100,
+  buttonWidthType: "auto",
+  buttonHeight: 36,
+  buttonRadius: 8,
+  buttonFontSize: 16,
+  buttonVerticalMargin: 10,
+  buttonHorizontalPadding: 10,
+  buttonAlignment: "left",
 };
 
 export const lightModeCustomizations: FormCustomizations = {

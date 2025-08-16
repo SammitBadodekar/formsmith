@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
+import { formCustomizationAtom } from "@/lib/atoms";
 import { createReactBlockSpec } from "@blocknote/react";
 import { useAtom } from "jotai";
 import { Check } from "lucide-react";

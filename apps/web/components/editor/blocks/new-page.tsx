@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@radix-ui/react-label";
 import { useEffect, useState } from "react";
 import { useAtom } from "jotai";
-import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
+import { formCustomizationAtom } from "@/lib/atoms";
 
 export const NewPage = createReactBlockSpec(
   {
@@ -44,17 +44,41 @@ export const NewPage = createReactBlockSpec(
       return (
         <div className="flex w-full flex-col gap-2">
           {!hideButton && (
-            <Button
-              className="w-fit px-3 font-semibold"
-              type={editor.isEditable ? "button" : "submit"}
+            <div
               style={{
-                backgroundColor: customizations.buttonColor,
-                color: customizations.buttonText,
+                display: "flex",
+                width: "100%",
+                justifyContent:
+                  customizations.buttonAlignment === "left"
+                    ? "flex-start"
+                    : customizations.buttonAlignment === "center"
+                      ? "center"
+                      : "flex-end",
               }}
             >
-              <p>{buttonText}</p>
-              <ArrowRight />
-            </Button>
+              <Button
+                className="w-fit px-3 font-semibold"
+                type={editor.isEditable ? "button" : "submit"}
+                style={{
+                  backgroundColor: customizations.buttonColor,
+                  color: customizations.buttonText,
+                  width:
+                    customizations.buttonWidthType === "auto"
+                      ? "auto"
+                      : customizations?.buttonWidthType === "full"
+                        ? "100%"
+                        : `${customizations.buttonWidth}px`,
+                  height: `${customizations.buttonHeight}px`,
+                  borderRadius: `${customizations.buttonRadius}px`,
+                  fontSize: `${customizations.buttonFontSize}px`,
+                  paddingInline: `${customizations.buttonHorizontalPadding}px`,
+                  marginBlock: `${customizations.buttonVerticalMargin}px`,
+                }}
+              >
+                <p>{buttonText}</p>
+                <ArrowRight />
+              </Button>
+            </div>
           )}
           <div className="relative flex w-full items-center gap-2 py-8 text-primary/75">
             <hr
@@ -86,7 +110,9 @@ export const NewPage = createReactBlockSpec(
                 backgroundColor: customizations.color,
                 filter: "brightness(90%)",
               }}
-              thumbClassName="bg-editorBackground"
+              thumbStyles={{
+                backgroundColor: customizations.backgroundColor,
+              }}
               onCheckedChange={() => {
                 editor.updateBlock(block, {
                   props: {

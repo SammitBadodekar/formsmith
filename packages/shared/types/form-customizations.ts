@@ -2,8 +2,6 @@ export type FormCustomizations = {
   theme: "light" | "dark" | "custom";
   backgroundColor: string;
   color: string;
-  buttonColor: string;
-  buttonText: string;
   accentColor: string;
   pageWidth?: number;
   baseFontSize?: number;
@@ -24,4 +22,14 @@ export type FormCustomizations = {
   inputsPlaceholderColor: string;
   inputsMarginBottom?: number;
   inputsHorizontalPadding?: number;
+  buttonWidth?: number;
+  buttonWidthType?: "fixed" | "full" | "auto";
+  buttonHeight?: number;
+  buttonRadius?: number;
+  buttonFontSize?: number;
+  buttonColor: string;
+  buttonText: string;
+  buttonVerticalMargin?: number;
+  buttonHorizontalPadding?: number;
+  buttonAlignment?: "left" | "center" | "right";
 };

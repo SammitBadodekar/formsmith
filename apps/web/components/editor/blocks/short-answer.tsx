@@ -11,7 +11,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { useAtom } from "jotai";
-import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
+import { formCustomizationAtom } from "@/lib/atoms";
 
 export const shortAnswer = createReactBlockSpec(
   {

@@ -45,7 +45,7 @@ import {
 import { longAnswerSchema, shortAnswerSchema } from "./validator";
 import { Uploader } from "../modals/uploader";
 import { useAtom } from "jotai";
-import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
+import { formCustomizationAtom } from "@/lib/atoms";
 import { hexToHsl } from "../ui/color-picker";
 import { FormCustomizations } from "@formsmith/shared";
 import { MdOutlineDashboardCustomize } from "react-icons/md";
@@ -227,7 +227,7 @@ function Editor(props: EditorProps) {
   }, [formData?.customizations]);
   return (
     <div
-      className={`h-full ${editable ? "min-h-[calc(100svh_-_56px)]" : "min-h-svh"} w-full pb-12`}
+      className={`h-full ${editable ? "min-h-[calc(100svh_-_56px)]" : "min-h-svh"} w-full overflow-y-auto pb-12`}
       style={{ ...(formData?.customizations ?? {}), ...customizations }}
     >
       {customizations?.image ? (
@@ -413,24 +413,49 @@ function Editor(props: EditorProps) {
             />
           </BlockNoteView>
           {!isThankYou && !isLastPageThankYou && (
-            <Button
-              className={`${customizations?.theme === "dark" ? "bg-primary-foreground text-primary hover:bg-primary-foreground/80" : ""} w-fit px-3 font-black`}
-              type={editable ? "button" : "submit"}
-              disabled={isSubmitting}
+            <div
               style={{
-                backgroundColor: customizations.buttonColor,
-                color: customizations.buttonText,
+                display: "flex",
+                width: "100%",
+                justifyContent:
+                  customizations.buttonAlignment === "left"
+                    ? "flex-start"
+                    : customizations.buttonAlignment === "center"
+                      ? "center"
+                      : "flex-end",
+                alignItems: "center",
               }}
             >
-              {isSubmitting ? (
-                <Loader className="mx-8 animate-spin" />
-              ) : (
-                <>
-                  <p>{submitButtonText}</p>
-                  <ArrowRight />
-                </>
-              )}
-            </Button>
+              <Button
+                className={`${customizations?.theme === "dark" ? "bg-primary-foreground text-primary hover:bg-primary-foreground/80" : ""} w-fit px-3 font-black`}
+                type={editable ? "button" : "submit"}
+                disabled={isSubmitting}
+                style={{
+                  backgroundColor: customizations.buttonColor,
+                  color: customizations.buttonText,
+                  width:
+                    customizations.buttonWidthType === "auto"
+                      ? "auto"
+                      : customizations?.buttonWidthType === "full"
+                        ? "100%"
+                        : `${customizations.buttonWidth}px`,
+                  height: `${customizations.buttonHeight}px`,
+                  borderRadius: `${customizations.buttonRadius}px`,
+                  fontSize: `${customizations.buttonFontSize}px`,
+                  paddingInline: `${customizations.buttonHorizontalPadding}px`,
+                  marginBlock: `${customizations.buttonVerticalMargin}px`,
+                }}
+              >
+                {isSubmitting ? (
+                  <Loader className="mx-8 animate-spin" />
+                ) : (
+                  <>
+                    <p>{submitButtonText}</p>
+                    <ArrowRight />
+                  </>
+                )}
+              </Button>
+            </div>
           )}
         </form>
       </div>

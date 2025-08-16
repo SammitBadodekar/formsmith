@@ -15,7 +15,7 @@ import { Form } from "@formsmith/database";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import FormCustomization from "@/components/editor/components/form-customization";
-import { formCustomizationAtom } from "@/app/app/(dashboard)/forms/[form_id]/atoms";
+import { formCustomizationAtom } from "@/lib/atoms";
 import { useAtom } from "jotai";
 
 const saveFormWithDebounce = debounce(async (callback, payload) => {

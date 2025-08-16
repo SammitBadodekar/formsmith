@@ -16,7 +16,7 @@ export const ThankYouPage = createReactBlockSpec(
     render: (props) => {
       const [customizations] = useAtom(formCustomizationAtom);
       return (
-        <div className="flex h-full w-full flex-col items-center justify-center">
+        <div className="mt-8 flex h-full w-full flex-col items-center justify-center">
           <div
             className="mb-8 rounded-full p-4 font-black"
             style={{

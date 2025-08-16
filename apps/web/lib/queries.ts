@@ -40,3 +40,12 @@ export const getSubmissions = async (formId: string) => {
   });
   return data?.data?.submissions ?? [];
 };
+
+export const getTemplate = async (templateId: string) => {
+  const { data } = await formsmithAxios.get("/template", {
+    params: {
+      id: templateId,
+    },
+  });
+  return data;
+};

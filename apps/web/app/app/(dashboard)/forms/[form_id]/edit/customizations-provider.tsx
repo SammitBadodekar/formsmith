@@ -30,17 +30,29 @@ function Hydrator({
 export function CustomizationsStoreProvider({
   formId,
   children,
+  customizations,
 }: {
   formId: string;
   children: React.ReactNode;
+  customizations?: any;
 }) {
+  const store = useRef(createStore()).current;
+
+  if (customizations) {
+    return (
+      <Provider key={formId} store={store}>
+        <Hydrator formId={formId} customization={customizations}>
+          {children}
+        </Hydrator>
+      </Provider>
+    );
+  }
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["getForm", formId] as const,
     queryFn: ({ queryKey: [, id] }) => getForm(id),
     staleTime: 0,
   });
-
-  const store = useRef(createStore()).current;
 
   if (isLoading) return <FormsLoading />;
   if (isError || !data?.data?.form) return <FormNotFound />;

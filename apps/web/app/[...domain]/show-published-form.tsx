@@ -16,10 +16,17 @@ export type Submission = {
   label_id: string;
 };
 
-const ShowPublishedForm = ({ data: form }: { data: Form }) => {
+const ShowPublishedForm = ({
+  data: form,
+  isPreview,
+}: {
+  data: Form;
+  isPreview?: boolean;
+}) => {
   const [currentPage, setCurrentPage] = useState(0);
   const submissions = useRef<Submission[]>([]);
   const pages = divideFormIntoPages(form);
+
   return (
     <>
       {form && (
@@ -29,7 +36,8 @@ const ShowPublishedForm = ({ data: form }: { data: Form }) => {
               page.isThankYou ?? index === pages.length - 1;
             return (
               <div
-                className={`${currentPage === index ? "" : "hidden"} flex h-full min-h-svh w-full justify-center`}
+                className={`${currentPage === index ? "" : "hidden"} flex h-full min-h-screen w-full justify-center`}
+                key={index}
               >
                 <Editor
                   editable={false}
@@ -45,10 +53,12 @@ const ShowPublishedForm = ({ data: form }: { data: Form }) => {
                       index + 1 === pages.length - 1;
 
                     if (isNextPageThankYouPage) {
-                      await submitForm({
-                        formId: (form as any)?.formId,
-                        formData: submissions.current,
-                      });
+                      if (!isPreview) {
+                        await submitForm({
+                          formId: (form as any)?.formId,
+                          formData: submissions.current,
+                        });
+                      }
                     }
                     setCurrentPage((prev) => prev + 1);
                   }}

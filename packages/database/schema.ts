@@ -92,9 +92,27 @@ export const formSubmissionTable = sqliteTable("form_submission", {
   }),
 });
 
+export const formTemplateTable = sqliteTable("form_template", {
+  id: text("id").primaryKey(),
+  name: text("name"),
+  description: text("description"),
+  data: text({ mode: "json" }),
+  customizations: text({ mode: "json" }),
+  creatorId: text("creator_id")
+    .notNull()
+    .references(() => userTable.id),
+  createdAt: integer("created_at", {
+    mode: "timestamp",
+  }),
+  updatedAt: integer("updated_at", {
+    mode: "timestamp",
+  }),
+});
+
 export type User = InferSelectModel<typeof userTable>;
 export type Session = InferSelectModel<typeof sessionTable>;
 export type Form = InferSelectModel<typeof formTable>;
 export type Workspace = InferSelectModel<typeof workspaceTable>;
 export type PublishedForm = InferSelectModel<typeof publishedFormTable>;
 export type FormSubmission = InferSelectModel<typeof formSubmissionTable>;
+export type FormTemplate = InferSelectModel<typeof formTemplateTable>;

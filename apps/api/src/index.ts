@@ -5,6 +5,7 @@ import formRoutes from "./routes/forms";
 import workspaceRoutes from "./routes/workspaces";
 import submissionRoutes from "./routes/submissions";
 import uploadRoutes from "./routes/upload";
+import templateRoutes from "./routes/templates";
 
 export type Env = {
   DATABASE_URL: string;
@@ -45,5 +46,6 @@ formRoutes(app);
 workspaceRoutes(app);
 submissionRoutes(app);
 uploadRoutes(app);
+templateRoutes(app);
 
 export default app;

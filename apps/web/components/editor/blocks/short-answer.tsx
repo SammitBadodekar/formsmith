@@ -116,10 +116,8 @@ export const shortAnswer = createReactBlockSpec(
 
       return (
         <div
-          className={cn(
-            "relative mb-6 flex w-full flex-col gap-2",
-            highlight ? getHighlightStyles() : "",
-          )}
+          className={cn("relative mb-6 flex w-full flex-col gap-2")}
+          style={highlight ? getHighlightStyles(customizations) : {}}
         >
           <Input
             ref={props.contentRef}

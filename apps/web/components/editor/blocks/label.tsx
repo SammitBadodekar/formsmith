@@ -1,10 +1,8 @@
-import { Input } from "@/components/ui/input";
-import { insertOrUpdateBlock } from "@blocknote/core";
 import { createReactBlockSpec } from "@blocknote/react";
-import { Label as ShadCNLabel } from "@/components/ui/label";
-import { use, useEffect, useRef } from "react";
 import { getHighlightStyles, getPlainText } from "../helpers";
 import { cn } from "@/lib/utils";
+import { useAtom } from "jotai";
+import { formCustomizationAtom } from "@/lib/atoms";
 
 export const Label = createReactBlockSpec(
   {
@@ -33,14 +31,13 @@ export const Label = createReactBlockSpec(
     render: (props) => {
       const hasContent = getPlainText(props.block)?.length > 0;
       const highlight = props?.block?.props?.highlight;
+      const [customizations] = useAtom(formCustomizationAtom);
 
       return (
         <label
           htmlFor={props?.block?.props?.for}
-          className={cn(
-            "relative block w-full",
-            highlight ? getHighlightStyles() : "",
-          )}
+          className={cn("relative block w-full")}
+          style={highlight ? getHighlightStyles(customizations) : {}}
         >
           {/* Placeholder */}
           {!hasContent && props.editor.isEditable && (

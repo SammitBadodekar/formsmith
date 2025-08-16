@@ -6,6 +6,7 @@ import {
   getshortAnswerSlashCommand,
 } from "./blocks";
 import { Form, PublishedForm } from "@formsmith/database";
+import { FormCustomizations } from "@formsmith/shared";
 
 export const getSlashMenuItems = (editor: typeof schema.BlockNoteEditor) => {
   const itemsToExclude = ["table", "check_list"];
@@ -21,8 +22,15 @@ export const getSlashMenuItems = (editor: typeof schema.BlockNoteEditor) => {
   ];
 };
 
-export const getHighlightStyles = () => {
-  return "bg-[#C6DDF5] rounded-none";
+export const getHighlightStyles = (
+  customizations?: FormCustomizations,
+): React.CSSProperties => {
+  return {
+    backgroundColor: customizations?.backgroundColor,
+    filter: "invert(1)",
+    opacity: 0.2,
+    borderRadius: "none",
+  };
 };
 
 export const getPlainText = (block: any) => {

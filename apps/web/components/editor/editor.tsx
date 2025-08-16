@@ -202,10 +202,14 @@ function Editor(props: EditorProps) {
   };
 
   useEffect(() => {
+    if (
+      !formData?.customizations ||
+      Object.keys(formData?.customizations).length === 0
+    )
+      return;
+
     setCustomizations({
       ...(formData?.customizations as FormCustomizations),
-      // logo: formData?.logo,
-      // image: formData?.image,
     });
 
     document.documentElement.style.setProperty(

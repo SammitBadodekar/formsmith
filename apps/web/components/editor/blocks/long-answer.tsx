@@ -112,10 +112,8 @@ export const longAnswer = createReactBlockSpec(
       };
       return (
         <div
-          className={cn(
-            `relative mb-6 flex w-full flex-col gap-2`,
-            highlight ? getHighlightStyles() : "",
-          )}
+          className={cn(`relative mb-6 flex w-full flex-col gap-2`)}
+          style={highlight ? getHighlightStyles(customizations) : {}}
         >
           <Textarea
             ref={props.contentRef}

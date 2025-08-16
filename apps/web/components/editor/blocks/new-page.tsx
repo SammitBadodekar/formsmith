@@ -1,14 +1,11 @@
 import { Input } from "@/components/ui/input";
-import { insertOrUpdateBlock } from "@blocknote/core";
 import { createReactBlockSpec, DragHandleMenuProps } from "@blocknote/react";
-import { getHighlightStyles, getPlainText } from "../helpers";
-import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { ArrowRight, StickyNote } from "lucide-react";
 import { schema } from "../editor";
 import { Button } from "@/components/ui/button";
 import { Label } from "@radix-ui/react-label";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAtom } from "jotai";
 import { formCustomizationAtom } from "@/lib/atoms";
 

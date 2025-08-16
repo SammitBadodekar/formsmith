@@ -208,9 +208,9 @@ function Editor(props: EditorProps) {
     )
       return;
 
-    setCustomizations({
-      ...(formData?.customizations as FormCustomizations),
-    });
+    // setCustomizations({
+    //   ...(formData?.customizations as FormCustomizations),
+    // });
 
     document.documentElement.style.setProperty(
       "--editor-background",

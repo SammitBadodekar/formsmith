@@ -1,5 +1,5 @@
-import { Provider } from "jotai";
 import EditForm from "./edit-form";
+import { CustomizationsStoreProvider } from "./customizations-provider";
 
 export const dynamic = "force-dynamic";
 
@@ -11,9 +11,9 @@ export default async function Page({
   const { form_id } = await params;
   return (
     <>
-      <Provider>
+      <CustomizationsStoreProvider formId={form_id}>
         <EditForm formId={form_id} />
-      </Provider>
+      </CustomizationsStoreProvider>
     </>
   );
 }

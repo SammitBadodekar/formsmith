@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import FormCustomization from "@/components/editor/components/form-customization";
 import { formCustomizationAtom } from "@/lib/atoms";
 import { useAtom } from "jotai";
+import posthog from "posthog-js";
 
 const saveFormWithDebounce = debounce(async (callback, payload) => {
   if (callback && payload) {
@@ -83,6 +84,7 @@ const EditForm = ({ formId }: { formId: string }) => {
   }, [data?.data?.form]);
 
   useEffect(() => {
+    posthog.capture("customizations-changed", { data: customizations });
     setFormData({
       customizations,
     } as any);

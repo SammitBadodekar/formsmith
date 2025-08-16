@@ -82,6 +82,7 @@ export const NewPage = createReactBlockSpec(
               className="h-0.5 w-full"
               style={{
                 backgroundColor: customizations.color,
+                border: "none",
               }}
             />
             <span

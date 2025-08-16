@@ -17,7 +17,13 @@ export const ThankYouPage = createReactBlockSpec(
       const [customizations] = useAtom(formCustomizationAtom);
       return (
         <div className="flex h-full w-full flex-col items-center justify-center">
-          <div className="mb-8 rounded-full bg-blue-50 p-4 font-black text-blue-500">
+          <div
+            className="mb-8 rounded-full p-4 font-black"
+            style={{
+              backgroundColor: customizations.color,
+              color: customizations.backgroundColor,
+            }}
+          >
             <Check size={40} />
           </div>
           <h2 className="font-bold">Thanks for completing this form!</h2>

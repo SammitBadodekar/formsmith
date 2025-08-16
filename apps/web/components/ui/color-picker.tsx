@@ -117,18 +117,59 @@ export function ColorPicker({
   };
 
   const colorPresets = [
-    "#FF3B30",
-    "#FF9500",
-    "#FFCC00",
-    "#4CD964",
-    "#5AC8FA",
-    "#007AFF",
-    "#5856D6",
-    "#FF2D55",
-    "#8E8E93",
-    "#EFEFF4",
-    "#E5E5EA",
-    "#D1D1D6",
+    "#EDEDEC",
+    "#EDDBDB",
+    "#EDDFD5",
+    "#ECEADC",
+    "#D9E7DA",
+    "#D6E1EC",
+    "#E2DCEC",
+    "#EBD8EA",
+
+    "#E5E5E5",
+    "#EDB2B2",
+    "#EDC09D",
+    "#ECE4B4",
+    "#9BE0A2",
+    "#9EC3EC",
+    "#C9B3EC",
+    "#EBA6E4",
+
+    "#9F9F9F",
+    "#ED6D6D",
+    "#ED8C45",
+    "#ECD870",
+    "#59D166",
+    "#4492EC",
+    "#9E6FED",
+    "#E954DA",
+
+    "#737372",
+    "#CE3C3B",
+    "#CE5F0C",
+    "#CEB73F",
+    "#23B631",
+    "#0D67CE",
+    "#733ECE",
+    "#CA1FBA",
+
+    "#0E0E0E",
+    "#731F1E",
+    "#734319",
+    "#6D6519",
+    "#145F1B",
+    "#113264",
+    "#401C6D",
+    "#6E1865",
+
+    // "#000000",
+    // "#490909",
+    // "#492608",
+    // "#464809",
+    // "#093C0F",
+    // "#082048",
+    // "#250C49",
+    // "#470F40",
   ];
 
   return (
@@ -139,7 +180,7 @@ export function ColorPicker({
           className="w-full justify-start p-0 px-2 text-left font-normal"
         >
           <div
-            className="mr-2 aspect-square h-4 w-4 rounded-full shadow-sm"
+            className="mr-2 aspect-square h-4 w-4 rounded shadow-sm"
             style={{ backgroundColor: hex }}
           />
           <span className="flex-grow truncate text-[0.75rem]">{hex}</span>
@@ -166,7 +207,7 @@ export function ColorPicker({
             onClick={handleSatLightClick}
           >
             <motion.div
-              className="absolute h-4 w-4 rounded-full border-2 border-white shadow-md"
+              className="absolute h-4 w-4 rounded border-2 border-white shadow-md"
               style={{
                 left: `${hsl[1]}%`,
                 top: `${100 - hsl[2]}%`,
@@ -182,7 +223,7 @@ export function ColorPicker({
             max={360}
             value={hsl[0]}
             onChange={handleHueChange}
-            className="h-3 w-full cursor-pointer appearance-none rounded-full"
+            className="h-3 w-full cursor-pointer appearance-none rounded"
             style={{
               background: `linear-gradient(to right,
                 hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%),
@@ -212,12 +253,12 @@ export function ColorPicker({
               whileTap={{ scale: 0.9 }}
             />
           </div>
-          <div className="grid grid-cols-6 gap-2">
+          <div className="grid grid-cols-8 gap-2">
             <AnimatePresence>
               {colorPresets.map((preset) => (
                 <motion.button
                   key={preset}
-                  className="relative h-8 w-8 rounded-full"
+                  className="relative h-8 w-8 rounded"
                   style={{ backgroundColor: preset }}
                   onClick={() => applyHsl(hexToHsl(preset))}
                   whileHover={{ scale: 1.2, zIndex: 1 }}

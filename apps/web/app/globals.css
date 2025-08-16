@@ -140,3 +140,11 @@ input::-ms-clear {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+.bn-side-menu svg {
+  color: var(--editor-text) !important;
+}
+
+.bn-inline-content::before {
+  color: var(--editor-text) !important;
+}

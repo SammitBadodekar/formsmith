@@ -146,5 +146,5 @@ input::-ms-clear {
 }
 
 .bn-inline-content::before {
-  color: var(--editor-text) !important;
+  color: color-mix(in srgb, var(--editor-text), transparent 50%) !important;
 }

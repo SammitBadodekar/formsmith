@@ -44,7 +44,12 @@ import {
   useRef,
   useState,
 } from "react";
-import { longAnswerSchema, shortAnswerSchema } from "./validator";
+import {
+  emailInputSchema,
+  linkInputSchema,
+  longAnswerSchema,
+  shortAnswerSchema,
+} from "./validator";
 import { Uploader } from "../modals/uploader";
 import { useAtom } from "jotai";
 import { formCustomizationAtom } from "@/lib/atoms";
@@ -143,6 +148,10 @@ function Editor(props: EditorProps) {
         return shortAnswerSchema;
       case "longAnswer":
         return longAnswerSchema;
+      case "emailInput":
+        return emailInputSchema;
+      case "linkInput":
+        return linkInputSchema;
       default:
         return null;
     }
@@ -155,12 +164,13 @@ function Editor(props: EditorProps) {
     const currentBlocks = editor.document;
 
     for (const block of currentBlocks) {
-      if (block.type === "shortAnswer" || block.type === "longAnswer") {
+      if (inputTypes.includes(block.type)) {
         const currentBlockProps = block.props;
         const zodSchemaFn = getBlockSchema(block.type);
 
         if (zodSchemaFn) {
           const schema = zodSchemaFn(currentBlockProps);
+          // @ts-ignore
           const validationResult = schema.safeParse(currentBlockProps.value);
 
           const newPropsUpdate: Record<string, any> = {

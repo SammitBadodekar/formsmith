@@ -1,6 +1,8 @@
 import { getDefaultReactSlashMenuItems } from "@blocknote/react";
 import { schema } from "./editor";
 import {
+  getEmailInputSlashCommand,
+  getLinkInputSlashCommand,
   getLongAnswerSlashCommand,
   getNewPageSlashCommand,
   getshortAnswerSlashCommand,
@@ -17,6 +19,8 @@ export const getSlashMenuItems = (editor: typeof schema.BlockNoteEditor) => {
   return [
     getshortAnswerSlashCommand(editor),
     getLongAnswerSlashCommand(editor),
+    getEmailInputSlashCommand(editor),
+    getLinkInputSlashCommand(editor),
     getNewPageSlashCommand(editor),
     ...filteredItems,
   ];
@@ -52,7 +56,12 @@ export const getPlainText = (block: any) => {
     .trim();
 };
 
-export const inputTypes = ["shortAnswer", "longAnswer"];
+export const inputTypes = [
+  "shortAnswer",
+  "longAnswer",
+  "emailInput",
+  "linkInput",
+];
 export const customBlockTypes = ["label", "newPage", ...inputTypes];
 export const skipBlockTitleEditor = ["newPage"];
 

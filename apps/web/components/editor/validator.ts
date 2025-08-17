@@ -43,3 +43,27 @@ export const createStringSchema = (blockProps: any) => {
 
 export const shortAnswerSchema = createStringSchema;
 export const longAnswerSchema = createStringSchema;
+
+export const emailInputSchema = (blockProps: any) => {
+  let schema = z.string().email();
+
+  if (blockProps.required) {
+    schema = schema.min(1, {
+      message: blockProps.customErrorMessage || "This field is required.",
+    });
+  }
+
+  return schema;
+};
+
+export const linkInputSchema = (blockProps: any) => {
+  let schema = z.string().url();
+
+  if (blockProps.required) {
+    schema = schema.min(1, {
+      message: blockProps.customErrorMessage || "This field is required.",
+    });
+  }
+
+  return schema;
+};

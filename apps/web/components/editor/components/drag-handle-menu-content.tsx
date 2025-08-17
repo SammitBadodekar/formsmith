@@ -1,7 +1,12 @@
 import { DragHandleMenuProps } from "@blocknote/react";
 import React from "react";
 import { schema } from "../editor";
-import { NewPageDragHandleMenu, ShortAnswerDragHandleMenu } from "../blocks";
+import {
+  EmailInputDragHandleMenu,
+  LinkInputDragHandleMenu,
+  NewPageDragHandleMenu,
+  ShortAnswerDragHandleMenu,
+} from "../blocks";
 
 const DragHandleMenuContent = ({
   props,
@@ -42,6 +47,14 @@ const DragHandleMenuContent = ({
     case "newPage":
       return (
         <NewPageDragHandleMenu props={props} editor={editor} block={block} />
+      );
+    case "emailInput":
+      return (
+        <EmailInputDragHandleMenu props={props} editor={editor} block={block} />
+      );
+    case "linkInput":
+      return (
+        <LinkInputDragHandleMenu props={props} editor={editor} block={block} />
       );
     default:
       return <></>;

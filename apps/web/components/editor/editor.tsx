@@ -29,6 +29,8 @@ import {
   longAnswer,
   NewPage,
   ThankYouPage,
+  emailInput,
+  linkInput,
 } from "./blocks";
 import BlocksDragHandleMenu from "./components/drag-handle-menu";
 import { ArrowRight, Hexagon, Loader, PanelTop, Trash2 } from "lucide-react";
@@ -47,7 +49,6 @@ import { Uploader } from "../modals/uploader";
 import { useAtom } from "jotai";
 import { formCustomizationAtom } from "@/lib/atoms";
 import { hexToHsl } from "../ui/color-picker";
-import { FormCustomizations } from "@formsmith/shared";
 import { MdOutlineDashboardCustomize } from "react-icons/md";
 
 export const schema = BlockNoteSchema.create({
@@ -58,6 +59,8 @@ export const schema = BlockNoteSchema.create({
     longAnswer: longAnswer,
     newPage: NewPage,
     thankYouPage: ThankYouPage,
+    emailInput: emailInput,
+    linkInput: linkInput,
   },
 });
 

@@ -1,35 +1,35 @@
 import { Input } from "@/components/ui/input";
 import { createReactBlockSpec, DragHandleMenuProps } from "@blocknote/react";
 import { schema } from "../editor";
-import { HiOutlineBars2 } from "react-icons/hi2";
 import cuid from "cuid";
 import { cn } from "@/lib/utils";
 import { getHighlightStyles } from "../helpers";
-import { shortAnswerSchema } from "../validator";
+import { linkInputSchema } from "../validator";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { useAtom } from "jotai";
 import { formCustomizationAtom } from "@/lib/atoms";
+import { Link } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export const shortAnswer = createReactBlockSpec(
+export const linkInput = createReactBlockSpec(
   {
-    type: "shortAnswer",
+    type: "linkInput",
     propSchema: {
       type: {
-        default: "shortAnswer",
-        values: ["shortAnswer"],
+        default: "linkInput",
+        values: ["linkInput"],
       },
       placeholder: {
         default: "Type placeholder text...",
       },
       name: {
-        default: "untitled shortAnswer",
+        default: "untitled linkInput",
       },
       highlight: {
         default: false,
@@ -42,15 +42,6 @@ export const shortAnswer = createReactBlockSpec(
       },
       required: {
         default: true,
-      },
-      pattern: {
-        default: "",
-      },
-      minLength: {
-        default: 0,
-      },
-      maxLength: {
-        default: Infinity,
       },
       customErrorMessage: {
         default: "",
@@ -76,7 +67,7 @@ export const shortAnswer = createReactBlockSpec(
       const highlight = props?.block?.props?.highlight;
 
       const validateAndCommit = (currentValue: string) => {
-        const schema = shortAnswerSchema(block.props); // Pass all props
+        const schema = linkInputSchema(block.props); // Pass all props
         const validationResult = schema.safeParse(currentValue);
 
         const newProps: Record<string, any> = {
@@ -120,7 +111,7 @@ export const shortAnswer = createReactBlockSpec(
 
       return (
         <div
-          className={cn("mb-6 flex w-full flex-col gap-2")}
+          className={cn("relative mb-6 flex w-full flex-col gap-2")}
           style={highlight ? getHighlightStyles(customizations) : {}}
         >
           <div
@@ -179,14 +170,14 @@ export const shortAnswer = createReactBlockSpec(
                 !isValid && isDirty ? `${block.id}-error` : undefined
               }
             />
-            {editor.isEditable && (
+            {editor?.isEditable && (
               <span className="absolute right-2 top-[calc(50%_-_0.85rem)]">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <HiOutlineBars2 size={18} />
+                    <Link size={18} />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Short Answer</p>
+                    <p>Link Input</p>
                   </TooltipContent>
                 </Tooltip>
               </span>
@@ -204,11 +195,11 @@ export const shortAnswer = createReactBlockSpec(
   },
 );
 
-export const getshortAnswerSlashCommand = (
+export function getLinkInputSlashCommand(
   editor: typeof schema.BlockNoteEditor,
-) => {
+) {
   return {
-    title: "Short Answer",
+    title: "Link",
     subtext: "",
     onItemClick: () => {
       const labelId = cuid();
@@ -232,7 +223,7 @@ export const getshortAnswerSlashCommand = (
             ],
           },
           {
-            type: "shortAnswer",
+            type: "linkInput",
             props: {
               label: labelId,
             },
@@ -244,13 +235,13 @@ export const getshortAnswerSlashCommand = (
       // @ts-ignore
       editor.removeBlocks([editor.getPrevBlock(blocks[0])]);
     },
-    aliases: ["short input", "input", "text", "string"],
+    aliases: ["link"],
     group: "Questions",
-    icon: <HiOutlineBars2 size={18} />,
+    icon: <Link size={18} />,
   };
-};
+}
 
-export const ShortAnswerDragHandleMenu = ({
+export const LinkInputDragHandleMenu = ({
   props,
   editor,
   block: Block,
@@ -263,8 +254,6 @@ export const ShortAnswerDragHandleMenu = ({
   const [config, setConfig] = useState({
     required: (block?.props as any)?.required,
     defaultValue: (block?.props as any)?.value,
-    minLength: (block?.props as any)?.minLength,
-    maxLength: (block?.props as any)?.maxLength,
     customErrorMessage: (block?.props as any)?.customErrorMessage,
   });
 
@@ -288,24 +277,6 @@ export const ShortAnswerDragHandleMenu = ({
     setConfig({ ...config, required: value });
   };
 
-  const handleMinLengthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    editor.updateBlock(block, {
-      props: {
-        minLength: Number(e.target.value),
-      },
-    });
-    setConfig({ ...config, minLength: Number(e.target.value) });
-  };
-
-  const handleMaxLengthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    editor.updateBlock(block, {
-      props: {
-        maxLength: Number(e.target.value),
-      },
-    });
-    setConfig({ ...config, maxLength: Number(e.target.value) });
-  };
-
   const handleCustomErrorMessageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -324,23 +295,6 @@ export const ShortAnswerDragHandleMenu = ({
         <Switch
           checked={config.required}
           onCheckedChange={handleRequiredChange}
-        />
-      </div>
-      <div className="flex w-full items-center gap-2">
-        <Label className="w-2/4 text-primary/75">Min Length</Label>
-        <Input
-          className="h-8 w-full"
-          value={config.minLength}
-          onChange={handleMinLengthChange}
-        />
-      </div>
-      <div className="flex w-full items-center gap-2">
-        <Label className="w-2/4 text-primary/75">Max Length</Label>
-        <Input
-          className="h-8 w-full"
-          type="number"
-          value={config.maxLength ?? Infinity}
-          onChange={handleMaxLengthChange}
         />
       </div>
       <div>

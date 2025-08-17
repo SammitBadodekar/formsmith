@@ -132,7 +132,7 @@ export const longAnswer = createReactBlockSpec(
                 : value
             }
             className={cn(
-              `min-w-full placeholder:text-editorText placeholder:opacity-50 ${customizations?.theme === "dark" ? "border-primary/25" : ""}`,
+              `min-w-full resize-none placeholder:text-editorText placeholder:opacity-50 ${customizations?.theme === "dark" ? "border-primary/25" : ""}`,
               {
                 "border-red-500": !isValid && isDirty,
               },
@@ -152,6 +152,7 @@ export const longAnswer = createReactBlockSpec(
             aria-describedby={
               !isValid && isDirty ? `${block.id}-error` : undefined
             }
+            rows={4}
           />
           {!isValid && isDirty && errorMessage && (
             <span id={`${block.id}-error`} className="text-sm text-red-600">

@@ -65,7 +65,8 @@ export const Label = createReactBlockSpec(
             </label>
 
             {correspondentInput &&
-              (correspondentInput as any)?.props?.required && (
+              (correspondentInput as any)?.props?.required &&
+              props?.editor?.isEditable && (
                 <span
                   className="absolute -right-6 top-[calc(50%_-_0.75rem)] cursor-pointer rounded-full bg-primary/10 font-black shadow-sm"
                   onClick={() => {

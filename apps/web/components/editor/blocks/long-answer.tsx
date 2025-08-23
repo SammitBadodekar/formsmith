@@ -141,7 +141,7 @@ export const longAnswer = createReactBlockSpec(
               borderRadius: `${customizations?.inputsRadius}px`,
               borderWidth: `${customizations?.inputsBorderWidth}px`,
               backgroundColor: customizations?.inputsBackgroundColor,
-              color: customizations?.inputsTextColor,
+              color: customizations?.color,
               borderColor: customizations?.inputsBorderColor,
               marginBottom: `${customizations?.inputsMarginBottom}px`,
               paddingInline: `${customizations?.inputsHorizontalPadding}px`,

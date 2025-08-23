@@ -131,6 +131,7 @@ export const shortAnswer = createReactBlockSpec(
                 : {
                     width: "max-content",
                   }),
+              marginBottom: `${customizations?.inputsMarginBottom}px`,
             }}
           >
             <Input
@@ -167,9 +168,8 @@ export const shortAnswer = createReactBlockSpec(
                 borderRadius: `${customizations?.inputsRadius}px`,
                 borderWidth: `${customizations?.inputsBorderWidth}px`,
                 backgroundColor: customizations?.inputsBackgroundColor,
-                color: customizations?.inputsTextColor,
+                color: customizations?.color,
                 borderColor: customizations?.inputsBorderColor,
-                marginBottom: `${customizations?.inputsMarginBottom}px`,
                 paddingInline: `${customizations?.inputsHorizontalPadding}px`,
               }}
               onChange={handleInputChange}
@@ -180,7 +180,7 @@ export const shortAnswer = createReactBlockSpec(
               }
             />
             {editor.isEditable && (
-              <span className="absolute right-2 top-[calc(50%_-_0.85rem)]">
+              <span className="absolute right-2 top-[calc(50%_-_0.6rem)]">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <HiOutlineBars2 size={18} />

@@ -122,6 +122,7 @@ export const emailInput = createReactBlockSpec(
                 : {
                     width: "max-content",
                   }),
+              marginBottom: `${customizations?.inputsMarginBottom}px`,
             }}
           >
             <Input
@@ -158,9 +159,8 @@ export const emailInput = createReactBlockSpec(
                 borderRadius: `${customizations?.inputsRadius}px`,
                 borderWidth: `${customizations?.inputsBorderWidth}px`,
                 backgroundColor: customizations?.inputsBackgroundColor,
-                color: customizations?.inputsTextColor,
+                color: customizations?.color,
                 borderColor: customizations?.inputsBorderColor,
-                marginBottom: `${customizations?.inputsMarginBottom}px`,
                 paddingInline: `${customizations?.inputsHorizontalPadding}px`,
               }}
               onChange={handleInputChange}
@@ -171,7 +171,7 @@ export const emailInput = createReactBlockSpec(
               }
             />
             {editor?.isEditable && (
-              <span className="absolute right-2 top-[calc(50%_-_0.85rem)]">
+              <span className="absolute right-2 top-[calc(50%_-_0.6rem)]">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <AtSign size={18} />

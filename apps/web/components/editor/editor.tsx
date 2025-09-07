@@ -60,7 +60,6 @@ import {
   multiColumnDropCursor,
   withMultiColumn,
 } from "@blocknote/xl-multi-column";
-import * as locales from "@blocknote/core/locales";
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
@@ -203,7 +202,7 @@ function Editor(props: EditorProps) {
     }
 
     // Update overall validity state based on these explicit checks
-    checkOverallFormValidity(editor.document);
+    checkOverallFormValidity(editor.document as any);
 
     if (!allFieldsValidAfterFinalCheck) {
       console.log("Form is invalid. Please check the fields.");
@@ -212,7 +211,7 @@ function Editor(props: EditorProps) {
 
     console.log("Form is valid. Submitting data...");
     setIsSubmitting(true);
-    const submissionData = getSubmissionData(editor);
+    const submissionData = getSubmissionData(editor as any);
     await props?.onSubmit?.(submissionData, editor.document);
     setIsSubmitting(false);
   };
@@ -424,7 +423,10 @@ function Editor(props: EditorProps) {
                         {customBlockTypes.includes(
                           props.block.type as string,
                         ) ? (
-                          <BlocksDragHandleMenu props={props} editor={editor} />
+                          <BlocksDragHandleMenu
+                            props={props}
+                            editor={editor as any}
+                          />
                         ) : (
                           <RemoveBlockItem {...props}>
                             <div className="-ml-2 flex items-center gap-2 px-1">

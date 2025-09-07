@@ -56,6 +56,11 @@ import { useAtom } from "jotai";
 import { formCustomizationAtom } from "@/lib/atoms";
 import { hexToHsl } from "../ui/color-picker";
 import { MdOutlineDashboardCustomize } from "react-icons/md";
+import {
+  multiColumnDropCursor,
+  withMultiColumn,
+} from "@blocknote/xl-multi-column";
+import * as locales from "@blocknote/core/locales";
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
@@ -121,7 +126,9 @@ function Editor(props: EditorProps) {
               content: "",
             },
           ],
-    schema: schema,
+
+    schema: withMultiColumn(schema),
+    dropCursor: multiColumnDropCursor,
   });
 
   const checkOverallFormValidity = useCallback(

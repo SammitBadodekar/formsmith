@@ -4,6 +4,7 @@ import {
   getEmailInputSlashCommand,
   getLinkInputSlashCommand,
   getLongAnswerSlashCommand,
+  getMultiChoiceSlashCommand,
   getNewPageSlashCommand,
   getshortAnswerSlashCommand,
 } from "./blocks";
@@ -21,6 +22,7 @@ export const getSlashMenuItems = (editor: typeof schema.BlockNoteEditor) => {
     getLongAnswerSlashCommand(editor),
     getEmailInputSlashCommand(editor),
     getLinkInputSlashCommand(editor),
+    getMultiChoiceSlashCommand(editor),
     getNewPageSlashCommand(editor),
     ...filteredItems,
   ];

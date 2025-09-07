@@ -67,3 +67,38 @@ export const linkInputSchema = (blockProps: any) => {
 
   return schema;
 };
+
+export const multiChoiceSchema = (blockProps: any) => {
+  let schema = z.array(z.string());
+
+  if (blockProps.required) {
+    schema = schema.min(1, {
+      message:
+        blockProps.customErrorMessage ||
+        "At least one option must be selected.",
+    });
+  }
+
+  if (blockProps.minSelected) {
+    schema = schema.min(blockProps.minSelected, {
+      message: `Select at least ${blockProps.minSelected} options.`,
+    });
+  }
+
+  if (blockProps.maxSelected) {
+    schema = schema.max(blockProps.maxSelected, {
+      message: `Select at most ${blockProps.maxSelected} options.`,
+    });
+  }
+
+  // If not required and no minSelected > 0, allow empty selection
+  if (
+    !blockProps.required &&
+    (blockProps.minSelected === undefined || blockProps.minSelected === 0)
+  ) {
+    // @ts-ignore
+    schema = schema.optional().or(z.array(z.string()).length(0));
+  }
+
+  return schema;
+};

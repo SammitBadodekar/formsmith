@@ -31,6 +31,7 @@ import {
   ThankYouPage,
   emailInput,
   linkInput,
+  multiChoice,
 } from "./blocks";
 import BlocksDragHandleMenu from "./components/drag-handle-menu";
 import { ArrowRight, Hexagon, Loader, PanelTop, Trash2 } from "lucide-react";
@@ -66,6 +67,7 @@ export const schema = BlockNoteSchema.create({
     thankYouPage: ThankYouPage,
     emailInput: emailInput,
     linkInput: linkInput,
+    multiChoice: multiChoice,
   },
 });
 
@@ -376,8 +378,10 @@ function Editor(props: EditorProps) {
             onChange={() => {
               onSave?.(editor.document);
               setIsLastPageThankYou(
-                editor.document.findLast((b) => b.type === "newPage")?.props
-                  ?.isThankYou
+                (
+                  editor.document.findLast((b) => b.type === "newPage")
+                    ?.props as any
+                )?.isThankYou
                   ? true
                   : false,
               );

@@ -5,3 +5,4 @@ export * from "./new-page";
 export * from "./thank-you-page";
 export * from "./email-input";
 export * from "./link-input";
+export * from "./multi-choice";

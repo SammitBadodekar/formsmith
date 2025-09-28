@@ -352,15 +352,6 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
-              <Stat label="Stars" value="★ ★ ★" />
-              <Stat label="Issues" value="Good first" />
-              <Stat label="License" value="MIT" />
-            </div>
-            <p className="mt-4 text-xs text-muted-foreground">
-              P.S. replace these placeholders with live GitHub data when you’re
-              ready.
-            </p>
           </div>
         </div>
       </section>

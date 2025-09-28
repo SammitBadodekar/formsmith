@@ -1,4 +1,4 @@
-import ShowPublishedForm from "@/app/[...domain]/show-published-form";
+import ShowPublishedForm from "@/app/(app)/[...domain]/show-published-form";
 import { getTemplate } from "@/lib/queries";
 import { CustomizationsStoreProvider } from "../../(dashboard)/forms/[form_id]/edit/customizations-provider";
 
@@ -11,7 +11,6 @@ export default async function Page({
 }) {
   const { template_id } = await params;
   const data = await getTemplate(template_id);
-  console.log("here template data", data);
   return (
     <>
       <CustomizationsStoreProvider

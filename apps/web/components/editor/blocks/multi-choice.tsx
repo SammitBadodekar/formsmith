@@ -260,7 +260,6 @@ export const multiChoice = createReactBlockSpec(
         options: optionsRaw,
       } = block.props;
       const [customizations] = useAtom(formCustomizationAtom);
-      console.log("here re-rendered", props);
       return (
         <>
           <RenderOptions {...props} />
@@ -341,7 +340,6 @@ export const getMultiChoiceSlashCommand = (
 };
 
 const RenderOptions = (props: any) => {
-  console.log("props", props);
   const { editor, block } = props;
   const {
     value,
@@ -405,8 +403,6 @@ const RenderOptions = (props: any) => {
   const [rows, setRowsState] = useState<Rows>(options);
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  console.log("options", { options, rows });
-
   function setRows(next: Rows) {
     setRowsState(next);
     editor.updateBlock(block, {
@@ -415,8 +411,6 @@ const RenderOptions = (props: any) => {
       },
     });
   }
-
-  console.log("rows", rows);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -539,7 +533,6 @@ const RenderOptions = (props: any) => {
 
   const setOptionText = (text: string, option: Option) => {
     const rowIdx = findRowIndexByItem(rows, option.id!);
-    console.log("here in setOptionText", { text, option, rowIdx });
     if (rowIdx === -1) return;
     const from = rows[rowIdx];
     const nextRows = [...rows];

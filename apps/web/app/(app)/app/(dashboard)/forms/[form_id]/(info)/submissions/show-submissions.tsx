@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGetSubmissionsQuery } from "@/hooks/use-queries";
-import { Submission } from "@/app/[...domain]/show-published-form";
+import { Submission } from "@/app/(app)/[...domain]/show-published-form";
 import { FormSubmission } from "@formsmith/database";
 import { format, isThisYear } from "date-fns";
 import Loader from "@/components/ui/loader";

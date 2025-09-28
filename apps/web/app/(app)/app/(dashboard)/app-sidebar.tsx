@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import { Globe, Home, Search, Settings } from "lucide-react";
-import { NavMain } from "@/app/app/(dashboard)/nav-main";
+import { NavMain } from "@/app/(app)/app/(dashboard)/nav-main";
 import {
   Sidebar,
   SidebarFooter,

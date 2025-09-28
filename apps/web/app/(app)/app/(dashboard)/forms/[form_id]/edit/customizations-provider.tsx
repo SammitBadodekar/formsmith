@@ -60,8 +60,6 @@ export function CustomizationsStoreProvider({
   const fromDb = (data?.data?.form?.customizations as FormCustomizations) ?? {};
   const initial = { ...defaultFormCustomizations, ...fromDb };
 
-  console.log("setting initial customizations", initial);
-
   return (
     <Provider key={formId} store={store}>
       <Hydrator formId={formId} customization={initial}>

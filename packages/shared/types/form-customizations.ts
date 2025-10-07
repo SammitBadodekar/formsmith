@@ -10,6 +10,7 @@ export type FormCustomizations = {
   logoHeight?: number;
   logoCornerRadius?: number;
   image?: string;
+  imagePosition?: string;
   imageHeight?: number;
   inputsWidthType?: "fixed" | "full" | "auto";
   inputsWidth?: number;

@@ -34,7 +34,14 @@ import {
   multiChoice,
 } from "./blocks";
 import BlocksDragHandleMenu from "./components/drag-handle-menu";
-import { ArrowRight, Hexagon, Loader, PanelTop, Trash2 } from "lucide-react";
+import {
+  ArrowRight,
+  Hexagon,
+  Loader,
+  Move,
+  PanelTop,
+  Trash2,
+} from "lucide-react";
 import { Form } from "@formsmith/database";
 import {
   Dispatch,
@@ -110,6 +117,11 @@ function Editor(props: EditorProps) {
   const [isLastPageThankYou, setIsLastPageThankYou] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customizations, setCustomizations] = useAtom(formCustomizationAtom);
+  const [isRepositioning, setIsRepositioning] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [imagePosition, setImagePosition] = useState({ x: 50, y: 50 });
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const editor = useCreateBlockNote({
     initialContent:
@@ -222,6 +234,127 @@ function Editor(props: EditorProps) {
     onSave?.(editor.document);
   };
 
+  const calculateConstrainedPosition = useCallback(
+    (clientX: number, clientY: number) => {
+      if (!imageContainerRef.current || !imageRef.current) return null;
+
+      const containerRect = imageContainerRef.current.getBoundingClientRect();
+      const img = imageRef.current;
+
+      // Get actual rendered image dimensions
+      const imgNaturalWidth = img.naturalWidth;
+      const imgNaturalHeight = img.naturalHeight;
+      const containerWidth = containerRect.width;
+      const containerHeight = containerRect.height;
+
+      // Calculate the scale factor (image is object-fit: cover)
+      const scaleX = containerWidth / imgNaturalWidth;
+      const scaleY = containerHeight / imgNaturalHeight;
+      const scale = Math.max(scaleX, scaleY);
+
+      // Calculate rendered image dimensions
+      const renderedWidth = imgNaturalWidth * scale;
+      const renderedHeight = imgNaturalHeight * scale;
+
+      // Calculate how much the image overflows the container
+      const overflowX = renderedWidth - containerWidth;
+      const overflowY = renderedHeight - containerHeight;
+
+      // Calculate mouse position relative to container
+      const mouseX = clientX - containerRect.left;
+      const mouseY = clientY - containerRect.top;
+
+      // Convert to percentage, but constrain to prevent black areas
+      let x = (mouseX / containerWidth) * 100;
+      let y = (mouseY / containerHeight) * 100;
+
+      // Constrain based on overflow
+      if (overflowX > 0) {
+        const minX = 0;
+        const maxX = 100;
+        x = Math.max(minX, Math.min(maxX, x));
+      } else {
+        x = 50; // Center if image is wider than container
+      }
+
+      if (overflowY > 0) {
+        const minY = 0;
+        const maxY = 100;
+        y = Math.max(minY, Math.min(maxY, y));
+      } else {
+        y = 50; // Center if image is taller than container
+      }
+
+      return { x, y };
+    },
+    [],
+  );
+
+  const handleImageMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!isDragging) return;
+
+      const position = calculateConstrainedPosition(e.clientX, e.clientY);
+      if (position) {
+        setImagePosition(position);
+      }
+    },
+    [isDragging, calculateConstrainedPosition],
+  );
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!isRepositioning) return;
+      setIsDragging(true);
+      const position = calculateConstrainedPosition(e.clientX, e.clientY);
+      if (position) {
+        setImagePosition(position);
+      }
+    },
+    [isRepositioning, calculateConstrainedPosition],
+  );
+
+  const handleMouseUp = useCallback(() => {
+    if (isDragging) {
+      setIsDragging(false);
+      setIsRepositioning(false);
+      handleUpdateCustomizations({
+        imagePosition: `${imagePosition.x}% ${imagePosition.y}%`,
+      });
+    }
+  }, [isDragging, imagePosition, handleUpdateCustomizations]);
+
+  const handleRepositionStart = () => {
+    // Parse existing position if any
+    const currentPos = customizations.imagePosition || "center";
+    const positionMap: Record<string, { x: number; y: number }> = {
+      "top left": { x: 0, y: 0 },
+      "top center": { x: 50, y: 0 },
+      "top right": { x: 100, y: 0 },
+      "center left": { x: 0, y: 50 },
+      center: { x: 50, y: 50 },
+      "center right": { x: 100, y: 50 },
+      "bottom left": { x: 0, y: 100 },
+      "bottom center": { x: 50, y: 100 },
+      "bottom right": { x: 100, y: 100 },
+    };
+
+    // Try to parse percentage values
+    if (currentPos.includes("%")) {
+      const [xStr, yStr] = currentPos.split(" ");
+      const x = parseFloat(xStr);
+      const y = parseFloat(yStr);
+      if (!isNaN(x) && !isNaN(y)) {
+        setImagePosition({ x, y });
+        setIsRepositioning(true);
+        return;
+      }
+    }
+
+    setImagePosition(positionMap[currentPos] || { x: 50, y: 50 });
+    setIsRepositioning(true);
+  };
+
   useEffect(() => {
     if (
       !formData?.customizations ||
@@ -256,18 +389,48 @@ function Editor(props: EditorProps) {
       style={{ ...(formData?.customizations ?? {}), ...customizations }}
     >
       {customizations?.image ? (
-        <div className="relative">
+        <div
+          ref={imageContainerRef}
+          className="relative select-none"
+          onMouseMove={handleImageMouseMove}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          style={{
+            cursor: isRepositioning
+              ? isDragging
+                ? "grabbing"
+                : "grab"
+              : "default",
+          }}
+        >
           <img
+            ref={imageRef}
             src={customizations?.image}
             height={customizations.imageHeight ?? 200}
             width={400}
             alt="cover image"
-            className="w-full object-cover"
+            className="pointer-events-none w-full object-cover"
+            draggable={false}
             style={{
               height: `${customizations.imageHeight ?? 200}px`,
+              objectPosition: isDragging
+                ? `${imagePosition.x}% ${imagePosition.y}%`
+                : customizations.imagePosition || "center",
             }}
           />
-          {editable && (
+          {isRepositioning && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+              <div className="flex flex-col items-center gap-2 text-white">
+                <Move className="h-8 w-8" />
+                <p className="text-lg font-bold">
+                  {isDragging ? "Dragging..." : "Click and drag to reposition"}
+                </p>
+                <p className="text-sm">{isDragging ? "Release to save" : ""}</p>
+              </div>
+            </div>
+          )}
+          {editable && !isRepositioning && (
             <div className="absolute bottom-4 right-4 flex gap-4">
               <Uploader
                 callback={(url) => {
@@ -283,19 +446,15 @@ function Editor(props: EditorProps) {
                   <PanelTop />
                   <p>Change</p>
                 </Button>
-              </Uploader>
+              </Uploader>{" "}
               <Button
                 variant="secondary"
-                className="flex items-center gap-2 font-black"
                 size="sm"
-                onClick={() => {
-                  handleUpdateCustomizations({
-                    image: "",
-                  });
-                }}
+                className="flex items-center gap-2 font-black"
+                onClick={handleRepositionStart}
               >
-                <Trash2 />
-                Remove
+                <Move />
+                <p>Reposition</p>
               </Button>
             </div>
           )}

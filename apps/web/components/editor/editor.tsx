@@ -273,6 +273,7 @@ function Editor(props: EditorProps) {
                 callback={(url) => {
                   handleUpdateCustomizations({ image: url });
                 }}
+                showUnsplash={true}
               >
                 <Button
                   variant="secondary"
@@ -355,6 +356,7 @@ function Editor(props: EditorProps) {
                   callback={(url) => {
                     handleUpdateCustomizations({ image: url });
                   }}
+                  showUnsplash={true}
                 >
                   <Button
                     variant="ghost"

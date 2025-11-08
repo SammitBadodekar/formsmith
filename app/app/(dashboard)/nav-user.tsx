@@ -27,7 +27,8 @@ import {
 } from "@/components/ui/sidebar";
 
 import Link from "next/link";
-import { useSession } from "@/lib/auth-client";
+import { signOut, useSession } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -96,13 +97,16 @@ export function NavUser() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link
-                href={`/api/auth/signout`}
+              <Button
                 className="flex w-full items-center gap-2"
+                onClick={async () => {
+                  await signOut();
+                  window.location.reload();
+                }}
               >
                 <LogOut className="h-4 w-4" />
                 Log out
-              </Link>
+              </Button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

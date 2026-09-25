@@ -39,6 +39,7 @@ export interface ObjectStore {
 export interface IntakeOptions {
   store: ObjectStore;
   enqueue: (key: string) => Promise<void>;
+  defer?: (work: Promise<void>) => void;
   send: (request: Request) => Promise<Response>;
   admissionKeys: Record<string, string>;
   controlKeys: Record<string, string>;
@@ -243,11 +244,13 @@ export class Intake {
     if (admission.expiresAt <= this.now())
       throw new IntakeError(410, "This attempt expired. Start a new attempt to submit.");
     if (command.honeypot) throw new IntakeError(422, "Submission could not be accepted");
-    await this.getPolicy(command.formId);
-    const definition: FormDefinition | null = await this.read(
-      `versions/${command.formId}/${command.versionId}`,
-      (value) => formSchema.parse(value),
-    );
+    const policy = await this.getPolicy(command.formId);
+    const definition: FormDefinition | null =
+      policy.versionId === admission.versionId
+        ? policy.definition
+        : await this.read(`versions/${command.formId}/${command.versionId}`, (value) =>
+            formSchema.parse(value),
+          );
     if (!definition || (await hashPayload(definition)) !== admission.definitionHash)
       throw new IntakeError(503, "Published version unavailable");
     const checked = validateAnswers(definition, command.answers);
@@ -292,11 +295,20 @@ export class Intake {
     if (saved.requestHash !== requestHash)
       throw new IntakeError(409, "This attempt already received different answers");
     // Queue availability is not the durability boundary: the journal is.
-    try {
-      await this.options.enqueue(key);
-    } catch {
+    const notification = this.options.enqueue(key).catch(() => {
       this.options.report?.("intake.enqueue_failed", saved.receiptId);
-    }
+    });
+    if (this.options.defer) this.options.defer(notification);
+    else await notification;
+    // A new receipt can be returned without a redundant result lookup. If a
+    // fast replay already committed, the respondent's next status read sees it.
+    if (inserted)
+      return {
+        id: saved.receiptId,
+        attemptId: command.attemptId,
+        receivedAt: saved.receivedAt,
+        status: "pending" as const,
+      };
     return this.receipt(saved);
   }
   async replay(key: string, recovering = false): Promise<void> {

@@ -17,7 +17,6 @@ import {
   FileText,
   Folder,
   Globe,
-  MoreHorizontal,
   Plus,
   Search,
   Settings,
@@ -30,6 +29,7 @@ import { Domains } from "./domains";
 import { useFormList } from "./use-form-list";
 
 const Builder = lazy(() => import("./builder"));
+const FormActions = lazy(() => import("./form-actions"));
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -263,22 +263,29 @@ function Dashboard() {
             {forms.length ? (
               <div className="form-list">
                 {forms.map((form) => (
-                  <Link
-                    className="form-row"
-                    to="/forms/$formId"
-                    params={{ formId: form.id }}
-                    key={form.id}
-                  >
-                    <FileText size={19} />
-                    <div>
-                      <strong>{form.title || "Untitled form"}</strong>
-                      <span>
-                        {form.publishedVersionId ? (form.closed ? "Closed" : "Published") : "Draft"}{" "}
-                        · Edited {new Date(form.updatedAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <MoreHorizontal size={19} />
-                  </Link>
+                  <div className="form-row" key={form.id}>
+                    <Link
+                      className="form-row-main"
+                      to="/forms/$formId"
+                      params={{ formId: form.id }}
+                    >
+                      <FileText size={19} />
+                      <div>
+                        <strong>{form.title || "Untitled form"}</strong>
+                        <span>
+                          {form.publishedVersionId
+                            ? form.closed
+                              ? "Closed"
+                              : "Published"
+                            : "Draft"}{" "}
+                          · Edited {new Date(form.updatedAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </Link>
+                    <Suspense fallback={<span className="icon-button" aria-hidden="true" />}>
+                      <FormActions form={form} onError={setError} />
+                    </Suspense>
+                  </div>
                 ))}
               </div>
             ) : loading ? (

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { createForm, createQuestion, newId, text } from "@formsmith/core";
 import { type JournalEntry, MAX_POLICY_AGE_MS } from "@formsmith/core/intake";
-import { Intake, type ObjectStore } from "./service";
+import { Intake, type IntakeOptions, type ObjectStore } from "./service";
 
 test("intake requires finalized file proofs bound to the attempt and question", async () => {
   const f = await fixture();
@@ -65,7 +65,7 @@ class MemoryStore implements ObjectStore {
     return { keys, cursor: remaining.length > keys.length ? keys.at(-1) : undefined };
   }
 }
-async function fixture() {
+async function fixture(overrides: Partial<Pick<IntakeOptions, "enqueue" | "defer">> = {}) {
   const store = new MemoryStore();
   const form = createForm();
   const question = { ...createQuestion("short_text"), label: text("Your name"), required: true };
@@ -104,6 +104,7 @@ async function fixture() {
       }
       return Response.json(result);
     },
+    ...overrides,
   });
   const manifest = {
     revision: 1,
@@ -146,6 +147,32 @@ async function fixture() {
 }
 
 describe("durable intake", () => {
+  test("a stuck background queue cannot delay a durable receipt or strand reconciliation", async () => {
+    let release = () => {};
+    let calls = 0;
+    const work: Promise<void>[] = [];
+    const f = await fixture({
+      enqueue: () =>
+        ++calls === 1
+          ? new Promise<void>((resolve) => {
+              release = resolve;
+            })
+          : Promise.resolve(),
+      defer: (task) => {
+        work.push(task);
+      },
+    });
+    const receipt = await f.intake.submit(f.attempt.token, f.command);
+    expect(receipt.status).toBe("pending");
+    expect(f.store.records.has(f.key)).toBe(true);
+    expect(work).toHaveLength(1);
+    await f.intake.reconcile();
+    expect(calls).toBe(2);
+    release();
+    await Promise.all(work);
+    await f.intake.replay(f.key);
+    expect((await f.intake.status(f.attempt.token)).status).toBe("committed");
+  }, 1000);
   test("explicit recovery ignores old commit markers and resumes failed pages after a restore", async () => {
     const f = await fixture();
     const receipts = [];

@@ -7,7 +7,8 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       "/api": "http://127.0.0.1:3001",
-      "/f": "http://127.0.0.1:5174",
+      "/.well-known/": "http://127.0.0.1:3001",
+      "/f/": "http://127.0.0.1:5174",
       "/intake": {
         target: "http://127.0.0.1:8787",
         rewrite: (path) => path.replace(/^\/intake/, ""),

@@ -6,14 +6,15 @@ import {
   verifyControl,
 } from "@formsmith/core/intake";
 import { R2Store } from "./r2-store";
-import { Intake, IntakeError, isJournalKey } from "./service";
+import { Intake, IntakeError, type IntakeOptions, isJournalKey } from "./service";
 
-function service(env: Env) {
+function service(env: Env, defer?: IntakeOptions["defer"]) {
   return new Intake({
     store: new R2Store(env.JOURNAL),
     enqueue: async (key) => {
       await env.REPLAY.send({ key });
     },
+    defer,
     send: (request) => fetch(request),
     apiUrl: env.API_URL,
     admissionKeys: parseKeyring(env.ADMISSION_KEYS),
@@ -26,7 +27,7 @@ const bearer = (request: Request) =>
   request.headers.get("authorization")?.replace(/^Bearer /, "") ?? "";
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const headers = new Headers({
       "cache-control": "no-store",
@@ -39,7 +40,7 @@ export default {
     if (origin && allowed.includes(origin)) headers.set("access-control-allow-origin", origin);
     const json = (body: unknown, status = 200) => Response.json(body, { status, headers });
     try {
-      const intake = service(env);
+      const intake = service(env, (work) => ctx.waitUntil(work));
       if (origin && !allowed.includes(origin)) {
         const source = new URL(origin);
         if (source.protocol !== "https:" || source.port)

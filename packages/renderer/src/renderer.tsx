@@ -570,7 +570,7 @@ export function FormRenderer({
         {form.theme.logo && safeUrl(form.theme.logo) && (
           <img className="fs-logo" src={form.theme.logo} alt="Form logo" />
         )}
-        {currentId === "start" && <h1>{form.title || "Untitled form"}</h1>}
+        {currentId === "start" && <h1>{form.title}</h1>}
         {page?.blocks.map(block)}
         {receipt && (
           <section className="fs-completion" role="status">

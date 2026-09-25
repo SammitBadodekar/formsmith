@@ -1,0 +1,37 @@
+{
+  "name": "@formsmith/dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5173",
+    "build": "vite build",
+    "typecheck": "wrangler types && tsc --noEmit && tsc --noEmit -p tsconfig.worker.json",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@formsmith/core": "workspace:*",
+    "@formsmith/renderer": "workspace:*",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@fontsource-variable/inter": "5.3.0",
+    "@formsmith/editor": "workspace:*",
+    "@tanstack/react-router": "1.170.39",
+    "better-auth": "1.7.6",
+    "@better-auth/oauth-provider": "1.7.6",
+    "lucide-react": "1.48.0",
+    "@radix-ui/react-dialog": "1.1.23",
+    "@radix-ui/react-dropdown-menu": "2.1.24",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "tailwind-merge": "3.7.0"
+  },
+  "devDependencies": {
+    "vite": "8.3.1",
+    "@vitejs/plugin-react": "6.1.1",
+    "tailwindcss": "4.3.3",
+    "@tailwindcss/vite": "4.3.3",
+    "wrangler": "4.137.0"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,55 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1790361400074,
+      "tag": "0000_daffy_saracen",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790363505568,
+      "tag": "0001_serious_colossus",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790363762253,
+      "tag": "0002_wonderful_guardsmen",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790364898628,
+      "tag": "0003_glamorous_kronos",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790365760125,
+      "tag": "0004_true_la_nuit",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790367039085,
+      "tag": "0005_cynical_lila_cheney",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790367961615,
+      "tag": "0006_confused_jetstream",
+      "breakpoints": true
+    }
+  ]
+}

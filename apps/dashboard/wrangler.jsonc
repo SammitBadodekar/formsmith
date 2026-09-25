@@ -1,0 +1,41 @@
+{
+  "name": "formsmith-dashboard",
+  "main": "worker.ts",
+  "compatibility_date": "2026-09-21",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "not_found_handling": "single-page-application"
+  },
+  "services": [
+    {
+      "binding": "FORMS",
+      "service": "formsmith-forms"
+    },
+    {
+      "binding": "INTAKE",
+      "service": "formsmith-intake"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "JOURNAL",
+      "bucket_name": "formsmith-intake"
+    }
+  ],
+  "vars": {
+    "PUBLIC_HOST": "formsmith.samz.in",
+    "API_URL": "https://formsmith-api-production.up.railway.app"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "account_id": "013745b929164ce47ff7c27f5d52d352",
+  "routes": [
+    {
+      "pattern": "formsmith.samz.in",
+      "custom_domain": true
+    }
+  ]
+}

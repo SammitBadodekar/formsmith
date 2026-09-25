@@ -1,0 +1,12 @@
+node_modules
+**/node_modules
+**/dist
+**/.turbo
+**/.wrangler
+.git
+.local
+.env
+.env.*
+**/.dev.vars
+**/*.log
+.github

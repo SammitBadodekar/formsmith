@@ -1,10 +1,16 @@
 import "@formsmith/editor/styles.css";
 import "@formsmith/renderer/styles.css";
-import { createForm, type FormDefinition, formSchema, validateDefinition } from "@formsmith/core";
+import {
+  createForm,
+  type FormDefinition,
+  formSchema,
+  safeUrl,
+  validateDefinition,
+} from "@formsmith/core";
 import { type EditorHandle, FormEditor, ImageUpload } from "@formsmith/editor";
-import { FormRenderer } from "@formsmith/renderer";
+import { FormRenderer, formThemeStyle } from "@formsmith/renderer";
 import { Link, useBlocker, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Check, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, Check, ImagePlus, SlidersHorizontal, SmilePlus } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { ApiError, api, type FormRecord, type Page } from "./api";
 import { Connectors } from "./connectors";
@@ -253,8 +259,15 @@ export default function Builder({ id }: { id?: string }) {
     }
   };
   if (!form) return <main className="message-page">{error || "Loading form…"}</main>;
+  const hasCover = Boolean(form.theme.cover && safeUrl(form.theme.cover));
+  const hasLogo = Boolean(form.theme.logo && safeUrl(form.theme.logo));
+  const updateTheme = (changes: Partial<FormDefinition["theme"]>) => {
+    const latest = editor.current?.getDefinition();
+    if (latest)
+      editor.current?.setDefinition({ ...latest, theme: { ...latest.theme, ...changes } });
+  };
   return (
-    <div className="builder">
+    <div className="builder" style={{ background: form.theme.background }}>
       <header className="builder-header">
         <Link to="/" className="builder-back" aria-label="Back to workspace">
           <ArrowLeft size={15} />
@@ -267,6 +280,9 @@ export default function Builder({ id }: { id?: string }) {
           {saveStatus}
         </span>
         <div className="header-actions">
+          <button type="button" className="button subtle" onClick={() => setPanel("customize")}>
+            Customize
+          </button>
           {id && (
             <button type="button" className="button subtle" onClick={() => setPanel("connectors")}>
               Connect
@@ -298,8 +314,49 @@ export default function Builder({ id }: { id?: string }) {
           </button>
         </div>
       )}
-      <main className="builder-canvas" style={{ maxWidth: form.theme.width }}>
+      {hasCover && (
+        <div className="builder-cover">
+          <img src={form.theme.cover} alt="Form cover" />
+          <div className="builder-media-actions">
+            <button className="button" type="button" onClick={() => setPanel("customize")}>
+              Change cover
+            </button>
+            <button className="button" type="button" onClick={() => updateTheme({ cover: "" })}>
+              Remove cover
+            </button>
+          </div>
+        </div>
+      )}
+      <main
+        className={`builder-canvas${hasCover ? " has-cover" : ""}${hasLogo ? " has-logo" : ""}`}
+        style={{ ...formThemeStyle(form.theme), maxWidth: form.theme.width }}
+      >
+        {hasLogo && (
+          <div className="builder-logo">
+            <img src={form.theme.logo} alt="Form logo" />
+            <div className="builder-media-actions">
+              <button className="button" type="button" onClick={() => setPanel("customize")}>
+                Change logo
+              </button>
+              <button className="button" type="button" onClick={() => updateTheme({ logo: "" })}>
+                Remove logo
+              </button>
+            </div>
+          </div>
+        )}
         <div className="builder-customize">
+          {!hasLogo && (
+            <button className="button subtle" type="button" onClick={() => setPanel("customize")}>
+              <SmilePlus size={16} />
+              Add logo
+            </button>
+          )}
+          {!hasCover && (
+            <button className="button subtle" type="button" onClick={() => setPanel("customize")}>
+              <ImagePlus size={16} />
+              Add cover
+            </button>
+          )}
           <button className="button subtle" type="button" onClick={() => setPanel("logic")}>
             Logic
           </button>
@@ -321,14 +378,7 @@ export default function Builder({ id }: { id?: string }) {
               key={kind}
               upload={uploadMedia}
               label={`Upload ${kind}`}
-              onComplete={(url) => {
-                const latest = editor.current?.getDefinition();
-                if (latest)
-                  editor.current?.setDefinition({
-                    ...latest,
-                    theme: { ...latest.theme, [kind]: url },
-                  });
-              }}
+              onComplete={(url) => updateTheme({ [kind]: url })}
             />
           ))}
           <button
@@ -496,6 +546,32 @@ function ThemeSettings({
         />
       </label>
       <label>
+        Font size
+        <input
+          type="range"
+          min={14}
+          max={24}
+          value={form.theme.fontSize}
+          onChange={(e) =>
+            onChange({ ...form, theme: { ...form.theme, fontSize: Number(e.target.value) } })
+          }
+        />
+        <output>{form.theme.fontSize}px</output>
+      </label>
+      <label>
+        Corner radius
+        <input
+          type="range"
+          min={0}
+          max={24}
+          value={form.theme.radius}
+          onChange={(e) =>
+            onChange({ ...form, theme: { ...form.theme, radius: Number(e.target.value) } })
+          }
+        />
+        <output>{form.theme.radius}px</output>
+      </label>
+      <label>
         Logo URL
         <input
           value={form.theme.logo}
@@ -515,6 +591,15 @@ function ThemeSettings({
           value={form.settings.submitLabel}
           onChange={(e) =>
             onChange({ ...form, settings: { ...form.settings, submitLabel: e.target.value } })
+          }
+        />
+      </label>
+      <label>
+        Next button
+        <input
+          value={form.settings.nextLabel}
+          onChange={(e) =>
+            onChange({ ...form, settings: { ...form.settings, nextLabel: e.target.value } })
           }
         />
       </label>

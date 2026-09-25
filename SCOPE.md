@@ -26,6 +26,8 @@ The standalone Bun gateway/intake now reuses the Cloudflare HTTP handlers with a
 
 Live Tally DOM measurements at 1280×800 now match the simple one-question builder and preview positions for the title, label, 320×36 email field and submit button. At 390×844, the respondent label/input/submit positions and full-width input also match without horizontal overflow. The change prevents question-label margin collapse, restores submit typography and removes the fabricated “Untitled form” respondent heading. Screenshot capture remains unavailable in the collaborative browser; full visual parity, other block types and interaction states remain open acceptance checks.
 
+Cover images and logos now appear directly in the builder with change/remove controls; their measured desktop/mobile respondent dimensions and overlap match Tally's reference. Builder and renderer share theme variables, and the dashboard exposes font size, corner radius and Next-button text. Native browser checks passed cover removal/undo without losing question text, theme changes in both views, and persistence after reload. The formatting toolbar no longer reserves blank document space. These checks used isolated local image fixtures; the earlier signed-upload verification remains separate.
+
 ## Confirmed scope
 
 - Open-source Tally alternative with simple, Notion-like form authoring.

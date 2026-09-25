@@ -1,10 +1,9 @@
 .fe-editor {
   position: relative;
-  color: #37352f;
-  font:
-    16px / 1.5 Inter,
-    system-ui,
-    sans-serif;
+  color: var(--fs-text, #37352f);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: inherit;
+  line-height: 1.5;
 }
 .fe-document {
   outline: none;
@@ -90,8 +89,8 @@
   margin-bottom: 0;
 }
 .fe-label {
-  font-size: 20px;
-  line-height: 25px;
+  font-size: 1.25em;
+  line-height: 1.25;
   font-weight: 600;
   min-height: 25px;
   margin-bottom: 12px;
@@ -106,7 +105,7 @@
 .fe-help {
   min-height: 0;
   color: #777;
-  font-size: 15px;
+  font-size: 0.9375em;
   margin-bottom: 12px;
 }
 .fe-help.is-empty {
@@ -117,12 +116,12 @@
   min-height: 23px;
 }
 .fe-field-preview {
-  height: 36px;
+  min-height: 36px;
   max-width: 320px;
   border: 0;
-  border-radius: 8px;
-  padding: 9px 10px;
-  line-height: 18px;
+  border-radius: var(--fs-radius, 8px);
+  padding: 6px 10px;
+  line-height: 1.5;
   box-shadow:
     0 1px 1px #0000001f,
     0 0 0 1px #3d3b3529,
@@ -166,7 +165,7 @@
 .fe-choice-preview {
   margin-top: 8px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: var(--fs-radius, 8px);
   background: #fafafa;
   padding: 8px 12px;
   max-width: 500px;
@@ -196,8 +195,8 @@
   border-radius: 8px;
 }
 .fe-reference {
-  color: #0070d7;
-  background: #edf5fd;
+  color: var(--fs-accent, #0070d7);
+  background: color-mix(in srgb, var(--fs-accent, #0070d7) 8%, var(--fs-bg, white));
   border-radius: 4px;
   padding: 0 3px;
 }
@@ -209,16 +208,22 @@
   background: transparent;
 }
 .fe-format-toolbar {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  z-index: 3;
   display: flex;
   gap: 3px;
   align-items: center;
-  margin-bottom: 16px;
+  background: var(--fs-bg, white);
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.1s;
 }
 .fe-editor:focus-within .fe-format-toolbar,
 .fe-format-toolbar:hover {
   opacity: 1;
+  pointer-events: auto;
 }
 .fe-format-toolbar button,
 .fe-format-toolbar select,

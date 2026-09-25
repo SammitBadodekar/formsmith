@@ -18,7 +18,8 @@
   line-height: 1.2;
   letter-spacing: normal;
   font-weight: 800;
-  margin: 0 0 62px;
+  margin: 0;
+  padding-bottom: 40px;
 }
 .fs-canvas h2 {
   font-size: 28px;
@@ -31,6 +32,9 @@
 }
 .fs-question {
   margin: 0 0 28px;
+}
+.fs-canvas > h1 + .fs-question {
+  margin-top: 22px;
 }
 .fs-question:has(+ .fs-navigation) {
   margin-bottom: 0;
@@ -301,18 +305,28 @@
   margin: 16px 0;
 }
 .fs-cover {
+  display: block;
   width: 100%;
-  height: 220px;
+  height: 25vh;
   object-fit: cover;
 }
 .fs-cover + .fs-canvas {
-  padding-top: 40px;
+  padding-top: 51px;
 }
 .fs-logo {
-  width: 64px;
-  height: 64px;
+  display: block;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
-  margin-bottom: 24px;
+  margin-bottom: 50px;
+}
+.fs-cover + .fs-canvas:has(> .fs-logo) {
+  display: flow-root;
+  padding-top: 0;
+}
+.fs-cover + .fs-canvas > .fs-logo {
+  margin-top: -50px;
+  margin-bottom: 51px;
 }
 .fs-progress {
   height: 4px;
@@ -327,7 +341,7 @@
   }
   .fs-canvas h1 {
     font-size: 32px;
-    margin-bottom: 54px;
+    padding-bottom: 32px;
   }
   .fs-renderer input:not([type="checkbox"], [type="radio"], [type="file"]),
   .fs-renderer textarea,
@@ -338,16 +352,13 @@
     display: block;
   }
   .fs-label {
-    font-size: 18px;
+    font-size: 1.125em;
   }
   .fs-scale {
     gap: 5px;
   }
   .fs-scale label {
     min-width: 34px;
-  }
-  .fs-cover {
-    height: 140px;
   }
 }
 

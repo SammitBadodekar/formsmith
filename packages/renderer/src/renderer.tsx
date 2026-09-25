@@ -15,6 +15,19 @@ import {
 } from "@formsmith/core";
 import { type CSSProperties, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 
+export function formThemeStyle(theme: FormDefinition["theme"]): CSSProperties {
+  return {
+    "--fs-bg": theme.background,
+    "--fs-text": theme.text,
+    "--fs-accent": theme.accent,
+    "--fs-button": theme.button,
+    "--fs-button-text": theme.buttonText,
+    "--fs-radius": `${theme.radius}px`,
+    "--fs-width": `${theme.width}px`,
+    fontSize: theme.fontSize,
+  } as CSSProperties;
+}
+
 export function RichContent({
   content,
   form,
@@ -514,18 +527,8 @@ export function FormRenderer({
       </p>
     );
   };
-  const style = {
-    "--fs-bg": form.theme.background,
-    "--fs-text": form.theme.text,
-    "--fs-accent": form.theme.accent,
-    "--fs-button": form.theme.button,
-    "--fs-button-text": form.theme.buttonText,
-    "--fs-radius": `${form.theme.radius}px`,
-    "--fs-width": `${form.theme.width}px`,
-    fontSize: form.theme.fontSize,
-  } as CSSProperties;
   return (
-    <div className="fs-renderer" style={style}>
+    <div className="fs-renderer" style={formThemeStyle(form.theme)}>
       {form.theme.cover && safeUrl(form.theme.cover) && (
         <img className="fs-cover" src={form.theme.cover} alt="" />
       )}

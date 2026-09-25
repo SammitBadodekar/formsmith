@@ -345,6 +345,24 @@ importers:
         specifier: 4.137.0
         version: 4.137.0(@cloudflare/workers-types@5.20260923.1)(@types/node@26.6.2)
 
+  apps/selfhost:
+    dependencies:
+      '@aws-sdk/client-s3':
+        specifier: 3.1138.0
+        version: 3.1138.0
+      '@formsmith/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@formsmith/dashboard':
+        specifier: workspace:*
+        version: link:../dashboard
+      '@formsmith/intake':
+        specifier: workspace:*
+        version: link:../intake
+      zod:
+        specifier: 4.6.5
+        version: 4.6.5
+
   packages/core:
     dependencies:
       zod:

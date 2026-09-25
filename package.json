@@ -13,7 +13,7 @@
     "typecheck": "turbo run typecheck && tsc -p .railway/tsconfig.json",
     "lint": "biome check .",
     "format": "biome check --write .",
-    "test": "bun test packages apps/api/src apps/intake/src",
+    "test": "bun test packages apps/api/src apps/intake/src apps/selfhost/src",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "db:migrate": "pnpm --filter @formsmith/api db:migrate",
     "db:generate": "pnpm --filter @formsmith/api db:generate",
@@ -22,6 +22,7 @@
     "bench": "bun scripts/benchmark.ts",
     "recover:intake": "bun scripts/recover-intake.ts",
     "test:restore": "bun scripts/restore-smoke.ts",
+    "test:selfhost": "pnpm --filter @formsmith/dashboard --filter @formsmith/forms build && bun scripts/selfhost-smoke.ts",
     "test:intake": "bun test packages/core/src/intake.test.ts apps/intake/src && bun scripts/intake-smoke.ts",
     "test:http": "bun scripts/e2e-http.ts",
     "test:gateway": "pnpm --filter @formsmith/dashboard --filter @formsmith/forms build && bun scripts/gateway-smoke.ts"

@@ -12,6 +12,7 @@ import { customDomains, forms, formVersions, jobs } from "./db/schema";
 import type { Job } from "./job-queue";
 
 export function publicationService(db: Database, config: Config) {
+  const selfHostedDomains = config.CUSTOM_DOMAIN_PROVIDER === "selfhost";
   const keys = parseKeyring(config.CONTROL_KEYS),
     provider = cloudflareDomains(config);
   async function intake(path: string, value: unknown) {
@@ -87,7 +88,7 @@ export function publicationService(db: Database, config: Config) {
       const [domain] = await db.select().from(customDomains).where(eq(customDomains.id, id));
       if (!domain?.verifiedAt || domain.status === "removed") return;
       let remote =
-        domain.status === "removing"
+        domain.status === "removing" || selfHostedDomains
           ? null
           : await provider.ensure(domain.hostname, domain.providerId);
       if (remote && remote.hostname !== domain.hostname)
@@ -115,7 +116,9 @@ export function publicationService(db: Database, config: Config) {
             isNotNull(forms.publishedVersionId),
           ),
         );
-      const active = remote?.status === "active" && remote.ssl?.status === "active";
+      const active =
+        domain.status !== "removing" &&
+        (selfHostedDomains || (remote?.status === "active" && remote.ssl?.status === "active"));
       const allowed = members.map((f) => f.id);
       const result = await intake("/internal/domain", {
         hostname: current.hostname,
@@ -135,12 +138,12 @@ export function publicationService(db: Database, config: Config) {
       if (domain.status === "removing") {
         // Route revocation precedes certificate deletion and releasing ownership.
         // Reconcile an unknown create outcome even when providerId was never saved.
-        if (!current.providerId) {
-          remote = await provider.find(current.hostname);
+        if (!selfHostedDomains) {
+          if (!current.providerId) remote = await provider.find(current.hostname);
+          const providerId = current.providerId ?? remote?.id;
+          if (providerId) await provider.remove(providerId);
+          await provider.removeRoute(current.hostname);
         }
-        const providerId = current.providerId ?? remote?.id;
-        if (providerId) await provider.remove(providerId);
-        await provider.removeRoute(current.hostname);
         await db
           .update(customDomains)
           .set({
@@ -162,7 +165,7 @@ export function publicationService(db: Database, config: Config) {
           .update(customDomains)
           .set({
             status: active ? "active" : "provisioning",
-            sslStatus: remote?.ssl?.status ?? "pending",
+            sslStatus: selfHostedDomains ? "managed_by_host" : (remote?.ssl?.status ?? "pending"),
             verificationRecords: remote ? providerRecords(remote) : [],
             syncedRevision: domain.revision,
             lastError: null,

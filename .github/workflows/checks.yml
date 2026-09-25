@@ -50,3 +50,10 @@ jobs:
           PG_CONTAINER: ${{ job.services.postgres.id }}
       - run: pnpm test:intake
       - run: pnpm test:gateway
+      - run: docker compose config --quiet
+        env:
+          FORM_HOST: formsmith.example.org
+          ACME_EMAIL: operator@example.org
+          POSTGRES_PASSWORD: ci-only
+          FORMSMITH_ENV_FILE: .env.example
+      - run: docker build --target selfhost --tag formsmith-selfhost:ci .

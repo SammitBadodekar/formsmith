@@ -137,7 +137,12 @@ export function Domains() {
               ))}
             </select>
           </label>
-          {domain.sslStatus && <p className="muted">HTTPS: {domain.sslStatus}</p>}
+          {domain.sslStatus && (
+            <p className="muted">
+              HTTPS:{" "}
+              {domain.sslStatus === "managed_by_host" ? "Managed by your host" : domain.sslStatus}
+            </p>
+          )}
           {domain.lastError && <p className="error">{domain.lastError}</p>}
           <footer>
             <button

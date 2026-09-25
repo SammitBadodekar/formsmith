@@ -26,6 +26,7 @@ const schema = z.object({
     .transform((v) => v === "true"),
   ACTIVE_KEY_ID: z.string().default("v1"),
   CUSTOM_DOMAIN_TARGET: z.string().default("forms.formsmith.samz.in"),
+  CUSTOM_DOMAIN_PROVIDER: z.enum(["cloudflare", "selfhost"]).default("cloudflare"),
   CLOUDFLARE_ZONE_ID: z.string().optional(),
   CLOUDFLARE_API_TOKEN: z.string().optional(),
   CLOUDFLARE_GATEWAY_WORKER: z.string().default("formsmith-dashboard"),

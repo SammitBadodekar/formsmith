@@ -2,6 +2,7 @@ import {
   type FormDefinition,
   formSchema,
   hashPayload,
+  idSchema,
   newId,
   questions,
   submissionSchema,
@@ -29,7 +30,11 @@ export interface ObjectStore {
   get(key: string): Promise<{ body: string; etag: string } | null>;
   put(key: string, body: string, condition?: { etag: string } | { absent: true }): Promise<boolean>;
   delete(key: string): Promise<void>;
-  list(prefix: string, cursor?: string): Promise<{ keys: string[]; cursor?: string }>;
+  list(
+    prefix: string,
+    cursor?: string,
+    limit?: number,
+  ): Promise<{ keys: string[]; cursor?: string }>;
 }
 export interface IntakeOptions {
   store: ObjectStore;
@@ -294,16 +299,19 @@ export class Intake {
     }
     return this.receipt(saved);
   }
-  async replay(key: string): Promise<void> {
+  async replay(key: string, recovering = false): Promise<void> {
     if (!isJournalKey(key)) throw new IntakeError(400, "Invalid journal key");
     const entry = await this.read(key, (value) => journalEntrySchema.parse(value));
-    if (!entry) return;
+    if (!entry) {
+      if (recovering) throw new IntakeError(503, "Journal entry disappeared during recovery");
+      return;
+    }
     const resultKey = related(key, "results");
-    if (await this.options.store.get(resultKey)) {
+    if (!recovering && (await this.options.store.get(resultKey))) {
       await this.options.store.delete(related(key, "pending"));
       return;
     }
-    if (await this.options.store.get(related(key, "failures"))) return;
+    if (!recovering && (await this.options.store.get(related(key, "failures")))) return;
     const url = new URL("/api/internal/intake/commit", this.options.apiUrl);
     const body = JSON.stringify(entry);
     const headers = await controlHeaders(
@@ -331,6 +339,8 @@ export class Intake {
         { absent: true },
       );
       this.options.report?.("intake.replay_needs_attention", entry.receiptId);
+      if (recovering)
+        throw new IntakeError(503, "Repair the journal conflict before continuing recovery");
       return;
     }
     if (response.status !== 200) {
@@ -342,8 +352,32 @@ export class Intake {
     );
     if (result.receiptId !== entry.receiptId || result.requestHash !== entry.requestHash)
       throw new Error("Backend acknowledgement does not match journal");
-    await this.options.store.put(resultKey, JSON.stringify(result), { absent: true });
+    await this.options.store.put(
+      resultKey,
+      JSON.stringify(result),
+      recovering ? undefined : { absent: true },
+    );
+    if (recovering) await this.options.store.delete(related(key, "failures"));
     await this.options.store.delete(related(key, "pending"));
+  }
+  async recover(formId: string, cursor?: string) {
+    const prefix = `journal/${idSchema.parse(formId)}/`;
+    const page = await this.options.store.list(prefix, cursor, 25);
+    // Recovery is explicit and synchronous. A page is acknowledged only after
+    // the restored database confirms every entry, irrespective of old markers.
+    // Retry a failed page from its original cursor; commits remain idempotent.
+    for (let offset = 0; offset < page.keys.length; offset += 5) {
+      const results = await Promise.allSettled(
+        page.keys.slice(offset, offset + 5).map(async (key) => {
+          if (!key.startsWith(prefix) || !isJournalKey(key))
+            throw new IntakeError(503, "Invalid journal entry in recovery page");
+          return this.replay(key, true);
+        }),
+      );
+      const failed = results.find((result) => result.status === "rejected");
+      if (failed?.status === "rejected") throw failed.reason;
+    }
+    return { recovered: page.keys.length, cursor: page.cursor ?? null };
   }
   async reconcile(): Promise<void> {
     const checkpoint = await this.options.store.get("maintenance/pending-cursor");

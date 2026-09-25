@@ -68,6 +68,15 @@ export default {
           return json(await intake.publishDomain(JSON.parse(body)));
         if (url.pathname === "/internal/upload" && request.method === "POST")
           return json(await intake.finalizeUpload(JSON.parse(body)));
+        if (url.pathname === "/internal/recover" && request.method === "POST") {
+          const input: unknown = JSON.parse(body);
+          if (typeof input !== "object" || input === null || !("formId" in input))
+            throw new IntakeError(400, "Invalid recovery request");
+          const cursor = "cursor" in input ? input.cursor : undefined;
+          if (cursor !== undefined && (typeof cursor !== "string" || cursor.length > 4096))
+            throw new IntakeError(400, "Invalid recovery cursor");
+          return json(await intake.recover(idSchema.parse(input.formId), cursor));
+        }
         if (url.pathname === "/internal/retry" && request.method === "POST") {
           const input: unknown = JSON.parse(body);
           if (

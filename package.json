@@ -20,6 +20,8 @@
     "dev:setup": "bun scripts/dev-setup.ts",
     "test:integration": "bun test apps/api/integration",
     "bench": "bun scripts/benchmark.ts",
+    "recover:intake": "bun scripts/recover-intake.ts",
+    "test:restore": "bun scripts/restore-smoke.ts",
     "test:intake": "bun test packages/core/src/intake.test.ts apps/intake/src && bun scripts/intake-smoke.ts",
     "test:http": "bun scripts/e2e-http.ts",
     "test:gateway": "pnpm --filter @formsmith/dashboard --filter @formsmith/forms build && bun scripts/gateway-smoke.ts"

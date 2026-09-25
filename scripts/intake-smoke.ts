@@ -172,13 +172,28 @@ try {
     410,
   );
   assert.equal((await fetch(`${base}/receipt`)).status, 401);
+  submissions.clear();
+  const recoveryBody = JSON.stringify({ formId: definition.id });
+  assert.equal(
+    (await fetch(`${base}/internal/recover`, { method: "POST", body: recoveryBody })).status,
+    401,
+  );
+  const recovered = await fetch(`${base}/internal/recover`, {
+    method: "POST",
+    body: recoveryBody,
+    headers: await controlHeaders("POST", "/internal/recover", recoveryBody, controlKeys, "v1"),
+  });
+  assert.equal(recovered.status, 200);
+  assert.deepEqual(await recovered.json(), { recovered: 1, cursor: null });
+  assert.equal(submissions.size, 1, "explicit recovery must bypass the retained commit marker");
+  assert.equal(submissions.get(attempt.attemptId)?.receiptId, receipts[0]?.id);
   assert.equal(
     (await fetch(`${base}/internal/publish`, { method: "POST", body: JSON.stringify(manifest) }))
       .status,
     401,
   );
   console.log(
-    "Intake smoke passed: real R2 conditional writes, concurrent retries, signed HTTP replay, backend outage, reconciliation, closure and receipt access.",
+    "Intake smoke passed: real R2 conditional writes, concurrent retries, signed HTTP replay, backend outage, reconciliation, closure, receipt access and recovery past stale commit markers.",
   );
 } catch (error) {
   console.error(await Bun.file(join(temporary, "worker-error.log")).text());

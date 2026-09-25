@@ -274,6 +274,9 @@ export function repository(db: Database) {
         const [inserted] = await tx
           .insert(submissions)
           .values({
+            // Retained journals recreate the same response/event identity after
+            // a database restore, including when the original row was lost.
+            id: entry.receiptId,
             receiptId: entry.receiptId,
             formId: command.formId,
             versionId: command.versionId,

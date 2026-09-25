@@ -107,6 +107,28 @@ test("same attempt with changed payload conflicts and cannot overwrite the respo
   const [stored] = await db.select().from(submissions).where(eq(submissions.formId, f.form.id));
   expect(stored?.requestHash).toBe(f.entry.requestHash);
 });
+test("replaying after response loss preserves response and connector event identity", async () => {
+  const f = await fixture();
+  const first = await repo.commit(f.entry);
+  expect(first.submissionId).toBe(f.entry.receiptId);
+  await db.delete(jobs).where(sql`${jobs.payload}->>'submissionId' = ${first.submissionId}`);
+  await db.delete(submissions).where(eq(submissions.id, first.submissionId));
+  const restored = await repo.commit(f.entry);
+  expect(restored.submissionId).toBe(first.submissionId);
+  const delivery = await db
+    .select()
+    .from(jobs)
+    .where(sql`${jobs.payload}->>'submissionId' = ${first.submissionId}`);
+  expect(delivery).toHaveLength(1);
+  expect(delivery[0]?.payload.eventId).toBe(first.submissionId);
+  await repo.commit(f.entry);
+  expect(
+    await db
+      .select()
+      .from(jobs)
+      .where(sql`${jobs.payload}->>'submissionId' = ${first.submissionId}`),
+  ).toHaveLength(1);
+});
 test("closing a form does not reject replay of an already accepted receipt", async () => {
   const f = await fixture();
   await repo.setClosed(ownerId, f.form.id, true);

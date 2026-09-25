@@ -24,8 +24,8 @@ export class R2Store implements ObjectStore {
   async delete(key: string) {
     await this.bucket.delete(key);
   }
-  async list(prefix: string, cursor?: string) {
-    const page = await this.bucket.list({ prefix, cursor, limit: 100 });
+  async list(prefix: string, cursor?: string, limit = 100) {
+    const page = await this.bucket.list({ prefix, cursor, limit });
     return {
       keys: page.objects.map((object) => object.key),
       cursor: page.truncated ? page.cursor : undefined,

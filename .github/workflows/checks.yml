@@ -45,5 +45,8 @@ jobs:
       - run: pnpm check
       - run: pnpm db:migrate
       - run: pnpm test:integration
+      - run: pnpm test:restore
+        env:
+          PG_CONTAINER: ${{ job.services.postgres.id }}
       - run: pnpm test:intake
       - run: pnpm test:gateway

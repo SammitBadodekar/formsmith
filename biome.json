@@ -25,6 +25,12 @@
       "preset": "recommended"
     }
   },
+  "overrides": [
+    {
+      "includes": ["scripts/**/*.ts"],
+      "linter": { "rules": { "suspicious": { "noUndeclaredEnvVars": "off" } } }
+    }
+  ],
   "assist": {
     "actions": {
       "source": {

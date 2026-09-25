@@ -146,6 +146,32 @@ async function fixture() {
 }
 
 describe("durable intake", () => {
+  test("explicit recovery ignores old commit markers and resumes failed pages after a restore", async () => {
+    const f = await fixture();
+    const receipts = [];
+    for (let i = 0; i < 3; i++) {
+      const attempt = await f.intake.start(f.form.id);
+      const receipt = await f.intake.submit(attempt.token, {
+        ...f.command,
+        attemptId: attempt.attemptId,
+      });
+      receipts.push(receipt.id);
+      await f.intake.replay(`journal/${f.form.id}/${attempt.attemptId}`);
+    }
+    expect(f.committed.size).toBe(3);
+    f.committed.clear();
+    f.backendStatus(503);
+    await expect(f.intake.recover(f.form.id)).rejects.toThrow();
+    expect(f.committed.size).toBe(0);
+    f.backendStatus(200);
+    const page = await f.intake.recover(f.form.id);
+    expect(page.recovered).toBe(2);
+    expect(page.cursor).toBeTruthy();
+    expect((await f.intake.recover(f.form.id, page.cursor ?? undefined)).recovered).toBe(1);
+    expect([...f.committed.values()].map((r) => r.receiptId).sort()).toEqual(receipts.sort());
+    await f.intake.recover(f.form.id);
+    expect(f.committed.size).toBe(3);
+  });
   test("simultaneous identical requests receive one stable receipt", async () => {
     const f = await fixture();
     const receipts = await Promise.all(

@@ -1,6 +1,6 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Copy, Download, ExternalLink, MoreHorizontal, Pencil, Share2 } from "lucide-react";
-import { useState } from "react";
 import { api, type FormRecord, type FormSummary } from "./api";
 import {
   DropdownMenu,
@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./components/ui/dropdown-menu";
+import { cacheSavedForm, formQuery } from "./queries";
 
 export default function FormActions({
   form,
@@ -16,13 +17,11 @@ export default function FormActions({
   form: FormSummary;
   onError: (message: string) => void;
 }) {
-  const [busy, setBusy] = useState(false),
-    navigate = useNavigate();
-  const duplicate = async () => {
-    setBusy(true);
-    onError("");
-    try {
-      const original = await api<FormRecord>(`/forms/${form.id}`);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const original = await queryClient.fetchQuery({ ...formQuery(form.id), staleTime: 0 });
       const copy = await api<FormRecord>("/forms", {
         method: "POST",
         body: {
@@ -32,13 +31,13 @@ export default function FormActions({
           },
         },
       });
+      cacheSavedForm(queryClient, copy);
       await navigate({ to: "/forms/$formId", params: { formId: copy.id } });
-    } catch (error) {
-      onError(error instanceof Error ? error.message : "Could not duplicate form");
-    } finally {
-      setBusy(false);
-    }
-  };
+    },
+    onMutate: () => onError(""),
+    onError: (error) => onError(error.message),
+  });
+  const busy = mutation.isPending;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -72,7 +71,7 @@ export default function FormActions({
             </a>
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem onSelect={() => void duplicate()}>
+        <DropdownMenuItem onSelect={() => mutation.mutate()}>
           <Copy size={15} />
           Duplicate
         </DropdownMenuItem>

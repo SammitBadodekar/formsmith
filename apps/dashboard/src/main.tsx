@@ -1,5 +1,6 @@
 import "@fontsource-variable/inter";
 import "./styles.css";
+import { QueryClientProvider } from "@tanstack/react-query";
 import {
   createRootRoute,
   createRoute,
@@ -8,14 +9,17 @@ import {
   Outlet,
   RouterProvider,
 } from "@tanstack/react-router";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { ConsentPage } from "./agent-access";
 import { authClient } from "./api";
 import { Dashboard } from "./dashboard";
 import { BuilderSkeleton, WorkspaceSkeleton } from "./loading";
+import { createQueryClient } from "./queries";
 
 const Builder = lazy(() => import("./builder"));
+const ConsentPage = lazy(() =>
+  import("./agent-access").then((module) => ({ default: module.ConsentPage })),
+);
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -140,4 +144,24 @@ function Login() {
 }
 const root = document.getElementById("root");
 if (!root) throw new Error("Missing app root");
-createRoot(root).render(<RouterProvider router={router} />);
+function SessionApp() {
+  const { data: session, isPending } = authClient.useSession();
+  if (isPending)
+    return location.pathname.startsWith("/forms/") || location.pathname === "/create" ? (
+      <BuilderSkeleton />
+    ) : (
+      <WorkspaceSkeleton />
+    );
+  return <QueryApp key={session?.user.id ?? "anonymous"} />;
+}
+function QueryApp() {
+  // A fresh client per authenticated owner prevents cached private data crossing accounts.
+  const [client] = useState(createQueryClient);
+  useEffect(() => () => client.clear(), [client]);
+  return (
+    <QueryClientProvider client={client}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  );
+}
+createRoot(root).render(<SessionApp />);

@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { api } from "./api";
 import { PanelSkeleton } from "./loading";
+import { resourceQuery } from "./queries";
 import { useFormList } from "./use-form-list";
 
 type Domain = {
@@ -13,33 +15,31 @@ type Domain = {
   records: { type: string; name: string; value: string }[];
 };
 export function Domains() {
-  const [initialLoading, setInitialLoading] = useState(true);
   const [search, setSearch] = useState("");
   const { forms, nextCursor, loading, error: formError, loadMore } = useFormList(true, search);
-  const [domains, setDomains] = useState<Domain[]>([]),
-    [hostname, setHostname] = useState(""),
+  const [hostname, setHostname] = useState(""),
     [error, setError] = useState(""),
     [busy, setBusy] = useState<string | null>(null);
-  const refresh = () => api<Domain[]>("/domains").then(setDomains);
-  useEffect(() => {
-    void api<Domain[]>("/domains")
-      .then(setDomains)
-      .catch((e) => setError(e.message))
-      .finally(() => setInitialLoading(false));
-  }, []);
+  const client = useQueryClient();
+  const options = resourceQuery<Domain[]>("/domains");
+  const query = useQuery(options);
+  const domains = query.data ?? [];
+  const mutation = useMutation({
+    mutationFn: (fn: () => Promise<unknown>) => fn(),
+    onSuccess: () => client.invalidateQueries({ queryKey: options.queryKey }),
+  });
   const action = async (id: string, fn: () => Promise<unknown>) => {
     setBusy(id);
     setError("");
     try {
-      await fn();
-      await refresh();
+      await mutation.mutateAsync(fn);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Domain update failed");
     } finally {
       setBusy(null);
     }
   };
-  if (initialLoading) return <PanelSkeleton label="Loading domains" />;
+  if (query.isPending) return <PanelSkeleton label="Loading domains" />;
   return (
     <div className="domain-settings">
       <h1>Custom domains</h1>
@@ -70,9 +70,14 @@ export function Domains() {
           Connect domain
         </button>
       </form>
-      {error && (
+      {(error || query.error) && (
         <p className="error" role="alert">
-          {error}
+          {error || query.error?.message}
+          {query.error && (
+            <button type="button" className="text-link" onClick={() => void query.refetch()}>
+              Try again
+            </button>
+          )}
         </p>
       )}
       {domains.length > 0 && (

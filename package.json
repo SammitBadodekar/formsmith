@@ -13,7 +13,7 @@
     "typecheck": "turbo run typecheck && tsc -p .railway/tsconfig.json",
     "lint": "biome check .",
     "format": "biome check --write .",
-    "test": "bun test packages apps/api/src apps/intake/src apps/selfhost/src",
+    "test": "bun test packages apps/api/src apps/intake/src apps/selfhost/src apps/dashboard/tests",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "db:migrate": "pnpm --filter @formsmith/api db:migrate",
     "db:generate": "pnpm --filter @formsmith/api db:generate",

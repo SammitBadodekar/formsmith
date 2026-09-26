@@ -28,17 +28,23 @@ export class ApiError extends Error {
 }
 export async function api<T>(
   path: string,
-  options: { method?: string; body?: unknown } = {},
+  options: { method?: string; body?: unknown; signal?: AbortSignal } = {},
 ): Promise<T> {
   const response = await fetch(`/api${path}`, {
     method: options.method ?? "GET",
     credentials: "same-origin",
+    signal: options.signal,
     headers: options.body === undefined ? undefined : { "content-type": "application/json" },
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
   });
   if (response.status === 204) return undefined as T;
-  const data = await response.json();
+  const data = await response.json().catch(() => null);
   if (!response.ok)
-    throw new ApiError(data.error ?? "Request failed", response.status, data.details);
+    throw new ApiError(
+      data?.error ?? "Request failed. Please try again.",
+      response.status,
+      data?.details,
+    );
+  if (data === null) throw new ApiError("The server returned an invalid response.", 502);
   return data as T;
 }

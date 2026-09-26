@@ -42,13 +42,13 @@ export default defineRailway(() => {
   };
   const api = service("formsmith-api", {
     ...common,
-    replicas: { "asia-southeast1-eqsg3a": 2 },
+    replicas: { "europe-west4-drams3a": 2 },
     healthcheck: "/ready",
     healthcheckTimeout: 120,
   });
   const worker = service("formsmith-worker", {
     ...common,
-    replicas: { "asia-southeast1-eqsg3a": 1 },
+    replicas: { "europe-west4-drams3a": 1 },
   });
   return project("formsmith", { resources: [api, worker] });
 });

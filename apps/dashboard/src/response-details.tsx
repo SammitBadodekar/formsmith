@@ -5,9 +5,10 @@ import {
   plainText,
   questions,
 } from "@formsmith/core";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { api } from "./api";
 import { PanelSkeleton } from "./loading";
+import { resourceQuery } from "./queries";
 
 export type ResponseRow = {
   id: string;
@@ -17,44 +18,33 @@ export type ResponseRow = {
   answers: Answers;
 };
 export function ResponseDetails({ row }: { row: ResponseRow }) {
-  const [definition, setDefinition] = useState<FormDefinition | null>(null);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const load = async () => {
-    if (definition || loading) return;
-    setLoading(true);
-    setError("");
-    try {
-      setDefinition(
-        (
-          await api<{ definition: FormDefinition }>(
-            `/forms/${row.formId}/versions/${row.versionId}`,
-          )
-        ).definition,
-      );
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not load question labels");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [open, setOpen] = useState(false);
+  const query = useQuery({
+    ...resourceQuery<{ definition: FormDefinition }>(
+      `/forms/${row.formId}/versions/${row.versionId}`,
+    ),
+    enabled: open,
+    staleTime: Infinity, // Published definitions are immutable and shared by many responses.
+  });
+  const definition = query.data?.definition;
+  const error = query.error?.message;
   return (
     <details
       className="response"
       onToggle={(e) => {
-        if (e.currentTarget.open) void load();
+        setOpen(e.currentTarget.open);
       }}
     >
       <summary>{new Date(row.receivedAt).toLocaleString()}</summary>
       {error && (
         <p className="error" role="alert">
           {error}{" "}
-          <button type="button" className="text-link" onClick={() => void load()}>
+          <button type="button" className="text-link" onClick={() => void query.refetch()}>
             Retry
           </button>
         </p>
       )}
-      {loading && <PanelSkeleton label="Loading response" />}
+      {open && query.isPending && <PanelSkeleton label="Loading response" />}
       {definition && (
         <dl className="response-fields">
           {Object.entries(row.answers).map(([id, value]) => {

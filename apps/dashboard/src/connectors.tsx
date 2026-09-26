@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { api, authClient } from "./api";
 import { PanelSkeleton } from "./loading";
+import { resourceQuery } from "./queries";
 
 type Connector = {
   id: string;
@@ -18,63 +20,44 @@ type Connector = {
   }[];
 };
 export function Connectors({ formId }: { formId: string }) {
-  const [loading, setLoading] = useState(true);
-  const [connectors, setConnectors] = useState<Connector[]>([]);
   const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
   const [secret, setSecret] = useState("");
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [spreadsheet, setSpreadsheet] = useState("");
   const endpoint = `/forms/${formId}/integrations`;
-  const refresh = async () => setConnectors(await api<Connector[]>(endpoint));
-  useEffect(() => {
-    let active = true;
-    const load = () =>
-      api<Connector[]>(endpoint)
-        .then((rows) => {
-          if (active) {
-            setConnectors(rows);
-            setLoading(false);
-          }
-        })
-        .catch((e) => {
-          if (active) {
-            setError(e.message);
-            setLoading(false);
-          }
-        });
-    void load();
-    const timer = setInterval(() => {
-      if (document.visibilityState === "visible") void load();
-    }, 15000);
-    return () => {
-      active = false;
-      clearInterval(timer);
-    };
-  }, [endpoint]);
+  const client = useQueryClient();
+  const options = resourceQuery<Connector[]>(endpoint);
+  const query = useQuery({ ...options, refetchInterval: 15_000 });
+  const connectors = query.data ?? [];
+  const mutation = useMutation({
+    mutationFn: (action: () => Promise<unknown>) => action(),
+    onSuccess: () => client.invalidateQueries({ queryKey: options.queryKey }),
+  });
+  const busy = mutation.isPending;
   const perform = async (action: () => Promise<unknown>) => {
-    setBusy(true);
     setError("");
     try {
-      await action();
-      await refresh();
+      await mutation.mutateAsync(action);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not update connector");
-    } finally {
-      setBusy(false);
     }
   };
-  if (loading) return <PanelSkeleton label="Loading integrations" />;
+  if (query.isPending) return <PanelSkeleton label="Loading integrations" />;
   return (
     <div className="connector-settings">
       <p>
         Send new responses to your tools. Failed deliveries retry automatically; responses remain
         saved in Formsmith.
       </p>
-      {error && (
+      {(error || query.error) && (
         <p role="alert" className="error">
-          {error}
+          {error || query.error?.message}
+          {query.error && (
+            <button type="button" className="text-link" onClick={() => void query.refetch()}>
+              Try again
+            </button>
+          )}
         </p>
       )}
       <section className="access-card">

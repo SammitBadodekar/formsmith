@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { api, authClient } from "./api";
 import { PanelSkeleton } from "./loading";
 
@@ -26,42 +27,39 @@ type Credential = {
 type Consent = { id: string; clientId: string; scopes: string[] };
 
 export function AgentAccess() {
-  const [loading, setLoading] = useState(true);
-  const [credentials, setCredentials] = useState<Credential[]>([]);
-  const [consents, setConsents] = useState<Consent[]>([]);
   const [name, setName] = useState("");
   const [days, setDays] = useState(30);
   const [scopes, setScopes] = useState(["forms:read"]);
   const [secret, setSecret] = useState("");
   const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
-  const refresh = useCallback(async () => {
-    const [tokens, grants] = await Promise.all([
-      api<Credential[]>("/credentials"),
-      authClient.oauth2.getConsents(),
-    ]);
-    if (grants.error) throw new Error(grants.error.message);
-    setCredentials(tokens);
-    setConsents(grants.data ?? []);
-  }, []);
-  useEffect(() => {
-    void refresh()
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [refresh]);
+  const client = useQueryClient();
+  const queryKey = ["agent-access"];
+  const query = useQuery({
+    queryKey,
+    queryFn: async ({ signal }) => {
+      const [tokens, grants] = await Promise.all([
+        api<Credential[]>("/credentials", { signal }),
+        authClient.oauth2.getConsents(),
+      ]);
+      if (grants.error) throw new Error(grants.error.message);
+      return { credentials: tokens, consents: (grants.data ?? []) as Consent[] };
+    },
+  });
+  const { credentials = [], consents = [] } = query.data ?? {};
+  const mutation = useMutation({
+    mutationFn: (action: () => Promise<unknown>) => action(),
+    onSuccess: () => client.invalidateQueries({ queryKey }),
+  });
+  const busy = mutation.isPending;
   const perform = async (action: () => Promise<unknown>) => {
-    setBusy(true);
     setError("");
     try {
-      await action();
-      await refresh();
+      await mutation.mutateAsync(action);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not update access");
-    } finally {
-      setBusy(false);
     }
   };
-  if (loading) return <PanelSkeleton label="Loading agent access" />;
+  if (query.isPending) return <PanelSkeleton label="Loading agent access" />;
   return (
     <section className="access-settings">
       <h1>Agents & API</h1>
@@ -74,9 +72,14 @@ export function AgentAccess() {
         Use this URL in your client's remote MCP settings. You’ll sign in with Google and choose
         whether to grant access.
       </p>
-      {error && (
+      {(error || query.error) && (
         <p className="error" role="alert">
-          {error}
+          {error || query.error?.message}
+          {query.error && (
+            <button type="button" className="text-link" onClick={() => void query.refetch()}>
+              Try again
+            </button>
+          )}
         </p>
       )}
       <h2>Connected applications</h2>

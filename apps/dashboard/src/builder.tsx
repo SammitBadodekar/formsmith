@@ -9,6 +9,7 @@ import {
 } from "@formsmith/core";
 import { type EditorHandle, FormEditor } from "@formsmith/editor";
 import { formThemeStyle } from "@formsmith/renderer";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useBlocker, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -29,6 +30,7 @@ import { BuilderSkeleton, PanelSkeleton } from "./loading";
 import { LogicSettings } from "./logic-settings";
 import { MediaPicker } from "./media-picker";
 import { FormPreview } from "./preview";
+import { cacheSavedForm, formQuery, resourceQuery } from "./queries";
 import { ResponseDetails, type ResponseRow } from "./response-details";
 import { ThemeSettings } from "./theme-settings";
 
@@ -62,6 +64,25 @@ export default function Builder({
     conflicted = useRef(false),
     timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const formLoad = useQuery({
+    ...formQuery(id ?? "new"),
+    enabled: Boolean(id),
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+  const saveMutation = useMutation({
+    mutationFn: ({
+      formId,
+      definition,
+      revision,
+    }: {
+      formId: string;
+      definition: FormDefinition;
+      revision: number;
+    }) => api<FormRecord>(`/forms/${formId}`, { method: "PATCH", body: { definition, revision } }),
+    onSuccess: (saved) => cacheSavedForm(queryClient, saved),
+  });
   useEffect(() => {
     // Clearing the management URL must not dismiss a just-opened editor panel.
     setPanelState((previous) => requestedPanel ?? (isManagementPanel(previous) ? null : previous));
@@ -112,21 +133,15 @@ export default function Builder({
     return () => clearTimeout(timeout);
   }, [copied]);
   useEffect(() => {
-    let active = true;
-    if (id)
-      api<FormRecord>(`/forms/${id}`)
-        .then((f) => {
-          if (active) {
-            stored.current = f;
-            current.current = f.draft;
-            setRecord(f);
-            setForm(f.draft);
-          }
-        })
-        .catch((e) => {
-          if (active) setError(e.message);
-        });
-    else {
+    // Hydrate once. Query refreshes must never replace a locally edited document.
+    if (current.current) return;
+    if (id) {
+      if (!formLoad.data || formLoad.isFetching) return;
+      stored.current = formLoad.data;
+      current.current = formLoad.data.draft;
+      setRecord(formLoad.data);
+      setForm(formLoad.data.draft);
+    } else {
       let draft = createForm();
       try {
         const raw = localStorage.getItem("formsmith:draft");
@@ -135,11 +150,12 @@ export default function Builder({
       current.current = draft;
       setForm(draft);
     }
+  }, [id, formLoad.data, formLoad.isFetching]);
+  useEffect(() => {
     return () => {
-      active = false;
       if (timer.current) clearTimeout(timer.current);
     };
-  }, [id]);
+  }, []);
   const save = async (): Promise<void> => {
     if (saving.current) {
       await saving.current;
@@ -155,10 +171,8 @@ export default function Builder({
     const snapshot = current.current,
       revision = stored.current.revision;
     setSaveStatus("Saving…");
-    const pending = api<FormRecord>(`/forms/${id}`, {
-      method: "PATCH",
-      body: { definition: snapshot, revision },
-    })
+    const pending = saveMutation
+      .mutateAsync({ formId: id, definition: snapshot, revision })
       .then((saved) => {
         stored.current = { ...saved, draft: snapshot };
         setRecord(saved);
@@ -209,32 +223,29 @@ export default function Builder({
       }
     },
   });
+  const publication = useQuery({
+    ...resourceQuery<FormRecord>(`/forms/${id}`),
+    queryKey: ["publication", id ?? "new"],
+    enabled: Boolean(id && panel === "share"),
+    staleTime: 0,
+    refetchInterval: (query) => {
+      const value = query.state.data;
+      return value && value.syncedPolicyRevision < value.policyRevision ? 2000 : false;
+    },
+  });
   useEffect(() => {
-    if (!id || panel !== "share") return;
-    let active = true;
-    const refresh = () => {
-      void api<FormRecord>(`/forms/${id}`)
-        .then((latest) => {
-          if (!active) return;
-          // Publication reads must never replace the draft's save revision or snapshot.
-          const metadata = {
-            publishedVersionId: latest.publishedVersionId,
-            closed: latest.closed,
-            policyRevision: latest.policyRevision,
-            syncedPolicyRevision: latest.syncedPolicyRevision,
-          };
-          if (stored.current) stored.current = { ...stored.current, ...metadata };
-          setRecord((value) => (value ? { ...value, ...metadata } : value));
-        })
-        .catch(() => {});
+    const latest = publication.data;
+    if (!latest) return;
+    // Only publication metadata is refreshed; the editor owns its save revision and draft.
+    const metadata = {
+      publishedVersionId: latest.publishedVersionId,
+      closed: latest.closed,
+      policyRevision: latest.policyRevision,
+      syncedPolicyRevision: latest.syncedPolicyRevision,
     };
-    refresh();
-    const interval = setInterval(refresh, 2000);
-    return () => {
-      active = false;
-      clearInterval(interval);
-    };
-  }, [id, panel]);
+    if (stored.current) stored.current = { ...stored.current, ...metadata };
+    setRecord((value) => (value ? { ...value, ...metadata } : value));
+  }, [publication.data]);
   const publish = async () => {
     if (!current.current) return;
     setError("");
@@ -267,6 +278,7 @@ export default function Builder({
             body: { revision: created.revision },
           });
           await syncCreated();
+          void queryClient.invalidateQueries({ queryKey: ["forms", "list"] });
           localStorage.removeItem("formsmith:draft");
           await navigate({
             to: "/forms/$formId",
@@ -297,6 +309,8 @@ export default function Builder({
       };
       if (stored.current) stored.current = { ...stored.current, ...metadata };
       setRecord((value) => (value ? { ...value, ...metadata } : value));
+      if (stored.current) cacheSavedForm(queryClient, stored.current);
+      void queryClient.invalidateQueries({ queryKey: ["publication", id] });
       setPanel("share");
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) {
@@ -310,11 +324,11 @@ export default function Builder({
     }
   };
   if (!form)
-    return error ? (
+    return error || formLoad.error ? (
       <main className="message-page">
         <h1>Couldn’t open this form</h1>
         <p role="alert" className="error">
-          {error}
+          {error || formLoad.error?.message}
         </p>
         <Link to="/" className="button">
           Back to workspace
@@ -619,6 +633,8 @@ export default function Builder({
                     });
                     const saved = await api<FormRecord>(`/forms/${id}`);
                     setRecord(saved);
+                    cacheSavedForm(queryClient, saved);
+                    void queryClient.invalidateQueries({ queryKey: ["publication", id] });
                   } catch (e) {
                     setError(e instanceof Error ? e.message : "Could not change availability");
                   }
@@ -685,49 +701,22 @@ function Panel({
   );
 }
 function Responses({ id }: { id: string }) {
-  const [attempt, setAttempt] = useState(0);
-  const [rows, setRows] = useState<ResponseRow[]>([]),
-    [error, setError] = useState(""),
-    [nextCursor, setNextCursor] = useState<string | null>(null),
-    [loading, setLoading] = useState(true);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: retry reloads the same form.
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    setError("");
-    api<Page<(typeof rows)[number]>>(`/forms/${id}/submissions`)
-      .then((page) => {
-        if (active) {
-          setRows(page.items);
-          setNextCursor(page.nextCursor);
-        }
-      })
-      .catch((e) => {
-        if (active) setError(e.message);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, [id, attempt]);
-  const more = async () => {
-    if (!nextCursor || loading) return;
-    setLoading(true);
-    setError("");
-    try {
-      const page = await api<Page<(typeof rows)[number]>>(
-        `/forms/${id}/submissions?${new URLSearchParams({ cursor: nextCursor })}`,
-      );
-      setRows((current) => [...current, ...page.items]);
-      setNextCursor(page.nextCursor);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not load responses");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const query = useInfiniteQuery({
+    queryKey: ["submissions", id],
+    initialPageParam: null as string | null,
+    queryFn: ({ pageParam, signal }) =>
+      api<Page<ResponseRow>>(
+        `/forms/${id}/submissions${pageParam ? `?${new URLSearchParams({ cursor: pageParam })}` : ""}`,
+        { signal },
+      ),
+    getNextPageParam: (page) => page.nextCursor ?? undefined,
+    staleTime: 15_000,
+  });
+  const rows = query.data?.pages.flatMap((page) => page.items) ?? [];
+  const error = query.error?.message;
+  const loading = query.isPending || query.isFetchingNextPage;
+  const nextCursor = query.hasNextPage;
+  const more = () => !query.isFetching && query.fetchNextPage();
   return (
     <>
       <div className="response-actions">
@@ -741,7 +730,7 @@ function Responses({ id }: { id: string }) {
       {error && (
         <div className="workspace-error" role="alert">
           <span>{error}</span>
-          <button type="button" className="button" onClick={() => setAttempt((value) => value + 1)}>
+          <button type="button" className="button" onClick={() => void query.refetch()}>
             Try again
           </button>
         </div>

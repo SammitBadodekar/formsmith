@@ -73,6 +73,31 @@ afterAll(async () => {
   await client.end();
 });
 
+test("Google Sheets linking requests offline access, consent and PKCE", async () => {
+  const response = await fetch(`${server.url}api/auth/link-social`, {
+    method: "POST",
+    headers: { "content-type": "application/json", origin: server.url.origin, cookie },
+    body: JSON.stringify({
+      provider: "google",
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+      callbackURL: "/",
+      disableRedirect: true,
+    }),
+  });
+  expect(response.status).toBe(200);
+  const authorization = new URL((await response.json()).url);
+  expect(authorization.origin).toBe("https://accounts.google.com");
+  expect(authorization.searchParams.get("access_type")).toBe("offline");
+  expect(authorization.searchParams.get("prompt")?.split(" ")).toContain("consent");
+  expect(authorization.searchParams.get("scope")?.split(" ")).toContain(
+    "https://www.googleapis.com/auth/spreadsheets",
+  );
+  expect(authorization.searchParams.get("code_challenge_method")).toBe("S256");
+  expect(authorization.searchParams.get("redirect_uri")).toBe(
+    `${server.url.origin}/api/auth/callback/google`,
+  );
+});
+
 test("domain tools require separate grants and cannot configure another owner's form", async () => {
   const reader = await credential(["forms:read"]);
   expect(

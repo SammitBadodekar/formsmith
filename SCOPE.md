@@ -28,6 +28,8 @@ Live Tally DOM measurements at 1280×800 now match the simple one-question build
 
 Cover images and logos now appear directly in the builder with change/remove controls; their measured desktop/mobile respondent dimensions and overlap match Tally's reference. Builder and renderer share theme variables, and the dashboard exposes font size, corner radius and Next-button text. Native browser checks passed cover removal/undo without losing question text, theme changes in both views, and persistence after reload. The formatting toolbar no longer reserves blank document space. These checks used isolated local image fixtures; the earlier signed-upload verification remains separate.
 
+Chrome Computer Use became accessible and the real Google OAuth callback successfully opened the owner's production workspace. Google Sheets initially rejected consent because account 0 was not an approved tester; the account was saved in Google Cloud's test audience and verified after reload. The live authorization request also exposed missing offline access: the provider now requests offline access and explicit consent, with an HTTP integration test verifying scopes, PKCE and callback URL. Sheets consent/delivery still needs completion; Computer Use subsequently failed with a native-pipe startup error, including after reconnecting.
+
 ## Confirmed scope
 
 - Open-source Tally alternative with simple, Notion-like form authoring.

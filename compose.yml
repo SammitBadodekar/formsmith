@@ -1,0 +1,85 @@
+name: formsmith
+
+x-backend: &backend
+  image: formsmith-api:local
+  build:
+    context: .
+    target: api
+  env_file: ${FORMSMITH_ENV_FILE:-.env}
+  environment: &backend-environment
+    DATABASE_URL: postgresql://formsmith:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/formsmith
+    PUBLIC_ORIGIN: https://${FORM_HOST:?Set FORM_HOST}
+    PORT: "3001"
+    INTAKE_URL: http://selfhost:8787
+    CUSTOM_DOMAIN_PROVIDER: selfhost
+    CUSTOM_DOMAIN_TARGET: ${FORM_HOST}
+  restart: unless-stopped
+  stop_grace_period: 45s
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:18.6
+    environment:
+      POSTGRES_USER: formsmith
+      POSTGRES_DB: formsmith
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U formsmith -d formsmith"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  api:
+    <<: *backend
+    environment:
+      <<: *backend-environment
+      PROCESS_ROLE: api
+
+  worker:
+    <<: *backend
+    environment:
+      <<: *backend-environment
+      PROCESS_ROLE: worker
+
+  selfhost:
+    image: formsmith-selfhost:local
+    build:
+      context: .
+      target: selfhost
+    env_file: ${FORMSMITH_ENV_FILE:-.env}
+    environment:
+      PUBLIC_ORIGIN: https://${FORM_HOST}
+      API_URL: http://api:3001
+      SELFHOST_PUBLIC_PORT: "3000"
+      SELFHOST_INTAKE_PORT: "8787"
+      SELFHOST_TRUST_PROXY: "true"
+    restart: unless-stopped
+    stop_grace_period: 45s
+
+  caddy:
+    image: caddy:2.11.4-alpine
+    environment:
+      FORM_HOST: ${FORM_HOST}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./apps/selfhost/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - selfhost
+    restart: unless-stopped
+
+volumes:
+  postgres:
+  caddy-data:
+  caddy-config:

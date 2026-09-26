@@ -1,51 +1,52 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "ui": "tui",
+  "$schema": "https://turborepo.dev/schema.json",
   "tasks": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        ".env*"
-      ],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**"
-      ],
-      "env": [
-        "DATABASE_URL",
-        "DATABASE_AUTH_TOKEN",
-        "FRONTEND_DOMAIN",
-        "NEXT_PUBLIC_APP_URL",
-        "NEXT_PUBLIC_API_URL",
-        "NEXT_PUBLIC_ROOT_DOMAIN",
-        "NEXT_PUBLIC_URL",
-        "GOOGLE_CLIENT_SECRET",
-        "GOOGLE_CLIENT_ID",
-        "GITHUB_CLIENT_SECRET",
-        "GITHUB_CLIENT_ID",
-        "R2_ACCESS_KEY_ID",
-        "R2_SECRET_ACCESS_KEY",
-        "R2_ACCOUNT_ID",
-        "NEXT_PUBLIC_POSTHOG_KEY",
-        "NEXT_PUBLIC_POSTHOG_HOST"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
+      "env": ["VITE_API_URL", "VITE_FORMS_URL", "VITE_INTAKE_URL"]
     },
-    "lint": {
-      "dependsOn": [
-        "^lint"
-      ]
-    },
-    "check-types": {
-      "dependsOn": [
-        "^check-types"
-      ]
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": []
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "passThroughEnv": [
+        "DATABASE_URL",
+        "PUBLIC_ORIGIN",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "BETTER_AUTH_SECRET",
+        "INTAKE_URL",
+        "CONTROL_KEYS",
+        "ADMISSION_KEYS",
+        "ACTIVE_KEY_ID",
+        "ENCRYPTION_KEY",
+        "CLOUDFLARE_ZONE_ID",
+        "CLOUDFLARE_API_TOKEN",
+        "CUSTOM_DOMAIN_TARGET"
+      ]
+    },
+    "@formsmith/core#build": {
+      "outputs": []
+    },
+    "@formsmith/editor#build": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "@formsmith/renderer#build": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "@formsmith/dashboard#typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": ["worker-configuration.d.ts"]
+    },
+    "@formsmith/intake#typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": ["worker-configuration.d.ts"]
     }
   }
 }

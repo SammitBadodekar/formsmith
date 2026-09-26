@@ -1,0 +1,450 @@
+.fs-renderer {
+  background: var(--fs-bg, #fff);
+  color: var(--fs-text, #37352f);
+  min-height: 100%;
+  font-family: var(--fs-font, Inter, system-ui, sans-serif);
+  line-height: 1.5;
+}
+.fs-renderer * {
+  box-sizing: border-box;
+}
+.fs-canvas {
+  width: min(var(--fs-width, 700px), calc(100% - 48px));
+  margin: 0 auto;
+  padding: 151px 0 48px;
+}
+.fs-canvas h1 {
+  font-size: 40px;
+  line-height: 1.2;
+  letter-spacing: normal;
+  font-weight: 800;
+  margin: 0;
+  padding-bottom: 40px;
+}
+.fs-canvas h2 {
+  font-size: 28px;
+  line-height: 1.3;
+  margin: 28px 0 16px;
+}
+.fs-canvas h3 {
+  font-size: 23px;
+  margin: 24px 0 12px;
+}
+.fs-question {
+  margin: 0 0 calc(18px + var(--fs-input-margin, 10px));
+}
+.fs-canvas > h1 + .fs-question {
+  margin-top: 22px;
+}
+.fs-question:has(+ .fs-navigation) {
+  margin-bottom: 0;
+}
+.fs-label {
+  display: block;
+  font-size: 1.25em;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0 0 12px;
+}
+.fs-help {
+  color: #777670;
+  font-size: 0.9375em;
+  white-space: pre-wrap;
+  margin: -4px 0 12px;
+}
+.fs-renderer input:not([type="checkbox"], [type="radio"], [type="file"]),
+.fs-renderer textarea,
+.fs-renderer select {
+  display: block;
+  width: 100%;
+  max-width: var(--fs-input-width, 320px);
+  min-height: var(--fs-input-height, 36px);
+  padding: 6px var(--fs-input-padding, 10px);
+  border: 0;
+  border-radius: var(--fs-input-radius, 8px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  box-shadow:
+    0 1px 1px #0000001f,
+    0 0 0 var(--fs-input-border-width, 1px) var(--fs-input-border, #3d3b3529),
+    0 2px 5px #3d3b3514;
+}
+.fs-renderer textarea {
+  max-width: var(--fs-long-input-width, 500px);
+  resize: vertical;
+}
+.fs-renderer ::placeholder {
+  color: var(--fs-input-placeholder, #bbbab8);
+}
+.fs-renderer input:focus,
+.fs-renderer textarea:focus,
+.fs-renderer select:focus {
+  outline: 2px solid var(--fs-accent);
+  outline-offset: 1px;
+}
+.fs-options {
+  display: grid;
+  gap: 8px;
+  max-width: var(--fs-long-input-width, 500px);
+}
+.fs-option {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #dededb;
+  border-radius: var(--fs-radius);
+  cursor: pointer;
+  background: #fafafa;
+}
+.fs-option input {
+  accent-color: var(--fs-accent);
+  margin: 0;
+}
+.fs-option-key {
+  display: none;
+}
+.fs-option.is-selected {
+  border-color: var(--fs-accent);
+  background: color-mix(in srgb, var(--fs-accent) 6%, var(--fs-bg));
+}
+.fs-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.fs-consent input {
+  margin: 5px 0 0;
+  accent-color: var(--fs-accent);
+}
+.fs-navigation {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 21px;
+}
+.fs-renderer button {
+  font: inherit;
+  cursor: pointer;
+}
+.fs-renderer .fs-submit {
+  border: 0;
+  border-radius: var(--fs-radius);
+  padding: 0 13.5px;
+  min-height: var(--fs-input-height, 36px);
+  background: var(--fs-button);
+  color: var(--fs-button-text);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 15px;
+}
+.fs-submit span {
+  margin-left: 8px;
+}
+.fs-back {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 8px;
+}
+.fs-renderer button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.fs-renderer button:focus-visible {
+  outline: 2px solid var(--fs-accent);
+  outline-offset: 3px;
+}
+.fs-error {
+  font-size: 14px;
+  color: #bf3434;
+  margin: 8px 0;
+}
+.fs-text {
+  white-space: pre-wrap;
+  min-height: 1.5em;
+  margin: 12px 0 20px;
+}
+.fs-columns {
+  display: flex;
+  gap: 24px;
+}
+.fs-canvas hr {
+  border: 0;
+  border-top: 1px solid #e9e9e7;
+  margin: 24px 0;
+}
+.fs-credit {
+  display: table;
+  color: inherit;
+  font-size: 12px;
+  text-decoration: none;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding: 5px 8px;
+  margin: 52px 0 0 auto;
+}
+.fs-scale {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.fs-scale label {
+  border: 1px solid #ddd;
+  border-radius: var(--fs-radius);
+  background: transparent;
+  color: inherit;
+  min-width: 40px;
+  height: 40px;
+}
+.fs-scale .is-selected {
+  background: var(--fs-accent);
+  color: #fff;
+  border-color: var(--fs-accent);
+}
+.fs-rating label {
+  font-size: 30px;
+  border: 0;
+  min-width: 32px;
+}
+.fs-rating .is-selected {
+  color: var(--fs-accent);
+  background: transparent;
+}
+.fs-ranking {
+  list-style: none;
+  padding: 0;
+  max-width: var(--fs-long-input-width, 500px);
+}
+.fs-ranking li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 8px 0;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: var(--fs-radius);
+}
+.fs-ranking li span {
+  flex: 1;
+}
+.fs-ranking button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+.fs-matrix {
+  max-width: 100%;
+  overflow: auto;
+}
+.fs-matrix table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+}
+.fs-matrix th,
+.fs-matrix td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  font-weight: 400;
+}
+.fs-matrix th:first-child {
+  text-align: left;
+}
+.fs-matrix input {
+  accent-color: var(--fs-accent);
+}
+.fs-signature {
+  max-width: var(--fs-long-input-width, 500px);
+  border: 1px solid #ddd;
+  border-radius: var(--fs-radius);
+  overflow: hidden;
+}
+.fs-signature canvas {
+  display: block;
+  touch-action: none;
+  width: 100%;
+  height: 150px;
+}
+.fs-signature button {
+  display: block;
+  margin: 0 8px 8px auto;
+  border: 0;
+  background: transparent;
+  color: #777;
+  font-size: 13px;
+}
+.fs-upload {
+  position: relative;
+  max-width: var(--fs-long-input-width, 500px);
+  padding: 32px 16px;
+  text-align: center;
+  border: 1px dashed #bbb;
+  border-radius: var(--fs-radius);
+  font-size: 14px;
+  color: #777;
+}
+.fs-upload input {
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.fs-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--fs-radius);
+  margin: 16px 0;
+}
+.fs-embed {
+  border: 0;
+  width: 100%;
+  min-height: 360px;
+  margin: 16px 0;
+}
+.fs-cover {
+  display: block;
+  width: 100%;
+  height: var(--fs-cover-height, 25vh);
+  object-position: center var(--fs-cover-position, 50%);
+  object-fit: cover;
+}
+.fs-cover + .fs-canvas {
+  padding-top: 51px;
+}
+.fs-logo {
+  display: block;
+  width: var(--fs-logo-width, 100px);
+  height: var(--fs-logo-height, 100px);
+  border-radius: var(--fs-logo-radius, 50px);
+  object-fit: contain;
+  margin-bottom: 50px;
+}
+.fs-cover + .fs-canvas:has(> .fs-logo) {
+  display: flow-root;
+  padding-top: 0;
+}
+.fs-cover + .fs-canvas > .fs-logo {
+  margin-top: calc(var(--fs-logo-height, 100px) / -2);
+  margin-bottom: 51px;
+}
+.fs-progress {
+  height: 4px;
+  width: 100%;
+  margin-top: 32px;
+  accent-color: var(--fs-accent);
+}
+@media (max-width: 600px) {
+  .fs-canvas {
+    padding-top: 51px;
+    width: calc(100% - 50px);
+  }
+  .fs-canvas h1 {
+    font-size: 32px;
+    padding-bottom: 32px;
+  }
+  .fs-renderer input:not([type="checkbox"], [type="radio"], [type="file"]),
+  .fs-renderer textarea,
+  .fs-renderer select {
+    max-width: 100%;
+  }
+  .fs-columns {
+    display: block;
+  }
+  .fs-label {
+    font-size: 1.125em;
+  }
+  .fs-scale {
+    gap: 5px;
+  }
+  .fs-scale label {
+    min-width: 34px;
+  }
+}
+
+.fs-options {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.fs-scale label {
+  display: grid;
+  place-items: center;
+  position: relative;
+  cursor: pointer;
+}
+.fs-scale label input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+.fs-scale label:focus-within {
+  outline: 2px solid var(--fs-accent);
+  outline-offset: 3px;
+}
+
+.fs-renderer input:not([type="checkbox"], [type="radio"], [type="file"]),
+.fs-renderer textarea,
+.fs-renderer select {
+  background: var(--fs-input-bg, var(--fs-bg));
+}
+.fs-navigation {
+  justify-content: var(--fs-button-align, flex-start);
+  margin-top: calc(11px + var(--fs-button-margin, 10px));
+  margin-bottom: var(--fs-button-margin, 10px);
+}
+.fs-renderer .fs-submit {
+  width: var(--fs-button-width, auto);
+  max-width: 100%;
+  min-height: var(--fs-button-height, 36px);
+  border-radius: var(--fs-button-radius, 8px);
+  font-size: var(--fs-button-font-size, 15px);
+  line-height: 1.4;
+  padding: 6px var(--fs-button-padding, 14px);
+}
+.fs-help {
+  color: color-mix(in srgb, var(--fs-text) 65%, var(--fs-bg));
+}
+.fs-option {
+  background: var(--fs-input-bg);
+  border-color: var(--fs-input-border);
+  border-radius: var(--fs-input-radius);
+}
+.fs-label > span[title="Required"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--fs-text) 10%, var(--fs-bg));
+  font-size: 12px;
+  vertical-align: middle;
+}
+.fs-credit {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  background: var(--fs-bg);
+  color: #0070d7;
+  font-size: 13px;
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .fs-credit {
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    border-radius: 0;
+    padding: 8px;
+  }
+}

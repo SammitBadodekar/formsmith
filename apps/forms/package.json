@@ -1,0 +1,27 @@
+{
+  "name": "@formsmith/forms",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5174",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@formsmith/core": "workspace:*",
+    "@formsmith/renderer": "workspace:*",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@fontsource-variable/inter": "5.3.0"
+  },
+  "devDependencies": {
+    "vite": "8.3.1",
+    "@vitejs/plugin-react": "6.1.1",
+    "tailwindcss": "4.3.3",
+    "@tailwindcss/vite": "4.3.3",
+    "wrangler": "4.137.0"
+  },
+  "license": "MIT"
+}

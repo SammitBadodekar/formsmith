@@ -1,0 +1,17 @@
+{
+	email {$ACME_EMAIL}
+	on_demand_tls {
+		ask http://selfhost:8787/internal/certificate
+	}
+}
+
+{$FORM_HOST} {
+	reverse_proxy selfhost:3000
+}
+
+https:// {
+	tls {
+		on_demand
+	}
+	reverse_proxy selfhost:3000
+}

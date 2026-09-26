@@ -1,0 +1,57 @@
+{
+  "name": "formsmith-intake",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "r2_buckets": [
+    {
+      "binding": "JOURNAL",
+      "bucket_name": "formsmith-intake"
+    }
+  ],
+  "queues": {
+    "producers": [
+      {
+        "binding": "REPLAY",
+        "queue": "formsmith-replay"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "formsmith-replay",
+        "max_batch_size": 10,
+        "max_retries": 10,
+        "dead_letter_queue": "formsmith-replay-failed",
+        "max_batch_timeout": 1
+      }
+    ]
+  },
+  "triggers": {
+    "crons": ["*/5 * * * *"]
+  },
+  "vars": {
+    "API_URL": "https://formsmith-api-production.up.railway.app",
+    "ALLOWED_ORIGINS": "https://formsmith.samz.in",
+    "PUBLIC_HOSTS": "formsmith.samz.in,formsmith-intake.badodekarsammit.workers.dev",
+    "ACTIVE_KEY_ID": "v1"
+  },
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "secrets": {
+    "required": ["ADMISSION_KEYS", "CONTROL_KEYS"]
+  },
+  "ratelimits": [
+    {
+      "name": "PUBLIC_RATE_LIMIT",
+      "namespace_id": "1001",
+      "simple": {
+        "limit": 120,
+        "period": 60
+      }
+    }
+  ],
+  "account_id": "013745b929164ce47ff7c27f5d52d352"
+}

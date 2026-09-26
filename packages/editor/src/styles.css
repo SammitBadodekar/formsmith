@@ -1,0 +1,418 @@
+.fe-editor {
+  position: relative;
+  color: var(--fs-text, #37352f);
+  font-family: var(--fs-font, Inter, system-ui, sans-serif);
+  font-size: inherit;
+  line-height: 1.5;
+}
+.fe-document {
+  outline: none;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  min-height: 48px;
+}
+.fe-document h1 {
+  font-size: 40px;
+  line-height: 48px;
+  letter-spacing: normal;
+  font-weight: 700;
+  margin: 0;
+  padding-bottom: 40px;
+  min-height: 48px;
+}
+.fe-document .is-empty:before {
+  content: attr(data-placeholder);
+  color: #bbbab8;
+  pointer-events: none;
+  position: absolute;
+  font-weight: inherit;
+}
+.fe-document h1.is-empty:before {
+  content: "Form title";
+}
+.fe-block {
+  position: relative;
+  margin: 0 0 12px;
+  isolation: isolate;
+}
+.fe-block-content {
+  min-height: 26px;
+  outline: none;
+}
+.fe-question > .fe-block-content {
+  display: flow-root;
+}
+.fe-paragraph[data-kind="heading"] > .fe-block-content {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: 24px;
+}
+.fe-block-tools {
+  position: absolute;
+  right: 100%;
+  top: 0;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  background: white;
+  border-radius: 5px;
+  z-index: 2;
+  white-space: nowrap;
+  padding-right: 4px;
+}
+.fe-block:hover > .fe-block-tools,
+.fe-block:focus-within > .fe-block-tools {
+  opacity: 1;
+}
+.fe-block-tools button {
+  width: 25px;
+  height: 26px;
+  border: 0;
+  color: #999;
+  background: transparent;
+  font-size: 17px;
+  padding: 0;
+  cursor: pointer;
+}
+.fe-block-tools button:first-child {
+  cursor: grab;
+}
+.fe-block-tools button:hover {
+  background: #f3f3f1;
+  color: #37352f;
+}
+.fe-question {
+  margin: 22px 0 calc(12px + var(--fs-input-margin, 10px));
+}
+.fe-document > .fe-block:last-child {
+  margin-bottom: 0;
+}
+.fe-label {
+  font-size: 1.25em;
+  line-height: 1.25;
+  font-weight: 600;
+  min-height: 25px;
+  margin-bottom: 12px;
+}
+.fe-question[data-required="true"] .fe-label:after {
+  content: " *";
+  color: #999;
+}
+.fe-question[data-hidden="true"] {
+  opacity: 0.6;
+}
+.fe-help {
+  min-height: 0;
+  color: #777;
+  font-size: 0.9375em;
+  margin-bottom: 12px;
+}
+.fe-help.is-empty {
+  display: none;
+}
+.fe-question:focus-within .fe-help.is-empty {
+  display: block;
+  min-height: 23px;
+}
+.fe-field-preview {
+  min-height: var(--fs-input-height, 36px);
+  max-width: var(--fs-input-width, 320px);
+  border: 0;
+  border-radius: var(--fs-input-radius, 8px);
+  padding: 6px var(--fs-input-padding, 10px);
+  line-height: 1.5;
+  box-shadow:
+    0 1px 1px #0000001f,
+    0 0 0 var(--fs-input-border-width, 1px) var(--fs-input-border, #3d3b3529),
+    0 2px 5px #3d3b3514;
+  color: #bbbab8;
+  cursor: pointer;
+}
+.fe-field-long_text {
+  height: 108px;
+  max-width: var(--fs-long-input-width, 500px);
+}
+.fe-field-linear_scale,
+.fe-field-matrix {
+  max-width: var(--fs-long-input-width, 500px);
+}
+.fe-field-signature {
+  height: 140px;
+  max-width: var(--fs-long-input-width, 500px);
+  border: 1px dashed #d9d9d9;
+  box-shadow: none;
+}
+.fe-field-file {
+  height: 110px;
+  max-width: var(--fs-long-input-width, 500px);
+  text-align: center;
+  padding-top: 40px;
+  border: 1px dashed #d9d9d9;
+  box-shadow: none;
+}
+.fe-field-rating {
+  font-size: 28px;
+  border: 0;
+  padding: 0;
+  box-shadow: none;
+}
+.fe-field-consent {
+  border: 0;
+  padding: 0;
+  box-shadow: none;
+}
+.fe-choice-preview {
+  margin-top: 8px;
+  border: 1px solid #ddd;
+  border-radius: var(--fs-input-radius, 8px);
+  background: #fafafa;
+  padding: 8px 12px;
+  max-width: var(--fs-long-input-width, 500px);
+  cursor: pointer;
+}
+.fe-section-rule {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #999;
+  font-size: 12px;
+  margin: 24px 0;
+}
+.fe-section-rule:before,
+.fe-section-rule:after {
+  content: "";
+  height: 1px;
+  background: #e9e9e7;
+  flex: 1;
+}
+.fe-columns-content {
+  display: flex;
+  gap: 24px;
+}
+.fe-input-preview img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+.fe-reference {
+  color: var(--fs-accent, #0070d7);
+  background: color-mix(in srgb, var(--fs-accent, #0070d7) 8%, var(--fs-bg, white));
+  border-radius: 4px;
+  padding: 0 3px;
+}
+.ProseMirror-selectednode {
+  outline: 2px solid #acd4fb;
+  outline-offset: 3px;
+}
+.ProseMirror-hideselection *::selection {
+  background: transparent;
+}
+.fe-format-toolbar {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  z-index: 3;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  background: var(--fs-bg, white);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s;
+}
+.fe-editor:focus-within .fe-format-toolbar,
+.fe-format-toolbar:hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+.fe-format-toolbar button,
+.fe-format-toolbar select,
+.fe-insert-row select {
+  font:
+    13px Inter,
+    system-ui;
+  border: 0;
+  background: transparent;
+  color: #777;
+  padding: 4px 7px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.fe-format-toolbar button:hover {
+  background: #f3f3f1;
+}
+.fe-insert-row {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: calc(32px + var(--fs-button-height, 36px) + var(--fs-button-margin, 10px));
+}
+.fe-insert-row select {
+  color: #999;
+}
+.fe-slash-menu {
+  position: fixed;
+  width: 280px;
+  max-height: 300px;
+  overflow: auto;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  box-shadow: 0 5px 22px #0002;
+  z-index: 50;
+}
+.fe-slash-menu button {
+  display: flex;
+  width: 100%;
+  gap: 12px;
+  align-items: center;
+  border: 0;
+  border-radius: 4px;
+  background: #fff;
+  padding: 8px 10px;
+  font:
+    14px Inter,
+    system-ui;
+  color: #37352f;
+  text-align: left;
+  cursor: pointer;
+}
+.fe-slash-menu button span {
+  width: 23px;
+  height: 23px;
+  border: 1px solid #e8e8e6;
+  border-radius: 4px;
+  text-align: center;
+  color: #888;
+}
+.fe-slash-menu button:hover,
+.fe-slash-menu button.is-active {
+  background: #f3f3f1;
+}
+.fe-inspector {
+  position: fixed;
+  right: 0;
+  top: 48px;
+  bottom: 0;
+  overflow: auto;
+  width: 280px;
+  background: white;
+  border-left: 1px solid #eee;
+  padding: 20px;
+  z-index: 30;
+  box-shadow: -4px 0 16px #00000004;
+  font-size: 14px;
+}
+.fe-inspector-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.fe-inspector button {
+  border: 0;
+  background: #f4f4f3;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 4px 8px;
+  color: inherit;
+}
+.fe-inspector-heading button {
+  font-size: 21px;
+  background: transparent;
+}
+.fe-inspector label {
+  display: block;
+  margin: 16px 0;
+}
+.fe-inspector input:not([type="checkbox"], [type="range"]),
+.fe-inspector select {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 7px 8px;
+  margin-top: 6px;
+  font: inherit;
+  background: #fff;
+}
+.fe-inspector .fe-check {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.fe-two {
+  display: flex;
+  gap: 12px;
+}
+.fe-two label {
+  min-width: 0;
+  flex: 1;
+}
+.fe-inspector fieldset {
+  border: 0;
+  padding: 0;
+  margin: 20px 0;
+}
+.fe-option-edit {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.fe-option-edit input {
+  min-width: 0;
+}
+.fe-option-edit button {
+  margin-top: 6px;
+}
+.fe-inspector input[type="range"] {
+  width: 100%;
+}
+@media (max-width: 800px) {
+  .fe-block-tools {
+    right: auto;
+    left: -30px;
+    flex-direction: column;
+    background: #fff;
+  }
+  .fe-block-tools button:not(:first-child) {
+    display: none;
+  }
+  .fe-inspector {
+    width: min(280px, 90vw);
+  }
+  .fe-columns-content {
+    display: block;
+  }
+  .fe-document h1 {
+    font-size: 32px;
+  }
+  .fe-format-toolbar {
+    opacity: 1;
+  }
+}
+
+.fe-field-preview {
+  background: var(--fs-input-bg, var(--fs-bg));
+  color: var(--fs-input-placeholder, #bbbab8);
+}
+.fe-choice-preview {
+  background: var(--fs-input-bg);
+  border-color: var(--fs-input-border);
+}
+.fe-help {
+  color: color-mix(in srgb, var(--fs-text) 65%, var(--fs-bg));
+}
+.fe-question[data-required="true"] .fe-label:after {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--fs-text) 10%, var(--fs-bg));
+  color: inherit;
+  font-size: 12px;
+  vertical-align: middle;
+}

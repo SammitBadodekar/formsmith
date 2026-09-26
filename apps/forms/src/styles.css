@@ -1,0 +1,53 @@
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  color: #37352f;
+  background: white;
+}
+#root {
+  display: flow-root;
+}
+.result-page {
+  max-width: 600px;
+  margin: 100px auto;
+  padding: 24px;
+  line-height: 1.6;
+}
+.result-page h1 {
+  font-size: 32px;
+  line-height: 1.25;
+  letter-spacing: -0.6px;
+}
+.result-page p {
+  color: #777;
+}
+.result-page small {
+  display: block;
+  color: #aaa;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+  margin-top: 36px;
+}
+.result-icon {
+  font-size: 28px;
+  color: #37352f;
+}
+.result-page button {
+  font: inherit;
+  background: #000;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin-top: 16px;
+  display: block;
+  cursor: pointer;
+}
+.honeypot {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

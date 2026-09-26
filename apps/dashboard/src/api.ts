@@ -1,0 +1,50 @@
+import { oauthProviderClient } from "@better-auth/oauth-provider/client";
+import type { FormDefinition } from "@formsmith/core";
+import { createAuthClient } from "better-auth/react";
+export const authClient = createAuthClient({ plugins: [oauthProviderClient()] });
+export type FormRecord = {
+  id: string;
+  draft: FormDefinition;
+  revision: number;
+  policyRevision: number;
+  syncedPolicyRevision: number;
+  publishedVersionId: string | null;
+  closed: boolean;
+  updatedAt: string;
+};
+export type FormSummary = Pick<
+  FormRecord,
+  "id" | "revision" | "publishedVersionId" | "closed" | "updatedAt"
+> & { title: string };
+export type Page<T> = { items: T[]; nextCursor: string | null };
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public status: number,
+    public details?: unknown,
+  ) {
+    super(message);
+  }
+}
+export async function api<T>(
+  path: string,
+  options: { method?: string; body?: unknown; signal?: AbortSignal } = {},
+): Promise<T> {
+  const response = await fetch(`/api${path}`, {
+    method: options.method ?? "GET",
+    credentials: "same-origin",
+    signal: options.signal,
+    headers: options.body === undefined ? undefined : { "content-type": "application/json" },
+    body: options.body === undefined ? undefined : JSON.stringify(options.body),
+  });
+  if (response.status === 204) return undefined as T;
+  const data = await response.json().catch(() => null);
+  if (!response.ok)
+    throw new ApiError(
+      data?.error ?? "Request failed. Please try again.",
+      response.status,
+      data?.details,
+    );
+  if (data === null) throw new ApiError("The server returned an invalid response.", 502);
+  return data as T;
+}

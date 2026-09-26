@@ -1,29 +1,34 @@
 {
-  "name": "api",
+  "name": "@formsmith/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "wrangler dev --remote",
-    "deploy": "wrangler deploy --minify",
-    "build": "wrangler build"
+    "dev": "bun --env-file=../../.env --watch src/index.ts",
+    "build": "bun build src/index.ts src/worker.ts --target=bun --outdir=dist --external=postgres",
+    "typecheck": "tsc --noEmit",
+    "start": "bun dist/index.js",
+    "worker": "bun dist/worker.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "bun --env-file=../../.env src/db/migrate.ts"
   },
   "dependencies": {
-    "@formsmith/database": "workspace:*",
-    "@formsmith/shared": "workspace:*",
-    "@hono-rate-limiter/cloudflare": "^0.2.2",
-    "@oslojs/crypto": "^1.0.1",
-    "@oslojs/encoding": "^1.1.0",
-    "axios": "^1.7.9",
-    "cuid": "^3.0.0",
-    "drizzle-orm": "^0.38.3",
-    "hono": "^4.6.16",
-    "hono-rate-limiter": "^0.4.2",
-    "libsql": "0.5.0-pre.5",
-    "nanoid": "^5.1.5",
-    "unique-names-generator": "^4.7.1",
-    "uuid": "^11.0.5",
-    "zod": "^3.24.1"
+    "@formsmith/core": "workspace:*",
+    "elysia": "1.4.30",
+    "@elysiajs/cors": "1.4.2",
+    "drizzle-orm": "0.45.3",
+    "postgres": "3.4.9",
+    "better-auth": "1.7.6",
+    "@better-auth/mcp": "1.7.6",
+    "@better-auth/cimd": "1.7.6",
+    "@modelcontextprotocol/server": "2.1.0",
+    "@aws-sdk/client-s3": "3.1138.0",
+    "@aws-sdk/s3-request-presigner": "3.1138.0",
+    "zod": "4.6.5",
+    "@better-auth/core": "1.7.6"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250109.0",
-    "wrangler": "^4.6.0"
-  }
+    "drizzle-kit": "0.31.11"
+  },
+  "license": "MIT"
 }

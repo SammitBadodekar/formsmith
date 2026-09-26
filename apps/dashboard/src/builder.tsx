@@ -7,30 +7,53 @@ import {
   safeUrl,
   validateDefinition,
 } from "@formsmith/core";
-import { type EditorHandle, FormEditor, ImageUpload } from "@formsmith/editor";
-import { FormRenderer, formThemeStyle } from "@formsmith/renderer";
+import { type EditorHandle, FormEditor } from "@formsmith/editor";
+import { formThemeStyle } from "@formsmith/renderer";
 import { Link, useBlocker, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Check, ImagePlus, SlidersHorizontal, SmilePlus } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  Database,
+  ImagePlus,
+  Link2,
+  Settings2,
+  Share2,
+  SlidersHorizontal,
+  SmilePlus,
+} from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { ApiError, api, type FormRecord, type Page } from "./api";
+import { ApiError, api, authClient, type FormRecord, type Page } from "./api";
 import { Connectors } from "./connectors";
+import { WorkspaceSidebar } from "./dashboard";
+import { BuilderSkeleton, PanelSkeleton } from "./loading";
 import { LogicSettings } from "./logic-settings";
+import { MediaPicker } from "./media-picker";
+import { FormPreview } from "./preview";
 import { ResponseDetails, type ResponseRow } from "./response-details";
+import { ThemeSettings } from "./theme-settings";
 
-export default function Builder({ id }: { id?: string }) {
+type ManagementPanel = "share" | "responses" | "connectors" | "settings";
+type BuilderPanel = ManagementPanel | "customize" | "preview" | "logic" | null;
+function isManagementPanel(panel: BuilderPanel): panel is ManagementPanel {
+  return (
+    panel === "share" || panel === "responses" || panel === "connectors" || panel === "settings"
+  );
+}
+export default function Builder({
+  id,
+  requestedPanel,
+}: {
+  id?: string;
+  requestedPanel?: ManagementPanel;
+}) {
+  const { data: session } = authClient.useSession();
+  const [mediaKind, setMediaKind] = useState<"logo" | "cover" | null>(null);
+  const [copied, setCopied] = useState(false);
   const [record, setRecord] = useState<FormRecord | null>(null),
     [form, setForm] = useState<FormDefinition | null>(null),
     [error, setError] = useState(""),
     [saveStatus, setSaveStatus] = useState("Saved"),
-    [panel, setPanel] = useState<
-      "customize" | "preview" | "share" | "responses" | "connectors" | "logic" | null
-    >(() =>
-      new URLSearchParams(location.search).get("panel") === "connectors"
-        ? "connectors"
-        : new URLSearchParams(location.search).get("panel") === "share"
-          ? "share"
-          : null,
-    ),
+    [panel, setPanelState] = useState<BuilderPanel>(requestedPanel ?? null),
     [publishing, setPublishing] = useState(false);
   const editor = useRef<EditorHandle>(null),
     current = useRef<FormDefinition | null>(null),
@@ -39,6 +62,21 @@ export default function Builder({ id }: { id?: string }) {
     conflicted = useRef(false),
     timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
+  useEffect(() => {
+    // Clearing the management URL must not dismiss a just-opened editor panel.
+    setPanelState((previous) => requestedPanel ?? (isManagementPanel(previous) ? null : previous));
+  }, [requestedPanel]);
+  const setPanel = (next: BuilderPanel) => {
+    setPanelState(next);
+    if (!id) return;
+    const routePanel = isManagementPanel(next) ? next : undefined;
+    if (routePanel !== requestedPanel)
+      void navigate({
+        to: "/forms/$formId",
+        params: { formId: id },
+        search: { panel: routePanel },
+      });
+  };
   const uploadMedia = id
     ? async (file: File) => {
         const target = await api<{ id: string; url: string; headers: Record<string, string> }>(
@@ -60,6 +98,19 @@ export default function Builder({ id }: { id?: string }) {
         return completed.url;
       }
     : undefined;
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(`${location.origin}/f/${id}`);
+      setCopied(true);
+    } catch {
+      setError("Couldn’t copy the link. Select and copy it from the Share page.");
+    }
+  };
+  useEffect(() => {
+    if (!copied) return;
+    const timeout = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(timeout);
+  }, [copied]);
   useEffect(() => {
     let active = true;
     if (id)
@@ -258,7 +309,21 @@ export default function Builder({ id }: { id?: string }) {
       setPublishing(false);
     }
   };
-  if (!form) return <main className="message-page">{error || "Loading form…"}</main>;
+  if (!form)
+    return error ? (
+      <main className="message-page">
+        <h1>Couldn’t open this form</h1>
+        <p role="alert" className="error">
+          {error}
+        </p>
+        <Link to="/" className="button">
+          Back to workspace
+        </Link>
+      </main>
+    ) : (
+      <BuilderSkeleton />
+    );
+  const managing = isManagementPanel(panel);
   const hasCover = Boolean(form.theme.cover && safeUrl(form.theme.cover));
   const hasLogo = Boolean(form.theme.logo && safeUrl(form.theme.logo));
   const updateTheme = (changes: Partial<FormDefinition["theme"]>) => {
@@ -267,7 +332,16 @@ export default function Builder({ id }: { id?: string }) {
       editor.current?.setDefinition({ ...latest, theme: { ...latest.theme, ...changes } });
   };
   return (
-    <div className="builder" style={{ background: form.theme.background }}>
+    <div
+      className={`builder${id && session ? " with-sidebar" : ""}${managing ? " is-managing" : ""}`}
+      style={{ ...formThemeStyle(form.theme), background: form.theme.background }}
+    >
+      {id && session && (
+        <WorkspaceSidebar
+          user={session.user}
+          select={(section) => void navigate({ to: "/", search: { section } })}
+        />
+      )}
       <header className="builder-header">
         <Link to="/" className="builder-back" aria-label="Back to workspace">
           <ArrowLeft size={15} />
@@ -280,30 +354,77 @@ export default function Builder({ id }: { id?: string }) {
           {saveStatus}
         </span>
         <div className="header-actions">
-          <button type="button" className="button subtle" onClick={() => setPanel("customize")}>
-            Customize
-          </button>
-          {id && (
-            <button type="button" className="button subtle" onClick={() => setPanel("connectors")}>
-              Connect
-            </button>
+          {managing ? (
+            <>
+              {record?.publishedVersionId && (
+                <button type="button" className="button subtle" onClick={() => void copyLink()}>
+                  {copied ? "Copied" : "Copy share link"}
+                </button>
+              )}
+              <button type="button" className="button primary" onClick={() => setPanel(null)}>
+                Edit form
+              </button>
+            </>
+          ) : (
+            <>
+              {record?.publishedVersionId && (
+                <button
+                  type="button"
+                  className="icon-button"
+                  aria-label="Share form"
+                  title="Share"
+                  onClick={() => setPanel("share")}
+                >
+                  <Share2 size={16} />
+                </button>
+              )}
+              <button
+                type="button"
+                className="icon-button"
+                aria-label="Form settings"
+                title="Settings"
+                onClick={() => setPanel("settings")}
+              >
+                <Settings2 size={16} />
+              </button>
+              <button type="button" className="button subtle" onClick={() => setPanel("customize")}>
+                Customize
+              </button>
+              {id && (
+                <button
+                  type="button"
+                  className="icon-button"
+                  aria-label="Integrations"
+                  title="Integrations"
+                  onClick={() => setPanel("connectors")}
+                >
+                  <Link2 size={16} />
+                </button>
+              )}
+              {id && (
+                <button
+                  type="button"
+                  className="icon-button"
+                  aria-label="Submissions"
+                  title="Submissions"
+                  onClick={() => setPanel("responses")}
+                >
+                  <Database size={16} />
+                </button>
+              )}
+              <button type="button" className="button subtle" onClick={() => setPanel("preview")}>
+                Preview
+              </button>
+              <button
+                type="button"
+                className="button primary"
+                disabled={publishing}
+                onClick={() => void publish()}
+              >
+                {publishing ? "Publishing…" : "Publish"}
+              </button>
+            </>
           )}
-          {id && (
-            <button type="button" className="button subtle" onClick={() => setPanel("responses")}>
-              Submissions
-            </button>
-          )}
-          <button type="button" className="button subtle" onClick={() => setPanel("preview")}>
-            Preview
-          </button>
-          <button
-            type="button"
-            className="button primary"
-            disabled={publishing}
-            onClick={() => void publish()}
-          >
-            {publishing ? "Publishing…" : "Publish"}
-          </button>
         </div>
       </header>
       {error && (
@@ -318,7 +439,7 @@ export default function Builder({ id }: { id?: string }) {
         <div className="builder-cover">
           <img src={form.theme.cover} alt="Form cover" />
           <div className="builder-media-actions">
-            <button className="button" type="button" onClick={() => setPanel("customize")}>
+            <button className="button" type="button" onClick={() => setMediaKind("cover")}>
               Change cover
             </button>
             <button className="button" type="button" onClick={() => updateTheme({ cover: "" })}>
@@ -335,7 +456,7 @@ export default function Builder({ id }: { id?: string }) {
           <div className="builder-logo">
             <img src={form.theme.logo} alt="Form logo" />
             <div className="builder-media-actions">
-              <button className="button" type="button" onClick={() => setPanel("customize")}>
+              <button className="button" type="button" onClick={() => setMediaKind("logo")}>
                 Change logo
               </button>
               <button className="button" type="button" onClick={() => updateTheme({ logo: "" })}>
@@ -346,13 +467,13 @@ export default function Builder({ id }: { id?: string }) {
         )}
         <div className="builder-customize">
           {!hasLogo && (
-            <button className="button subtle" type="button" onClick={() => setPanel("customize")}>
+            <button className="button subtle" type="button" onClick={() => setMediaKind("logo")}>
               <SmilePlus size={16} />
               Add logo
             </button>
           )}
           {!hasCover && (
-            <button className="button subtle" type="button" onClick={() => setPanel("customize")}>
+            <button className="button subtle" type="button" onClick={() => setMediaKind("cover")}>
               <ImagePlus size={16} />
               Add cover
             </button>
@@ -366,40 +487,93 @@ export default function Builder({ id }: { id?: string }) {
           </button>
         </div>
         <FormEditor ref={editor} definition={form} onChange={change} uploadMedia={uploadMedia} />
-        <button className="builder-submit" type="button" onClick={() => setPanel("preview")}>
-          {form.settings.submitLabel} <span>→</span>
-        </button>
+        <div className="builder-submit-row">
+          <button className="builder-submit" type="button" onClick={() => setPanel("preview")}>
+            {form.settings.submitLabel} <span>→</span>
+          </button>
+        </div>
       </main>
+      {mediaKind && (
+        <MediaPicker
+          kind={mediaKind}
+          value={form.theme[mediaKind]}
+          upload={uploadMedia}
+          change={(url) => updateTheme({ [mediaKind]: url })}
+          close={() => setMediaKind(null)}
+        />
+      )}
       {panel === "customize" && (
         <Panel title="Customize" close={() => setPanel(null)}>
-          <ThemeSettings form={form} onChange={(next) => editor.current?.setDefinition(next)} />
-          {(["logo", "cover"] as const).map((kind) => (
-            <ImageUpload
-              key={kind}
-              upload={uploadMedia}
-              label={`Upload ${kind}`}
-              onComplete={(url) => updateTheme({ [kind]: url })}
+          <ThemeSettings theme={form.theme} onChange={updateTheme} />
+        </Panel>
+      )}
+      {managing && (
+        <div className="form-management-header">
+          <div>
+            <h1>{form.title || "Untitled form"}</h1>
+          </div>
+          <nav aria-label="Form navigation">
+            {(
+              [
+                ["responses", "Submissions"],
+                ["share", "Share"],
+                ["connectors", "Integrations"],
+                ["settings", "Settings"],
+              ] as const
+            ).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                aria-current={panel === key ? "page" : undefined}
+                onClick={() => setPanel(key)}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      )}
+      {panel === "settings" && (
+        <Panel page title="Settings" close={() => setPanel(null)}>
+          <label>
+            Submit button
+            <input
+              value={form.settings.submitLabel}
+              onChange={(e) =>
+                editor.current?.setDefinition({
+                  ...form,
+                  settings: { ...form.settings, submitLabel: e.target.value },
+                })
+              }
             />
+          </label>
+          <label>
+            Next button
+            <input
+              value={form.settings.nextLabel}
+              onChange={(e) =>
+                editor.current?.setDefinition({
+                  ...form,
+                  settings: { ...form.settings, nextLabel: e.target.value },
+                })
+              }
+            />
+          </label>
+          {(["resume", "showProgress"] as const).map((key) => (
+            <label className="check-setting" key={key}>
+              <input
+                type="checkbox"
+                checked={form.settings[key]}
+                onChange={(e) =>
+                  editor.current?.setDefinition({
+                    ...form,
+                    settings: { ...form.settings, [key]: e.target.checked },
+                  })
+                }
+              />
+              {key === "resume" ? "Save progress on this device" : "Show progress bar"}
+            </label>
           ))}
-          <button
-            className="button"
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              const a = document.createElement("a"),
-                url = URL.createObjectURL(
-                  new Blob([JSON.stringify(editor.current?.getDefinition() ?? form, null, 2)], {
-                    type: "application/json",
-                  }),
-                );
-              a.href = url;
-              a.download = "form.json";
-              a.click();
-              URL.revokeObjectURL(url);
-            }}
-          >
-            Export form JSON
-          </button>
         </Panel>
       )}
       {panel === "logic" && (
@@ -407,76 +581,71 @@ export default function Builder({ id }: { id?: string }) {
           <LogicSettings form={form} onChange={(next) => editor.current?.setDefinition(next)} />
         </Panel>
       )}
-      {panel === "preview" && (
-        <div className="preview-overlay">
-          <div className="preview-header">
-            <span>Preview</span>
-            <button className="button" type="button" onClick={() => setPanel(null)}>
-              Back to editor
-            </button>
-          </div>
-          <FormRenderer
-            definition={form}
-            onSubmit={async () => {
-              setError("Preview submitted successfully. No response was saved.");
-              setPanel(null);
-            }}
-          />
-        </div>
-      )}
+      {panel === "preview" && <FormPreview form={form} close={() => setPanel(null)} />}
       {panel === "share" && record && (
-        <Panel title="Share your form" close={() => setPanel(null)}>
+        <Panel page title="Share your form" close={() => setPanel(null)}>
           <p>
             {record.syncedPolicyRevision < record.policyRevision
               ? "Publishing is synchronizing. The link becomes available when synchronization completes."
-              : "Your form is live."}
+              : record.publishedVersionId
+                ? "Your form is live."
+                : "Publish your form to create a shareable link."}
           </p>
-          <label>
-            Form link
-            <input readOnly value={`${location.origin}/f/${id}`} />
-          </label>
-          <button
-            type="button"
-            className="button"
-            onClick={() => void navigator.clipboard.writeText(`${location.origin}/f/${id}`)}
-          >
-            Copy link
-          </button>
-          <label>
-            Embed code
-            <textarea
-              readOnly
-              rows={5}
-              value={`<iframe data-formsmith-src="${location.origin}/f/${id}" title="${form.title.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;")}" width="100%" height="650" style="border:0"></iframe>\n<script async src="${location.origin}/embed.js"></script>`}
-            />
-          </label>
-          <button
-            type="button"
-            className="button"
-            onClick={async () => {
-              try {
-                await api(`/forms/${id}/closed`, {
-                  method: "PATCH",
-                  body: { closed: !record.closed },
-                });
-                const saved = await api<FormRecord>(`/forms/${id}`);
-                setRecord(saved);
-              } catch (e) {
-                setError(e instanceof Error ? e.message : "Could not change availability");
-              }
-            }}
-          >
-            {record.closed ? "Reopen form" : "Close form"}
-          </button>
+          {record.publishedVersionId ? (
+            <>
+              <label>
+                Form link
+                <input readOnly value={`${location.origin}/f/${id}`} />
+              </label>
+              <button type="button" className="button" onClick={() => void copyLink()}>
+                {copied ? "Copied" : "Copy link"}
+              </button>
+              <label>
+                Embed code
+                <textarea
+                  readOnly
+                  rows={5}
+                  value={`<iframe data-formsmith-src="${location.origin}/f/${id}" title="${form.title.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;")}" width="100%" height="650" style="border:0"></iframe>\n<script async src="${location.origin}/embed.js"></script>`}
+                />
+              </label>
+              <button
+                type="button"
+                className="button"
+                onClick={async () => {
+                  try {
+                    await api(`/forms/${id}/closed`, {
+                      method: "PATCH",
+                      body: { closed: !record.closed },
+                    });
+                    const saved = await api<FormRecord>(`/forms/${id}`);
+                    setRecord(saved);
+                  } catch (e) {
+                    setError(e instanceof Error ? e.message : "Could not change availability");
+                  }
+                }}
+              >
+                {record.closed ? "Reopen form" : "Close form"}
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="button primary"
+              disabled={publishing}
+              onClick={() => void publish()}
+            >
+              {publishing ? "Publishing…" : "Publish form"}
+            </button>
+          )}
         </Panel>
       )}
       {panel === "responses" && id && (
-        <Panel title="Submissions" close={() => setPanel(null)} wide>
+        <Panel page title="Submissions" close={() => setPanel(null)} wide>
           <Responses id={id} />
         </Panel>
       )}
       {panel === "connectors" && id && (
-        <Panel title="Connect your form" close={() => setPanel(null)} wide>
+        <Panel page title="Connect your form" close={() => setPanel(null)} wide>
           <Connectors formId={id} />
         </Panel>
       )}
@@ -488,14 +657,23 @@ function Panel({
   children,
   close,
   wide,
+  page,
 }: {
   title: string;
   children: ReactNode;
   close: () => void;
   wide?: boolean;
+  page?: boolean;
 }) {
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") close();
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [close]);
   return (
-    <aside className={`settings-panel ${wide ? "wide" : ""}`}>
+    <aside className={`settings-panel ${wide ? "wide" : ""} ${page ? "management-panel" : ""}`}>
       <header>
         <h2>{title}</h2>
         <button type="button" aria-label="Close panel" onClick={close}>
@@ -506,134 +684,17 @@ function Panel({
     </aside>
   );
 }
-function ThemeSettings({
-  form,
-  onChange,
-}: {
-  form: FormDefinition;
-  onChange: (f: FormDefinition) => void;
-}) {
-  return (
-    <>
-      <fieldset>
-        <legend>Colors</legend>
-        {(["background", "text", "accent", "button", "buttonText"] as const).map((key) => (
-          <label className="color-setting" key={key}>
-            <span>
-              {key === "buttonText" ? "Button text" : key.charAt(0).toUpperCase() + key.slice(1)}
-            </span>
-            <input
-              type="color"
-              value={form.theme[key]}
-              onChange={(e) =>
-                onChange({ ...form, theme: { ...form.theme, [key]: e.target.value } })
-              }
-            />
-          </label>
-        ))}
-      </fieldset>
-      <label>
-        Page width
-        <input
-          type="range"
-          min={400}
-          max={1200}
-          step={20}
-          value={form.theme.width}
-          onChange={(e) =>
-            onChange({ ...form, theme: { ...form.theme, width: Number(e.target.value) } })
-          }
-        />
-      </label>
-      <label>
-        Font size
-        <input
-          type="range"
-          min={14}
-          max={24}
-          value={form.theme.fontSize}
-          onChange={(e) =>
-            onChange({ ...form, theme: { ...form.theme, fontSize: Number(e.target.value) } })
-          }
-        />
-        <output>{form.theme.fontSize}px</output>
-      </label>
-      <label>
-        Corner radius
-        <input
-          type="range"
-          min={0}
-          max={24}
-          value={form.theme.radius}
-          onChange={(e) =>
-            onChange({ ...form, theme: { ...form.theme, radius: Number(e.target.value) } })
-          }
-        />
-        <output>{form.theme.radius}px</output>
-      </label>
-      <label>
-        Logo URL
-        <input
-          value={form.theme.logo}
-          onChange={(e) => onChange({ ...form, theme: { ...form.theme, logo: e.target.value } })}
-        />
-      </label>
-      <label>
-        Cover image URL
-        <input
-          value={form.theme.cover}
-          onChange={(e) => onChange({ ...form, theme: { ...form.theme, cover: e.target.value } })}
-        />
-      </label>
-      <label>
-        Submit button
-        <input
-          value={form.settings.submitLabel}
-          onChange={(e) =>
-            onChange({ ...form, settings: { ...form.settings, submitLabel: e.target.value } })
-          }
-        />
-      </label>
-      <label>
-        Next button
-        <input
-          value={form.settings.nextLabel}
-          onChange={(e) =>
-            onChange({ ...form, settings: { ...form.settings, nextLabel: e.target.value } })
-          }
-        />
-      </label>
-      <label className="check-setting">
-        <input
-          type="checkbox"
-          checked={form.settings.resume}
-          onChange={(e) =>
-            onChange({ ...form, settings: { ...form.settings, resume: e.target.checked } })
-          }
-        />
-        Save progress on this device
-      </label>
-      <label className="check-setting">
-        <input
-          type="checkbox"
-          checked={form.settings.showProgress}
-          onChange={(e) =>
-            onChange({ ...form, settings: { ...form.settings, showProgress: e.target.checked } })
-          }
-        />
-        Show progress
-      </label>
-    </>
-  );
-}
 function Responses({ id }: { id: string }) {
+  const [attempt, setAttempt] = useState(0);
   const [rows, setRows] = useState<ResponseRow[]>([]),
     [error, setError] = useState(""),
     [nextCursor, setNextCursor] = useState<string | null>(null),
     [loading, setLoading] = useState(true);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: retry reloads the same form.
   useEffect(() => {
     let active = true;
     setLoading(true);
+    setError("");
     api<Page<(typeof rows)[number]>>(`/forms/${id}/submissions`)
       .then((page) => {
         if (active) {
@@ -650,7 +711,7 @@ function Responses({ id }: { id: string }) {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [id, attempt]);
   const more = async () => {
     if (!nextCursor || loading) return;
     setLoading(true);
@@ -677,11 +738,20 @@ function Responses({ id }: { id: string }) {
           Export JSON
         </a>
       </div>
-      {error && <p className="error">{error}</p>}
+      {error && (
+        <div className="workspace-error" role="alert">
+          <span>{error}</span>
+          <button type="button" className="button" onClick={() => setAttempt((value) => value + 1)}>
+            Try again
+          </button>
+        </div>
+      )}
       {rows.length ? (
         rows.map((row) => <ResponseDetails key={row.id} row={row} />)
+      ) : loading ? (
+        <PanelSkeleton label="Loading submissions" />
       ) : (
-        <p className="muted">{loading ? "Loading responses…" : "No submissions yet."}</p>
+        !error && <p className="muted">No submissions yet.</p>
       )}
       {nextCursor && (
         <button type="button" className="button" disabled={loading} onClick={() => void more()}>

@@ -2,7 +2,7 @@
   background: var(--fs-bg, #fff);
   color: var(--fs-text, #37352f);
   min-height: 100%;
-  font-family: Inter, system-ui, sans-serif;
+  font-family: var(--fs-font, Inter, system-ui, sans-serif);
   line-height: 1.5;
 }
 .fs-renderer * {
@@ -31,7 +31,7 @@
   margin: 24px 0 12px;
 }
 .fs-question {
-  margin: 0 0 28px;
+  margin: 0 0 calc(18px + var(--fs-input-margin, 10px));
 }
 .fs-canvas > h1 + .fs-question {
   margin-top: 22px;
@@ -57,25 +57,25 @@
 .fs-renderer select {
   display: block;
   width: 100%;
-  max-width: 320px;
-  min-height: 36px;
-  padding: 6px 10px;
+  max-width: var(--fs-input-width, 320px);
+  min-height: var(--fs-input-height, 36px);
+  padding: 6px var(--fs-input-padding, 10px);
   border: 0;
-  border-radius: var(--fs-radius, 8px);
+  border-radius: var(--fs-input-radius, 8px);
   background: transparent;
   color: inherit;
   font: inherit;
   box-shadow:
     0 1px 1px #0000001f,
-    0 0 0 1px #3d3b3529,
+    0 0 0 var(--fs-input-border-width, 1px) var(--fs-input-border, #3d3b3529),
     0 2px 5px #3d3b3514;
 }
 .fs-renderer textarea {
-  max-width: 500px;
+  max-width: var(--fs-long-input-width, 500px);
   resize: vertical;
 }
 .fs-renderer ::placeholder {
-  color: #aaa9a5;
+  color: var(--fs-input-placeholder, #bbbab8);
 }
 .fs-renderer input:focus,
 .fs-renderer textarea:focus,
@@ -86,7 +86,7 @@
 .fs-options {
   display: grid;
   gap: 8px;
-  max-width: 500px;
+  max-width: var(--fs-long-input-width, 500px);
 }
 .fs-option {
   display: flex;
@@ -133,7 +133,7 @@
   border: 0;
   border-radius: var(--fs-radius);
   padding: 0 13.5px;
-  min-height: 36px;
+  min-height: var(--fs-input-height, 36px);
   background: var(--fs-button);
   color: var(--fs-button-text);
   font-size: 15px;
@@ -216,7 +216,7 @@
 .fs-ranking {
   list-style: none;
   padding: 0;
-  max-width: 500px;
+  max-width: var(--fs-long-input-width, 500px);
 }
 .fs-ranking li {
   display: flex;
@@ -258,7 +258,7 @@
   accent-color: var(--fs-accent);
 }
 .fs-signature {
-  max-width: 500px;
+  max-width: var(--fs-long-input-width, 500px);
   border: 1px solid #ddd;
   border-radius: var(--fs-radius);
   overflow: hidden;
@@ -279,7 +279,7 @@
 }
 .fs-upload {
   position: relative;
-  max-width: 500px;
+  max-width: var(--fs-long-input-width, 500px);
   padding: 32px 16px;
   text-align: center;
   border: 1px dashed #bbb;
@@ -307,7 +307,8 @@
 .fs-cover {
   display: block;
   width: 100%;
-  height: 25vh;
+  height: var(--fs-cover-height, 25vh);
+  object-position: center var(--fs-cover-position, 50%);
   object-fit: cover;
 }
 .fs-cover + .fs-canvas {
@@ -315,8 +316,9 @@
 }
 .fs-logo {
   display: block;
-  width: 100px;
-  height: 100px;
+  width: var(--fs-logo-width, 100px);
+  height: var(--fs-logo-height, 100px);
+  border-radius: var(--fs-logo-radius, 50px);
   object-fit: contain;
   margin-bottom: 50px;
 }
@@ -325,7 +327,7 @@
   padding-top: 0;
 }
 .fs-cover + .fs-canvas > .fs-logo {
-  margin-top: -50px;
+  margin-top: calc(var(--fs-logo-height, 100px) / -2);
   margin-bottom: 51px;
 }
 .fs-progress {
@@ -385,4 +387,64 @@
 .fs-scale label:focus-within {
   outline: 2px solid var(--fs-accent);
   outline-offset: 3px;
+}
+
+.fs-renderer input:not([type="checkbox"], [type="radio"], [type="file"]),
+.fs-renderer textarea,
+.fs-renderer select {
+  background: var(--fs-input-bg, var(--fs-bg));
+}
+.fs-navigation {
+  justify-content: var(--fs-button-align, flex-start);
+  margin-top: calc(11px + var(--fs-button-margin, 10px));
+  margin-bottom: var(--fs-button-margin, 10px);
+}
+.fs-renderer .fs-submit {
+  width: var(--fs-button-width, auto);
+  max-width: 100%;
+  min-height: var(--fs-button-height, 36px);
+  border-radius: var(--fs-button-radius, 8px);
+  font-size: var(--fs-button-font-size, 15px);
+  line-height: 1.4;
+  padding: 6px var(--fs-button-padding, 14px);
+}
+.fs-help {
+  color: color-mix(in srgb, var(--fs-text) 65%, var(--fs-bg));
+}
+.fs-option {
+  background: var(--fs-input-bg);
+  border-color: var(--fs-input-border);
+  border-radius: var(--fs-input-radius);
+}
+.fs-label > span[title="Required"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--fs-text) 10%, var(--fs-bg));
+  font-size: 12px;
+  vertical-align: middle;
+}
+.fs-credit {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  background: var(--fs-bg);
+  color: #0070d7;
+  font-size: 13px;
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .fs-credit {
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    border-radius: 0;
+    padding: 8px;
+  }
 }

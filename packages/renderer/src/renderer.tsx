@@ -24,6 +24,50 @@ export function formThemeStyle(theme: FormDefinition["theme"]): CSSProperties {
     "--fs-button-text": theme.buttonText,
     "--fs-radius": `${theme.radius}px`,
     "--fs-width": `${theme.width}px`,
+    "--fs-font": {
+      Inter: "Inter, system-ui, sans-serif",
+      System: "system-ui, sans-serif",
+      Georgia: "Georgia, serif",
+      Monospace: "ui-monospace, monospace",
+    }[theme.font ?? "Inter"],
+    "--fs-logo-width": `${theme.logoWidth ?? 100}px`,
+    "--fs-logo-height": `${theme.logoHeight ?? 100}px`,
+    "--fs-logo-radius": `${theme.logoRadius ?? 50}px`,
+    "--fs-cover-height": `${theme.coverHeight ?? 25}${theme.coverHeightUnit ?? "vh"}`,
+    "--fs-cover-position": `${theme.coverPosition ?? 50}%`,
+    "--fs-input-width":
+      theme.inputWidthMode === "full"
+        ? "100%"
+        : theme.inputWidth === undefined
+          ? "320px"
+          : `${theme.inputWidth}px`,
+    "--fs-long-input-width":
+      theme.inputWidthMode === "full" ? "100%" : `${theme.inputWidth ?? 500}px`,
+    "--fs-input-height": `${theme.inputHeight ?? 36}px`,
+    "--fs-input-bg": theme.inputBackground ?? theme.background,
+    "--fs-input-placeholder": theme.inputPlaceholder ?? "#bbbab8",
+    "--fs-input-border": theme.inputBorder ?? "#3d3b3529",
+    "--fs-input-border-width": `${theme.inputBorderWidth ?? 1}px`,
+    "--fs-input-radius": `${theme.inputRadius ?? theme.radius}px`,
+    "--fs-input-margin": `${theme.inputMargin ?? 10}px`,
+    "--fs-input-padding": `${theme.inputPadding ?? 10}px`,
+    "--fs-button-width":
+      theme.buttonWidthMode === "full"
+        ? "100%"
+        : theme.buttonWidthMode === "fixed"
+          ? `${theme.buttonWidth ?? 120}px`
+          : "auto",
+    "--fs-button-height": `${theme.buttonHeight ?? 36}px`,
+    "--fs-button-align":
+      theme.buttonAlign === "center"
+        ? "center"
+        : theme.buttonAlign === "right"
+          ? "flex-end"
+          : "flex-start",
+    "--fs-button-font-size": `${theme.buttonFontSize ?? 15}px`,
+    "--fs-button-radius": `${theme.buttonRadius ?? theme.radius}px`,
+    "--fs-button-margin": `${theme.buttonMargin ?? 10}px`,
+    "--fs-button-padding": `${theme.buttonPadding ?? 14}px`,
     fontSize: theme.fontSize,
   } as CSSProperties;
 }
@@ -429,6 +473,7 @@ export function FormRenderer({
   receipt,
 }: RendererProps) {
   const [answers, setAnswers] = useState<Answers>(initialAnswers),
+    [submitted, setSubmitted] = useState(false),
     [pageId, setPageId] = useState("start"),
     [errors, setErrors] = useState<Record<string, string>>({}),
     [busy, setBusy] = useState(false),
@@ -437,13 +482,14 @@ export function FormRenderer({
   const pages = pagesOf(form),
     route = reachablePages(form, state.jumps),
     finalPage = pages.find((p) => p.id === route.at(-1)),
-    currentId = receipt
-      ? finalPage?.ending
-        ? finalPage.id
-        : "complete"
-      : route.includes(pageId)
-        ? pageId
-        : "start",
+    currentId =
+      receipt || submitted
+        ? finalPage?.ending
+          ? finalPage.id
+          : "complete"
+        : route.includes(pageId)
+          ? pageId
+          : "start",
     pageIndex = route.indexOf(currentId),
     page = pages.find((p) => p.id === currentId);
   const next = pages.find((p) => p.id === route[pageIndex + 1]),
@@ -537,16 +583,17 @@ export function FormRenderer({
         noValidate
         onSubmit={async (event) => {
           event.preventDefault();
-          if (busy || disabled || receipt || page?.ending) return;
+          if (busy || disabled || receipt || submitted || page?.ending) return;
           const checked = validateAnswers(form, answers, isLast ? undefined : currentId);
           setErrors(checked.errors);
           setFailure("");
           if (!checked.valid) {
+            const ownerDocument = event.currentTarget.ownerDocument;
             requestAnimationFrame(() => {
               const id = Object.keys(checked.errors)[0];
               const element =
-                document.getElementById(`input-${id}`) ??
-                document
+                ownerDocument.getElementById(`input-${id}`) ??
+                ownerDocument
                   .getElementById(`question-${id}`)
                   ?.querySelector<HTMLElement>("input, select, textarea, button, [tabindex]");
               element?.focus();
@@ -560,6 +607,7 @@ export function FormRenderer({
           setBusy(true);
           try {
             await onSubmit(checked.answers);
+            setSubmitted(true);
             if (next?.ending) setPageId(next.id);
           } catch (error) {
             setFailure(
@@ -575,22 +623,24 @@ export function FormRenderer({
         )}
         {currentId === "start" && <h1>{form.title}</h1>}
         {page?.blocks.map(block)}
-        {receipt && (
+        {(receipt || (submitted && !page?.ending)) && (
           <section className="fs-completion" role="status">
             {!page?.ending && (
               <h1>
-                {receipt.status === "committed" ? "Thank you!" : "Your response has been received"}
+                {!receipt || receipt.status === "committed"
+                  ? "Thank you!"
+                  : "Your response has been received"}
               </h1>
             )}
             <p>
-              {receipt.status === "committed"
+              {!receipt || receipt.status === "committed"
                 ? "Your response has been submitted."
                 : "Your response is safely received and waiting to finish processing. You can close this page."}
             </p>
-            <small>Receipt: {receipt.id}</small>
+            {receipt && <small>Receipt: {receipt.id}</small>}
           </section>
         )}
-        {!page?.ending && !receipt && (
+        {!page?.ending && !receipt && !submitted && (
           <div className="fs-navigation">
             {pageIndex > 0 && (
               <button
@@ -616,7 +666,7 @@ export function FormRenderer({
             {failure}
           </p>
         )}
-        {!receipt && form.settings.showProgress && route.length > 1 && (
+        {!receipt && !submitted && form.settings.showProgress && route.length > 1 && (
           <progress
             className="fs-progress"
             aria-label="Form progress"

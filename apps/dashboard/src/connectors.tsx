@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api, authClient } from "./api";
+import { PanelSkeleton } from "./loading";
 
 type Connector = {
   id: string;
@@ -17,6 +18,7 @@ type Connector = {
   }[];
 };
 export function Connectors({ formId }: { formId: string }) {
+  const [loading, setLoading] = useState(true);
   const [connectors, setConnectors] = useState<Connector[]>([]);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -31,10 +33,16 @@ export function Connectors({ formId }: { formId: string }) {
     const load = () =>
       api<Connector[]>(endpoint)
         .then((rows) => {
-          if (active) setConnectors(rows);
+          if (active) {
+            setConnectors(rows);
+            setLoading(false);
+          }
         })
         .catch((e) => {
-          if (active) setError(e.message);
+          if (active) {
+            setError(e.message);
+            setLoading(false);
+          }
         });
     void load();
     const timer = setInterval(() => {
@@ -57,6 +65,7 @@ export function Connectors({ formId }: { formId: string }) {
       setBusy(false);
     }
   };
+  if (loading) return <PanelSkeleton label="Loading integrations" />;
   return (
     <div className="connector-settings">
       <p>

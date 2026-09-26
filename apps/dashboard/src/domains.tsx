@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "./api";
+import { PanelSkeleton } from "./loading";
 import { useFormList } from "./use-form-list";
 
 type Domain = {
@@ -12,6 +13,7 @@ type Domain = {
   records: { type: string; name: string; value: string }[];
 };
 export function Domains() {
+  const [initialLoading, setInitialLoading] = useState(true);
   const [search, setSearch] = useState("");
   const { forms, nextCursor, loading, error: formError, loadMore } = useFormList(true, search);
   const [domains, setDomains] = useState<Domain[]>([]),
@@ -22,7 +24,8 @@ export function Domains() {
   useEffect(() => {
     void api<Domain[]>("/domains")
       .then(setDomains)
-      .catch((e) => setError(e.message));
+      .catch((e) => setError(e.message))
+      .finally(() => setInitialLoading(false));
   }, []);
   const action = async (id: string, fn: () => Promise<unknown>) => {
     setBusy(id);
@@ -36,6 +39,7 @@ export function Domains() {
       setBusy(null);
     }
   };
+  if (initialLoading) return <PanelSkeleton label="Loading domains" />;
   return (
     <div className="domain-settings">
       <h1>Custom domains</h1>

@@ -1,7 +1,7 @@
 .fe-editor {
   position: relative;
   color: var(--fs-text, #37352f);
-  font-family: Inter, system-ui, sans-serif;
+  font-family: var(--fs-font, Inter, system-ui, sans-serif);
   font-size: inherit;
   line-height: 1.5;
 }
@@ -83,7 +83,7 @@
   color: #37352f;
 }
 .fe-question {
-  margin: 22px 0;
+  margin: 22px 0 calc(12px + var(--fs-input-margin, 10px));
 }
 .fe-document > .fe-block:last-child {
   margin-bottom: 0;
@@ -116,36 +116,36 @@
   min-height: 23px;
 }
 .fe-field-preview {
-  min-height: 36px;
-  max-width: 320px;
+  min-height: var(--fs-input-height, 36px);
+  max-width: var(--fs-input-width, 320px);
   border: 0;
-  border-radius: var(--fs-radius, 8px);
-  padding: 6px 10px;
+  border-radius: var(--fs-input-radius, 8px);
+  padding: 6px var(--fs-input-padding, 10px);
   line-height: 1.5;
   box-shadow:
     0 1px 1px #0000001f,
-    0 0 0 1px #3d3b3529,
+    0 0 0 var(--fs-input-border-width, 1px) var(--fs-input-border, #3d3b3529),
     0 2px 5px #3d3b3514;
   color: #bbbab8;
   cursor: pointer;
 }
 .fe-field-long_text {
   height: 108px;
-  max-width: 500px;
+  max-width: var(--fs-long-input-width, 500px);
 }
 .fe-field-linear_scale,
 .fe-field-matrix {
-  max-width: 500px;
+  max-width: var(--fs-long-input-width, 500px);
 }
 .fe-field-signature {
   height: 140px;
-  max-width: 500px;
+  max-width: var(--fs-long-input-width, 500px);
   border: 1px dashed #d9d9d9;
   box-shadow: none;
 }
 .fe-field-file {
   height: 110px;
-  max-width: 500px;
+  max-width: var(--fs-long-input-width, 500px);
   text-align: center;
   padding-top: 40px;
   border: 1px dashed #d9d9d9;
@@ -165,10 +165,10 @@
 .fe-choice-preview {
   margin-top: 8px;
   border: 1px solid #ddd;
-  border-radius: var(--fs-radius, 8px);
+  border-radius: var(--fs-input-radius, 8px);
   background: #fafafa;
   padding: 8px 12px;
-  max-width: 500px;
+  max-width: var(--fs-long-input-width, 500px);
   cursor: pointer;
 }
 .fe-section-rule {
@@ -245,7 +245,7 @@
   position: absolute;
   top: 100%;
   right: 0;
-  margin-top: 26px;
+  margin-top: calc(32px + var(--fs-button-height, 36px) + var(--fs-button-margin, 10px));
 }
 .fe-insert-row select {
   color: #999;
@@ -390,4 +390,29 @@
   .fe-format-toolbar {
     opacity: 1;
   }
+}
+
+.fe-field-preview {
+  background: var(--fs-input-bg, var(--fs-bg));
+  color: var(--fs-input-placeholder, #bbbab8);
+}
+.fe-choice-preview {
+  background: var(--fs-input-bg);
+  border-color: var(--fs-input-border);
+}
+.fe-help {
+  color: color-mix(in srgb, var(--fs-text) 65%, var(--fs-bg));
+}
+.fe-question[data-required="true"] .fe-label:after {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--fs-text) 10%, var(--fs-bg));
+  color: inherit;
+  font-size: 12px;
+  vertical-align: middle;
 }

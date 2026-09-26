@@ -3,11 +3,14 @@ import { api, type FormSummary, type Page } from "./api";
 
 export function useFormList(enabled: boolean, search: string) {
   const [forms, setForms] = useState<FormSummary[]>([]);
+  const [loadedSearch, setLoadedSearch] = useState<string | null>(null);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(enabled);
+  const [attempt, setAttempt] = useState(0);
   const [error, setError] = useState("");
   const generation = useRef(0);
   const pending = useRef(false);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: retry starts a fresh request with unchanged search.
   useEffect(() => {
     const version = ++generation.current;
     setForms([]);
@@ -31,7 +34,10 @@ export function useFormList(enabled: boolean, search: string) {
             if (generation.current === version) setError(e.message);
           })
           .finally(() => {
-            if (generation.current === version) setLoading(false);
+            if (generation.current === version) {
+              setLoading(false);
+              setLoadedSearch(search);
+            }
           });
       },
       search ? 200 : 0,
@@ -40,7 +46,7 @@ export function useFormList(enabled: boolean, search: string) {
       clearTimeout(timer);
       generation.current++;
     };
-  }, [enabled, search]);
+  }, [enabled, search, attempt]);
   const loadMore = useCallback(async () => {
     if (!nextCursor || pending.current || loading) return;
     const version = generation.current;
@@ -63,5 +69,12 @@ export function useFormList(enabled: boolean, search: string) {
       if (version === generation.current) setLoading(false);
     }
   }, [search, nextCursor, loading]);
-  return { forms, nextCursor, loading, error, loadMore };
+  return {
+    forms: loadedSearch === search ? forms : [],
+    nextCursor,
+    loading: loading || (enabled && loadedSearch !== search),
+    error,
+    loadMore,
+    retry: () => setAttempt((value) => value + 1),
+  };
 }

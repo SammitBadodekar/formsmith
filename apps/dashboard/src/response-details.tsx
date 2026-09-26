@@ -7,6 +7,7 @@ import {
 } from "@formsmith/core";
 import { useState } from "react";
 import { api } from "./api";
+import { PanelSkeleton } from "./loading";
 
 export type ResponseRow = {
   id: string;
@@ -53,7 +54,7 @@ export function ResponseDetails({ row }: { row: ResponseRow }) {
           </button>
         </p>
       )}
-      {loading && <p role="status">Loading response…</p>}
+      {loading && <PanelSkeleton label="Loading response" />}
       {definition && (
         <dl className="response-fields">
           {Object.entries(row.answers).map(([id, value]) => {

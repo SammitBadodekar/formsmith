@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, authClient } from "./api";
+import { PanelSkeleton } from "./loading";
 
 const permissions: Record<string, string> = {
   "forms:read": "Read your forms and their configuration",
@@ -25,6 +26,7 @@ type Credential = {
 type Consent = { id: string; clientId: string; scopes: string[] };
 
 export function AgentAccess() {
+  const [loading, setLoading] = useState(true);
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [consents, setConsents] = useState<Consent[]>([]);
   const [name, setName] = useState("");
@@ -43,7 +45,9 @@ export function AgentAccess() {
     setConsents(grants.data ?? []);
   }, []);
   useEffect(() => {
-    void refresh().catch((e) => setError(e.message));
+    void refresh()
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
   }, [refresh]);
   const perform = async (action: () => Promise<unknown>) => {
     setBusy(true);
@@ -57,6 +61,7 @@ export function AgentAccess() {
       setBusy(false);
     }
   };
+  if (loading) return <PanelSkeleton label="Loading agent access" />;
   return (
     <section className="access-settings">
       <h1>Agents & API</h1>

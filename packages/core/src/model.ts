@@ -200,6 +200,42 @@ export const themeSchema = z.object({
   radius: z.number().min(0).max(24),
   logo: z.string().max(3000),
   cover: z.string().max(3000),
+  // Optional additions preserve the serialized shape of existing published versions.
+  mode: z.enum(["light", "dark", "custom"]).optional(),
+  font: z.enum(["Inter", "System", "Georgia", "Monospace"]).optional(),
+  logoWidth: z.number().min(24).max(400).optional(),
+  logoHeight: z.number().min(24).max(400).optional(),
+  logoRadius: z.number().min(0).max(200).optional(),
+  coverHeight: z.number().min(0).max(800).optional(),
+  coverHeightUnit: z.enum(["px", "vh"]).optional(),
+  coverPosition: z.number().min(0).max(100).optional(),
+  inputWidth: z.number().min(80).max(1200).optional(),
+  inputWidthMode: z.enum(["fixed", "full"]).optional(),
+  inputHeight: z.number().min(28).max(120).optional(),
+  inputBackground: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/)
+    .optional(),
+  inputPlaceholder: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/)
+    .optional(),
+  inputBorder: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/)
+    .optional(),
+  inputBorderWidth: z.number().min(0).max(8).optional(),
+  inputRadius: z.number().min(0).max(60).optional(),
+  inputMargin: z.number().min(0).max(100).optional(),
+  inputPadding: z.number().min(0).max(60).optional(),
+  buttonWidthMode: z.enum(["auto", "fixed", "full"]).optional(),
+  buttonWidth: z.number().min(60).max(1200).optional(),
+  buttonHeight: z.number().min(28).max(120).optional(),
+  buttonAlign: z.enum(["left", "center", "right"]).optional(),
+  buttonFontSize: z.number().min(12).max(40).optional(),
+  buttonRadius: z.number().min(0).max(60).optional(),
+  buttonMargin: z.number().min(0).max(100).optional(),
+  buttonPadding: z.number().min(0).max(80).optional(),
 });
 export const formSchema = z.object({
   schemaVersion: z.literal(1),
